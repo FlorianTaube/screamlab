@@ -1,0 +1,25 @@
+package:
+  name: 'CorziliusNMR'
+  author: 'Florian Taube'
+  author_email: 'florian.taube@uni-rostock.de'
+  year: '2024'
+  description: ''
+  urls:
+    main: ''
+    documentation: ''
+    source: ''
+  keywords: [Buildup Time Calculator, NMR, DNP, SCREAM_DNP, TopspinExport]
+  install_requires: [matplotlib, numpy, lmfit, scipy, math]
+  license: BSD
+documentation:
+  logo: ''
+  favicon: ''
+  language: en
+options:
+  logging: false
+  git: true
+  gui: false
+gui:
+  splash: true
+  organisation: ''
+  domain: ''
