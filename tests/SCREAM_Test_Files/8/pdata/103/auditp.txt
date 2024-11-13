@@ -1,0 +1,56 @@
+##TITLE= Audit trail, TopSpin 4.1.4
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Florian Taube
+$$ F:/ssNMR/20241021_S27F/8/pdata/103/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2024-10-22 15:21:50.807 +0200>,<Florian Taube>,<Siavash>,<mvrow>,<TopSpin 4.1.4>,
+      <rsr 1 from
+       1 8 "20241021_S27F" "F:/ssNMR"
+       data hash MD5: 16K
+       CD 87 43 CD BB 0E 70 08 8D 18 E9 BE 29 58 95 2C>)
+(   2,<2024-10-22 15:21:52.161 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <Unknown data manipulation detected
+       abs ABSG = 5 
+       data hash MD5: 16K
+       55 59 BC B6 2E 8E AD 36 BF 75 CB F1 C9 32 EC CF>)
+(   3,<2024-10-22 15:25:19.941 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apks 
+       data hash MD5: 16K
+       B5 8C 37 D9 AF 47 D6 3F 7A 90 7F DF 6E C0 A4 4C>)
+(   4,<2024-10-22 15:27:01.205 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apk 
+       data hash MD5: 16K
+       1C 79 08 22 AE E5 A6 7F 12 52 B9 A5 99 66 9F A4>)
+(   5,<2024-10-22 16:00:01.080 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apks 
+       data hash MD5: 16K
+       19 13 C9 B4 86 AD 55 D4 BA 2A 4F 48 E8 F5 C0 8B>)
+(   6,<2024-10-24 10:59:24.976 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apk 
+       data hash MD5: 16K
+       E2 02 21 C4 C8 B1 16 B8 52 8A D5 57 81 67 5D 2C>)
+(   7,<2024-10-24 10:59:26.319 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apks 
+       data hash MD5: 16K
+       42 77 0F 64 C0 AF B5 FE 3A E4 FE 6A 2D A6 53 81>)
+(   8,<2024-10-24 11:00:05.751 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <pk fgphup PHC0 = 5.4 PHC1 = 0 
+       data hash MD5: 16K
+       2D 5B AF 7F C5 0D 6C 68 2C BC 0E CE B8 65 2E C8>)
+(   9,<2024-10-24 11:02:11.556 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <abs n ABSG = 5 
+       data hash MD5: 16K
+       B7 C8 EB 93 81 D5 EC CE EE C2 51 E8 B7 56 05 7B>)
+(  10,<2024-10-24 22:44:21.604 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apks 
+       data hash MD5: 16K
+       D2 96 51 EB A1 E1 EC F0 23 60 6A 3A 98 3F 49 58>)
+(  11,<2024-10-24 22:44:36.900 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <abs n ABSG = 5 
+       data hash MD5: 16K
+       02 EA 40 7E BA 68 1C AA 2A 14 2F F5 D1 E1 51 36>)
+##END=
+
+$$ hash MD5
+$$ 0F F7 D4 CE A6 AE EA E1 19 6E CF 5E 46 87 19 C7

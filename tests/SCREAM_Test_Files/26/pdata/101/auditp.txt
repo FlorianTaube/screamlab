@@ -1,0 +1,15 @@
+##TITLE= Audit trail, TopSpin 4.1.4
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Florian Taube
+$$ F:/ssNMR/20241021_S27F/26/pdata/101/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2024-10-22 15:22:06.472 +0200>,<Florian Taube>,<Siavash>,<mvrow>,<TopSpin 4.1.4>,
+      <rsr 1 from
+       1 26 "20241021_S27F" "F:/ssNMR"
+       data hash MD5: 16K
+       0F 41 71 E0 D3 87 0B 1B B1 C6 A3 36 F5 8B C3 CF>)
+##END=
+
+$$ hash MD5
+$$ 7F 37 A1 60 9A D5 46 E7 89 B1 A9 46 C6 A1 68 AD

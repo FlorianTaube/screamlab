@@ -1,0 +1,48 @@
+##TITLE= Audit trail, TopSpin 4.1.4
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Florian Taube
+$$ F:/ssNMR/20241021_S27F/6/pdata/103/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2024-10-22 15:21:43.832 +0200>,<Florian Taube>,<Siavash>,<mvrow>,<TopSpin 4.1.4>,
+      <rsr 1 from
+       1 6 "20241021_S27F" "F:/ssNMR"
+       data hash MD5: 16K
+       B1 A8 EB 48 8C 92 07 86 63 01 29 CC 91 02 BD 87>)
+(   2,<2024-10-22 15:21:45.094 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <Unknown data manipulation detected
+       abs ABSG = 5 
+       data hash MD5: 16K
+       2A 13 A6 6A 39 89 55 1B 00 FF 7E ED E0 57 22 81>)
+(   3,<2024-10-22 15:25:19.737 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apks 
+       data hash MD5: 16K
+       B1 DA 6E E0 0A E4 76 82 17 60 0C 85 4D C8 E8 7A>)
+(   4,<2024-10-22 15:27:00.809 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apk 
+       data hash MD5: 16K
+       9C BC FA C6 01 8C A0 6A 8C 9C AC 52 9B 89 9B 23>)
+(   5,<2024-10-24 11:02:11.362 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <abs n ABSG = 5 
+       data hash MD5: 16K
+       DC 0F 14 2C DA 65 A7 D4 BA 19 29 E3 63 0A D7 13>)
+(   6,<2024-10-24 11:02:23.561 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apk 
+       data hash MD5: 16K
+       B1 2B FD ED 8B 6E F5 2E 0A B9 52 97 BD 80 E4 AB>)
+(   7,<2024-10-24 11:02:24.763 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apks 
+       data hash MD5: 16K
+       FB 01 6F A0 58 8A B5 8C A8 91 2D A9 E7 9F AF 58>)
+(   8,<2024-10-24 22:44:21.356 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apks 
+       data hash MD5: 16K
+       83 27 B0 23 1B C8 E0 D3 33 35 00 9D C2 3F C3 34>)
+(   9,<2024-10-24 22:44:36.746 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <abs n ABSG = 5 
+       data hash MD5: 16K
+       39 5D 6F FF A2 D3 D3 97 45 31 23 CD 5A 45 8B BF>)
+##END=
+
+$$ hash MD5
+$$ AE 5B 47 84 76 E6 BA 5F CB 5E B4 B8 2B 9C CB 7B

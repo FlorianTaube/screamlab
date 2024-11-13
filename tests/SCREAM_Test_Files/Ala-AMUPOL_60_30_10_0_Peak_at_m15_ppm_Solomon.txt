@@ -1,0 +1,20 @@
+[[Model]]
+    Model(_eval)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 25
+    # data points      = 8
+    # variables        = 3
+    chi-square         = 4458.27958
+    reduced chi-square = 891.655915
+    Akaike info crit   = 56.5846135
+    Bayesian info crit = 56.8229381
+    R-squared          = 0.99974923
+[[Variables]]
+    M_C_inf:   5186.77471 +/- 104.590564 (2.02%) (init = 5000)
+    lambda_H:  2.23073547 +/- 0.21991514 (9.86%) (init = 3)
+    lambda_C:  18.3246573 +/- 0.76048757 (4.15%) (init = 20)
+[[Correlations]] (unreported correlations are < 0.100)
+    C(M_C_inf, lambda_C)  = +0.9608
+    C(lambda_H, lambda_C) = -0.6397
+    C(M_C_inf, lambda_H)  = -0.5500

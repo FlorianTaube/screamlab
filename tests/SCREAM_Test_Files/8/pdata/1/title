@@ -1,0 +1,10 @@
+S24F
+100 mM 13C5-15N-HN-P-OH
+100 mM 13C3-H2N-Ala-OH
+10 mM AMUPOL
+1.3 mm Rotor
+18 kHz
+100 K
+NS 64
+tbup =32s
+t1Hbup = 0.25s

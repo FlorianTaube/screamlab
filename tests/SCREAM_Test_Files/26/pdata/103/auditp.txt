@@ -1,0 +1,44 @@
+##TITLE= Audit trail, TopSpin 4.1.4
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Florian Taube
+$$ F:/ssNMR/20241021_S27F/26/pdata/103/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2024-10-22 15:22:06.703 +0200>,<Florian Taube>,<Siavash>,<mvrow>,<TopSpin 4.1.4>,
+      <rsr 1 from
+       1 26 "20241021_S27F" "F:/ssNMR"
+       data hash MD5: 16K
+       0F 41 71 E0 D3 87 0B 1B B1 C6 A3 36 F5 8B C3 CF>)
+(   2,<2024-10-22 15:22:07.952 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <Unknown data manipulation detected
+       abs ABSG = 5 
+       data hash MD5: 16K
+       20 B4 5C F2 78 05 A0 EA B1 A0 5A EC A3 1B FB 04>)
+(   3,<2024-10-22 15:25:20.801 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apks 
+       data hash MD5: 16K
+       6C BE D7 12 0D FB 13 A6 4E 5F BB E9 7A B7 7D CA>)
+(   4,<2024-10-22 15:27:02.342 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apk 
+       data hash MD5: 16K
+       30 87 1C 1B 55 55 D7 8B B2 8D A6 5A 2D 67 4C 9F>)
+(   5,<2024-10-24 11:02:12.205 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <abs n ABSG = 5 
+       data hash MD5: 16K
+       EE 9B 3D C9 DE 81 11 0A FD 03 5B 4A 7E 71 99 48>)
+(   6,<2024-10-24 15:17:41.104 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apk 
+       data hash MD5: 16K
+       C3 4F E7 7D 76 CA 2D 15 F4 6C F2 E1 8D 11 92 FB>)
+(   7,<2024-10-24 22:44:22.341 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apks 
+       data hash MD5: 16K
+       2D D2 B1 59 7B 63 2F 02 E2 4D F4 5F 34 BF 31 21>)
+(   8,<2024-10-24 22:44:37.363 +0200>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <abs n ABSG = 5 
+       data hash MD5: 16K
+       55 A3 85 DB D4 FB 20 2E 7C E5 15 55 78 9C 65 C7>)
+##END=
+
+$$ hash MD5
+$$ F5 67 C3 FA 80 B6 5C 94 19 29 04 52 20 6A 2A 86

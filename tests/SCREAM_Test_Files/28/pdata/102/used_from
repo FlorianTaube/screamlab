@@ -1,0 +1,16 @@
+##TITLE= Parameter file, TopSpin 4.1.4
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 1	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Florian Taube
+$$ 2024-10-22 15:22:11.847 +0200  Florian Taube@Siavash
+$$ F:/ssNMR/20241021_S27F/28/pdata/102/used_from
+$$ process C:\Bruker\TopSpin4.1.4\prog\mod\mvrow.exe
+##$CUREXP= <row>
+##$DATPATH= <F:/ssNMR>
+##$EXPNO= 28
+##$NAME= <20241021_S27F>
+##$PROCNO= 1
+##$PROCNO2= 2
+##END=

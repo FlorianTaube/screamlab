@@ -1,0 +1,156 @@
+# 1 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+# 1 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+;Vica SCREAM DP and DPsat alternating
+;further comments and easier-to-use updates introduced by Thomas
+;
+; 14.04.2023
+
+;hpdec.av
+;acquisition on X with hp proton decoupling
+;interleaved acquisition of DP (1st) and DPsat (2nd) block
+
+;set NBL value to 2!
+;d1: recycle delay, set to 0.1s if duty cycle allows
+;d4: dinterpulse delay of initial saturation train
+;d10: d20 - L5*(p1+d4) 
+;d20: interpulse delay for 1H saturation during buildup, set to 250ms
+;l4: nr of saturation pulses for initial saturation on 1H and 13C
+;l20: nr of saturation pulses during buildup
+;l21: nr of saturation pulses during 1H buildup; l6=l7+l8
+;tbup: = l20*d20, SCREAM buildup time
+;pcpd2: set to (180 deg - 0.2 us) if not determined
+;pl1: carbon 90 hard pulse power
+;pl3: proton 90 hard pulse power
+;pl12: proton power for decoupling
+;p4: proton 90 at power level PLW3
+;p1: carbon 90 at PLW1
+;l7: l6-1
+;l8: =1
+# 26 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+# 27 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+
+define loopcounter count
+"count=0"
+define delay tbup
+"tbup=l20*d20"
+define delay t1Hbup
+"t1Hbup=l21*d20"
+
+"l7=l21-1"
+"plw2=0"
+"plw20=plw3" ;pl20: pl for saturation during buildup
+"plw21=0" ;pl21: set to 0W, not used
+"p20=p4*2" ;p20: proton 180
+"p30=p31-0.4u"
+"l8=1"
+"d10=d20-l4*(p1+d4)"
+# 34 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+# 35 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+
+define delay MCWRK
+define delay MCREST
+"MCWRK = 0.500000*10m"
+"MCREST = 10m - 0.500000*10m"
+  
+# 1 "mc_line 41 file C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/tb_scream_final dc-measurement inserted automatically"
+
+    dccorr
+# 40 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+# 1 "mc_line 41 file C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f dc-measurement inserted automatically"
+
+    dccorr
+# 41 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+# 41 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+1 ze ;set RCU to replace mode
+
+
+  "tbup=(1+l20)*d20"
+	"t1Hbup=l21*d20"
+# 45 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+# 46 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+2 MCWRK
+  MCREST
+
+
+  st0
+  d1 do:f2 ;recycle delay
+3 (p4 pl3 ph4^):f2  
+  d4
+lo to 3 times l4
+# 57 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+4	(p20 pl21 ph0):f2 
+	d10
+	5 (p1 pl2 ph6^):f1
+ 	  d4
+	lo to 5 times l4
+lo to 4 times l7
+
+6	(p20 pl21 ph0):f2 
+	d10
+	7 (p1 pl1 ph6^):f1
+ 	  d4
+	lo to 7 times l4
+lo to 6 times l8
+
+# 55 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+# 56 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+
+;  tbup do:f2
+8 (p20 pl21 ph0):f2
+	d20 ; dummy delay mimicking the not-applied 180 deg pulse on 1H
+lo to 8 times l20
+
+# 63 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+  (p1 pl1 ph1):f1 ;transmitter pulse on F1 with power level pl1
+  1u pl12:f2
+  1u cpds2:f2 ;use cpdprg2 spinal64 or tppm at power pl12
+  goscnp ph31 ;make sure the adc is finished, turn decoupling off
+  1u st
+# 68 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+
+;start DPsat
+
+  d1 do:f2 ;recycle delay, set to low values (e.g. 0.1s) if duty cycle allows
+9 (p4 pl3 ph4^):f2 
+  d4
+lo to 9 times l4
+# 76 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+10	(p20 pl20 ph0):f2 
+	d10
+	11 (p1 pl2 ph6^):f1
+ 	  d4
+	lo to 11 times l4
+lo to 10 times l7
+
+12	(p20 pl20 ph0):f2 
+	d10
+	13 (p1 pl1 ph6^):f1
+ 	  d4
+	lo to 13 times l4
+lo to 12 times l8
+;  tbup do:f2
+14 (p20 pl20 ph0):f2 ; 180 deg pulses on 1H during buildup
+  d20
+lo to 14 times l20
+# 81 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+
+  (p1 pl1 ph1):f1 ;transmitter pulse on F1 with power level pl1
+  1u pl12:f2
+  1u cpds2:f2 ;use cpdprg2 spinal64 or tppm at power pl12
+  go=2 ph31 ;make sure the adc is finished, turn decoupling off
+# 87 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+  1m do:f2
+;  d20
+
+  MCWRK  wr #0
+  MCWRK
+# 93 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+
+;  wr #0 ;save data in current data set
+exit
+# 97 "C:/Bruker/TopSpin3.5pl6/exp/stan/nmr/lists/pp/user/ft_scream_mod_f"
+ph0= 0     ;constant phase for acquisition
+ph1= 0 1 2 3 ;simple pulse phase list
+ph4= 0 1
+ph6= 0 1
+ph31=0 1 2 3 ;signal routing corresponds to pulse phase list
