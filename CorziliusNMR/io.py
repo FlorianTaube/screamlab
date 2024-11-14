@@ -1,23 +1,16 @@
 """
 io module of the CorziliusNMR package.
 """
-
-import sys
-import os
-from datetime import date
-from bruker.data.nmr  import *
-from matplotlib import pyplot as plt
 import numpy as np
-import bruker.api.topspin as top
+
+'''
 def generate_csv_from_scream_set(path, output_file, expno, procnos=[103]):
 ### Path to the Topspin files
     expno = np.arange(expno[0], expno[1] + 1)
     for procno in procnos:
         ### Name of the output file
         par_out = np.zeros(shape=(4,len(expno)))
-        import bruker.api.topspin as top
-        top = top.Topspin()
-        dp = top.getDataProvider()
+
         counter = 1
         for exp in expno:
             try:
@@ -82,3 +75,133 @@ def generate_csv_from_scream_set(path, output_file, expno, procnos=[103]):
         np.savetxt((output_file+"_"+str(procno)+".csv"),npout,header=header,
                    delimiter=",",comments = comment, fmt="%10.5f")
         plt.close()
+'''
+
+from bruker.data.nmr import *
+import bruker.api.topspin as top
+
+class TopspinExporter:
+
+    def __init__(self,dataset):
+        self._dataset = dataset
+
+    def export(self):
+        self.read_in_topspin_data()
+        self.save_data_in_csv()
+        pass
+
+    def read_in_topspin_data(self):
+        pass
+
+    def save_data_in_csv(self):
+        pass
+
+
+
+class ScreamExporter(TopspinExporter):
+
+    def __init__(self,dataset):
+        super().__init__(dataset)
+
+    def export(self):
+        super().export()
+        return
+
+    def read_in_topspin_data(self):
+        path = self._dataset._fileNames.path_to_topspin_experiment
+        procno =self._dataset._fileNames.procno_of_topspin_experiment
+        for expno_nr,expno in \
+                enumerate(self._dataset._fileNames.expno_of_topspin_experiment):
+            self._dataset.experiments.append(_Experiment(f"{path}/{expno}/pdata"
+                                                 f"/{procno}"))
+            self._dataset.experiments[expno_nr]._get_values()
+
+    def save_data_in_csv(self):
+        file = self._dataset._fileNames.generate_output_csv_file_name()
+        delay_times = [spectrum.tbup for spectrum in self._dataset.experiments]
+        spectra = np.vstack(
+            [np.vstack((spectrum.x_axis, spectrum.y_axis)) for spectrum in
+             self._dataset.experiments]).transpose()
+
+        with open(file, 'w') as csv_file:
+            csv_file.write('; '.join(map(str, delay_times)) + '\n')
+            csv_file.writelines(
+                ';'.join(map(str, row)) + '\n' for row in spectra)
+
+
+
+
+
+
+
+
+class Pseudo2DExporter(TopspinExporter):
+
+    def __init__(self,dataset):
+        super().__init__(dataset)
+
+    def export(self):
+        return
+
+    def read_in_topspin_data():
+        pass
+
+class _Experiment():
+
+    def __init__(self,file):
+        self._file = file
+        self.NS = ""
+        self.tbup = ""
+        self.x_axis = None
+        self.y_axis = []
+        self._top = top.Topspin()
+        self._data_provider = self._top.getDataProvider()
+        self._nmr_metadata = self._data_provider.getNMRData(self._file)
+        self._nmr_spectral_data = self._nmr_metadata.getSpecDataPoints()
+
+    def _get_values(self):
+        self._get_number_of_scans()
+        self._get_buildup_time()
+        self._get_x_axis()
+        self._get_y_axis()
+        self._normalize_y_values_to_number_of_scans()
+
+    def _get_number_of_scans(self):
+        self.NS = int(self._nmr_metadata.getPar("NS"))
+
+    def _get_buildup_time(self):
+        self.tbup = int(self._nmr_metadata.getPar("L 20")) / 4
+
+    def _get_x_axis(self):
+        _physicalRange = self._nmr_spectral_data['physicalRanges'][0]
+        _number_of_datapoints = self._nmr_spectral_data['dataPoints']
+        self.x_axis = np.linspace(float(_physicalRange['start']),
+                                  float(_physicalRange[ 'end']),
+                                  len(_number_of_datapoints))
+
+    def _get_y_axis(self):
+        self.y_axis = self._nmr_spectral_data['dataPoints']
+
+    def _normalize_y_values_to_number_of_scans(self):
+        self.y_axis = np.divide(self.y_axis, self.NS)
+
+
+
+
+class _FileNameHandler():
+
+    def __init__(self):
+        self.path_to_topspin_experiment = None
+        self.procno_of_topspin_experiment = None
+        self.expno_of_topspin_experiment = None
+        self.output_file_name = None
+
+    def generate_output_csv_file_name(self):
+        return self.output_file_name + ".csv"
+
+    def generate_export_output_pdf_file_name(self):
+        return self.output_file_name +".pdf"
+
+
+
+

@@ -1,14 +1,36 @@
-from CorziliusNMR import io,fitting
+# Assuming `top` is a module you want to use
+#import top  # Add this if top is a module you want to import
 
+class TopspinExporter:
+    def __init__(self, dataset):
+        self._dataset = dataset
 
-path = r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K"
-expno=[24,33]
-output_file = r"C:\Users\Florian Taube\Desktop\Prolin_auswertung_Test\HN-P-100K"
-io.generate_csv_from_scream_set(path, output_file, expno)
-peak_list = [172,60,50,40,30]
-plus_minus_list = ["-"]*5
-buildup_fit_type_list = ["Biexponential_with_offset","Biexponential"]
-fitting.scream_buildup_time_evaluation(output_file,peak_list,
-                                       plus_minus_list=plus_minus_list,
-                                       autopeakpick=True,
-                                       buildup_fit_type_list=buildup_fit_type_list)
+    def export(self):
+        # Assuming top.Topspin() and top.getDataProvider() are valid calls.
+        #topspin = top.Topspin()
+        #dataprovider = top.getDataProvider()
+        self.pathlist_to_experimental_data()  # Now this is valid
+        pass
+
+    # Add self as the first argument for instance methods
+    def pathlist_to_experimental_data(self):
+        # Implement your logic here
+        pass
+
+class ScreamExporter(TopspinExporter):
+    def __init__(self, dataset):
+        super().__init__(dataset)
+
+    def export(self):
+        print("hallo2")
+        return
+
+    # Add self as the first argument for instance methods
+    def pathlist_to_experimental_data(self):
+        print("hallo")
+        pass
+
+# Testing the implementation
+dataset = "Some dataset"  # Placeholder for dataset
+exporter = ScreamExporter(dataset)
+exporter.export()  # This should print "hallo2" and return
