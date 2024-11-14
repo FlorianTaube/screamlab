@@ -69,16 +69,16 @@ def get_param_ranges(fitting_type,delay_times,intensitys_result):
             'x1':(0, delay_times[-1]*2),
             'x0':(-10,10)}
     elif fitting_type == "Biexponential":
-        return {'A1': (0, intensitys_result[-1]*2),
-                'A2': (0, intensitys_result[-1]*2),
+        return {'A1': (0, intensitys_result[-1]*1.5),
+                'A2': (0, intensitys_result[-1]*1.5),
             'x1':(0.5, delay_times[-1]*2),
             'x2':(0.5, delay_times[-1]*2)}
     elif fitting_type == "Biexponential_with_offset":
-        return {'A1': (0, intensitys_result[-1]*2),
-                'A2': (0, intensitys_result[-1]*2),
-            'x1':(0, delay_times[-1]*2),
-            'x2':(0, delay_times[-1]*2),
-            'x0':(-10,10)}
+        return {'A1': (0, intensitys_result[-1]*1.5),
+                'A2': (0, intensitys_result[-1]*1.5),
+            'x1':(0.5, delay_times[-1]*2),
+            'x2':(0.5, delay_times[-1]*2),
+            'x0':(-2,2)}
     elif fitting_type == "Solomon":
         return{
             'P_c0': (0, intensitys_result[-1]*2),

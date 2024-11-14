@@ -4,9 +4,13 @@ fitting module of the CorziliusNMR package.
 from CorziliusNMR import utils
 import sys
 
-def scream_buildup_time_evaluation(output_file, peak_list,plus_minus_list=["+"], procpars=["103"],autopeakpick=False, hilfe=["max_value","voigt","global_voigt"]):
+def scream_buildup_time_evaluation(output_file, peak_list, plus_minus_list=[
+    "+"], procpars=["103"], autopeakpick=False,
+                                   signal_intensity_determination_methond=[
+                                       "max_value", "voigt", "global_voigt"],
+                                   buildup_fit_type_list=["Biexponential"]):
     if len(procpars) != 1: sys.exit("ERROR: Too many procpars.")
-    csv_file_name = utils.generate_csv(output_file,procpars)
+    csv_file_name = utils.generate_csv(output_file,procpars[0])
     delay_times = utils.get_delay_times_from_csv(csv_file_name)
     x_data, y_data = utils.read_xy_data_from_csv(csv_file_name)
     sys.exit() if not utils.check_if_plus_minus_list_contains_just_plus_and_minus(
@@ -22,7 +26,7 @@ def scream_buildup_time_evaluation(output_file, peak_list,plus_minus_list=["+"],
 
     peak_infos = utils.generate_peak_dict(peak_list, plus_minus_list)
     peak_infos = utils.add_peak_label(peak_infos, procpars)
-    for type in hilfe:
+    for type in signal_intensity_determination_methond:
         if type == "max_value":
             intensitys = utils.get_intensitys_from_maximum(x_data, y_data,
                                                            peak_infos)
@@ -38,4 +42,4 @@ def scream_buildup_time_evaluation(output_file, peak_list,plus_minus_list=["+"],
         else:
             sys.exit("Unknown fitting type!")
         utils.calc_buildup(intensitys, delay_times, output_file, type,
-                           fitting_type_list=["Biexponential"])
+                           fitting_type_list=buildup_fit_type_list)

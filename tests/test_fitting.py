@@ -209,7 +209,7 @@ class TestAnalysis(unittest.TestCase):
 
     def test_get_intensitys_from_voigt_fittings_real_data_one_peak(self):
         procpars = ["103"]
-        hilfe = ["voigt","max_value"]
+        hilfe = ["voigt","max_value","global_voigt"]
         autopeakpick = False
         peak_list = [-15]
         plus_minus_list = ["+"]
@@ -236,6 +236,7 @@ class TestAnalysis(unittest.TestCase):
                 print(type)
             else:
                 sys.exit("Unknown fitting type!")
+            print("Hello")
             utils.calc_buildup(intensitys, delay_times, output_file,type,
                                fitting_type_list=["Solomon"])
 
@@ -279,7 +280,7 @@ class TestAnalysis(unittest.TestCase):
     def test_get_intensitys_from_global_voigt_fittings_real_data_five_peaks(
             self):
         procpars = ["103"]
-        hilfe = ["global_voigt","voigt","max_values"]
+        hilfe = ["global_voigt","voigt","max_value"]
         autopeakpick = True
         peak_list = [172, 60, 50, 40, 30]
         plus_minus_list = ["-"] * 5

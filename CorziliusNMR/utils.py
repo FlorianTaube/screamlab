@@ -129,13 +129,16 @@ def save_fitting_report(result,fitting_type,output_file,key,type):
             file.write((result.fit_report()))
 
 def get_best_fit(model,intensitys_result,params,delay_times,fitting_type,
-                 num_samples=50):
+                 num_samples=100):
+
     lhs_samples = lhs(len(params), samples=num_samples)
     param_ranges = fitting_parameter_dicts.get_param_ranges(fitting_type,delay_times,intensitys_result)
     best_result = None
     best_residual = np.inf
+    best_rsquared = 0
     for nr,sample in enumerate(lhs_samples):
         print(nr)
+        print(nr) if (nr + 1) % 25 == 0 else None
         for key_nr,key in enumerate(param_ranges):
             params[key].value = sample[key_nr]*(param_ranges[key][1]-param_ranges[key][0])+param_ranges[key][0]
             if param_ranges[key][0] < param_ranges[key][1]:
@@ -151,15 +154,20 @@ def get_best_fit(model,intensitys_result,params,delay_times,fitting_type,
                 P_c_initial = 0
                 result = fit_and_plot_spectrum(delay_times, intensitys_result, P_h_initial, P_c_initial,params)
                 fitted_data = solomon_model(result.params, delay_times, P_h_initial, P_c_initial)
-                residual = sum(intensitys_result - fitted_data)
+                residual = abs(sum(intensitys_result - fitted_data))
+                if best_residual > residual:
+                    best_residual = residual
+                    best_result = result
             else:
                 result = model.fit(intensitys_result,params,x=delay_times)
                 residual = sum(intensitys_result - result.best_fit)
-            if residual < best_residual:
-                best_result = result
-                best_residual = residual
+                rsquared = result.rsquared
+                if best_rsquared < rsquared:
+                    best_result = result
+                    best_rsquared = rsquared
         except:
             pass
+    print(best_result)
     return best_result
 
 def solomon_two_spin(x,  P_h0, rho_h, sigma_HC, P_c0, rho_c):

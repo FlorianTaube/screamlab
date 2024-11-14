@@ -77,6 +77,8 @@ def generate_csv_from_scream_set(path, output_file, expno, procnos=[103]):
         comment += "#Phase correction 1st order / degree:\n#" + np.array2string(par_out[2,:], max_line_width=100, precision=2,separator=",") + "\n"
         np.set_printoptions(suppress=True)
         comment += "#Delay time for build up / s:\n#" + np.array2string(par_out[3,:], max_line_width=120, precision=2,separator=",") + "\n"
-        plt.savefig(output_file+"_"+procno+".pdf", dpi='figure',format="pdf")
-        np.savetxt((output_file+"_"+procno+".csv"),npout,header=header,delimiter=",",comments = comment, fmt="%10.5f")
+        plt.savefig(output_file+"_"+str(procno)+".pdf", dpi='figure',
+                                        format="pdf")
+        np.savetxt((output_file+"_"+str(procno)+".csv"),npout,header=header,
+                   delimiter=",",comments = comment, fmt="%10.5f")
         plt.close()
