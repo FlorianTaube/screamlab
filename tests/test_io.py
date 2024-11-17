@@ -2,7 +2,7 @@ import unittest
 
 import CorziliusNMR.dataset
 from CorziliusNMR import io
-from CorziliusNMR.dataset import Dataset
+from CorziliusNMR.dataset import Dataset, _Experiment
 class TestDataset(unittest.TestCase):
 
     def test_generate_output_csv_file_name(self):
@@ -37,45 +37,43 @@ class TestDataset(unittest.TestCase):
         pass
 
     def test_init_of_Experiment(self):
-        exp = io._Experiment(
+        exp = _Experiment(
             r"F:\NMR\Max\20230706_100mM_HN-P"
             r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
-        self.assertEqual(type(exp),CorziliusNMR.io._Experiment)
+        self.assertEqual(type(exp),CorziliusNMR._Experiment)
 
     def test_init_of_Experiment(self):
-        exp = io._Experiment(
+        exp = _Experiment(
             r"F:\NMR\Max\20230706_100mM_HN-P"
             r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
         self.assertEqual(exp._file,r"F:\NMR\Max\20230706_100mM_HN-P"
             r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
 
     def test_get_number_of_scans(self):
-        exp = io._Experiment(
+        exp = _Experiment(
             r"F:\NMR\Max\20230706_100mM_HN-P"
             r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
         exp._get_values()
         self.assertEqual(exp.NS, 64)
 
     def test_get_x_axis(self):
-        exp = io._Experiment(
+        exp = _Experiment(
             r"F:\NMR\Max\20230706_100mM_HN-P"
             r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
         exp._get_values()
         self.assertEqual(len(exp.x_axis), 16384)
 
     def test_get_y_axis(self):
-        exp = io._Experiment(
+        exp = _Experiment(
             r"F:\NMR\Max\20230706_100mM_HN-P"
             r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
         exp._get_values()
         self.assertEqual(len(exp.y_axis), 16384)
 
     def test_get_normalize_y_data_to_number_of_scans(self):
-        exp = io._Experiment(
+        exp = _Experiment(
             r"F:\NMR\Max\20230706_100mM_HN-P"
             r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
         exp._get_values()
         self.assertEqual(round(min(exp.y_axis)), -144)
-
-
 

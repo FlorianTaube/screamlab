@@ -2,6 +2,8 @@
 io module of the CorziliusNMR package.
 """
 import numpy as np
+import CorziliusNMR as corz
+
 
 '''
 def generate_csv_from_scream_set(path, output_file, expno, procnos=[103]):
@@ -77,8 +79,7 @@ def generate_csv_from_scream_set(path, output_file, expno, procnos=[103]):
         plt.close()
 '''
 
-from bruker.data.nmr import *
-import bruker.api.topspin as top
+
 
 class TopspinExporter:
 
@@ -112,7 +113,8 @@ class ScreamExporter(TopspinExporter):
         procno =self._dataset._fileNames.procno_of_topspin_experiment
         for expno_nr,expno in \
                 enumerate(self._dataset._fileNames.expno_of_topspin_experiment):
-            self._dataset.experiments.append(_Experiment(f"{path}/{expno}/pdata"
+            self._dataset.experiments.append(corz.dataset._Experiment(f"{path}"
+                                                          f"/{expno}/pdata"
                                                  f"/{procno}"))
             self._dataset.experiments[expno_nr]._get_values()
 
@@ -146,44 +148,6 @@ class Pseudo2DExporter(TopspinExporter):
     def read_in_topspin_data():
         pass
 
-class _Experiment():
-
-    def __init__(self,file):
-        self._file = file
-        self.NS = ""
-        self.tbup = ""
-        self.x_axis = None
-        self.y_axis = []
-        self._top = top.Topspin()
-        self._data_provider = self._top.getDataProvider()
-        self._nmr_metadata = self._data_provider.getNMRData(self._file)
-        self._nmr_spectral_data = self._nmr_metadata.getSpecDataPoints()
-
-    def _get_values(self):
-        self._get_number_of_scans()
-        self._get_buildup_time()
-        self._get_x_axis()
-        self._get_y_axis()
-        self._normalize_y_values_to_number_of_scans()
-
-    def _get_number_of_scans(self):
-        self.NS = int(self._nmr_metadata.getPar("NS"))
-
-    def _get_buildup_time(self):
-        self.tbup = int(self._nmr_metadata.getPar("L 20")) / 4
-
-    def _get_x_axis(self):
-        _physicalRange = self._nmr_spectral_data['physicalRanges'][0]
-        _number_of_datapoints = self._nmr_spectral_data['dataPoints']
-        self.x_axis = np.linspace(float(_physicalRange['start']),
-                                  float(_physicalRange[ 'end']),
-                                  len(_number_of_datapoints))
-
-    def _get_y_axis(self):
-        self.y_axis = self._nmr_spectral_data['dataPoints']
-
-    def _normalize_y_values_to_number_of_scans(self):
-        self.y_axis = np.divide(self.y_axis, self.NS)
 
 
 

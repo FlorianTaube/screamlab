@@ -1,3 +1,34 @@
+import numpy as np
+
+class Fitter:
+
+    def __init__(self,dataset):
+        self.dataset = dataset
+        self.model = None
+        self.params = None
+
+    def _set_model(self):
+        pass
+
+
+
+
+def generate_subspectrum(experiment,peak_center,offset):
+    closest_index = (np.abs(experiment.x_axis -
+                            (int(peak_center) - offset)).argmin(),
+                     np.abs(experiment.x_axis -
+                            (int(peak_center) + offset)).argmin())
+    return experiment.y_axis[closest_index[0]:closest_index[1]]
+
+
+
+
+
+
+
+
+
+'''
 import csv
 import numpy as np
 from matplotlib import cm
@@ -377,5 +408,5 @@ def voigt_profile(x, amplitude, center, sigma, gamma):
             number])/(sigma[number]*np.sqrt(2)))))/(sigma[number]*np.sqrt(
             2*np.pi)) for number in range(len(amplitude)))
 
-
+'''
 
