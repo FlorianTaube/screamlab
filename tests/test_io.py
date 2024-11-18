@@ -2,78 +2,32 @@ import unittest
 
 import CorziliusNMR.dataset
 from CorziliusNMR import io
-from CorziliusNMR.dataset import Dataset, _Experiment
+from CorziliusNMR.dataset import Dataset, Experiment
 class TestDataset(unittest.TestCase):
 
-    def test_generate_output_csv_file_name(self):
-        csvGenerator = io._FileNameHandler()
-        csvGenerator.output_file_name = r"C:\TestFolder\Testfile"
-        self.assertEqual(csvGenerator.generate_output_csv_file_name(), r"C:\TestFolder\Testfile.csv")
+    def setUp(self):
+        self.dataset = Dataset()
 
-    def test_gen_export_pdf_file_name(self):
-        pdf_generator = io._FileNameHandler()
-        pdf_generator.output_file_name = r"C:\TestFolder\Testfile"
-        self.assertEqual(pdf_generator.generate_export_output_pdf_file_name(),r"C:\TestFolder\Testfile.pdf")
 
-    def test_if_topspin_scream_exporter_has_dataset(self):
-        dataset = Dataset()
-        screamExporter = io.ScreamExporter(dataset)
-        self.assertEqual(type(screamExporter._dataset),CorziliusNMR.dataset.Dataset)
-
-    def test_if_topspinpseudo_2D_exporter_has_dataset(self):
-        dataset = Dataset()
-        pseudoExporter = io.Pseudo2DExporter(dataset)
-        self.assertEqual(type(pseudoExporter._dataset),CorziliusNMR.dataset.Dataset)
-
-    def test_if_topspin_scream_exporter_has_dataset_with_correct_procpar_value(
-            self):
-        dataset = Dataset()
-        dataset.procnoOfTopspinExperiment = "103"
-        screamExporter = io.ScreamExporter(dataset)
-        self.assertEqual(screamExporter._dataset.procno_of_topspin_experiment,
-                         "103")
-
-    def test_pathlist_to_experimental_data(self):
+    def tearDown(self):
+        #os.rmdir('tmp/')
         pass
+    def fake_input(self):
+        # Define your spectrum
+        self.dataset.output_file_name = "../tests/SCREAM_Test_Files/tmp/"
+        self.dataset.path_to_topspin_experiment = r"..\tests\SCREAM_Test_Files"
+        self.dataset.expno_of_topspin_experiment = [24, 26]
+        self.dataset.procno_of_topspin_experiment = "103"
 
-    def test_init_of_Experiment(self):
-        exp = _Experiment(
-            r"F:\NMR\Max\20230706_100mM_HN-P"
-            r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
-        self.assertEqual(type(exp),CorziliusNMR._Experiment)
+    def test_import_topspin_data(self):
+        self.fake_input()
+        self.dataset._setup_correct_topspin_importer()
+        self.dataset.importer.import_topspin_data()
+        self.assertEqual(len(self.dataset.experiments),3)
 
-    def test_init_of_Experiment(self):
-        exp = _Experiment(
-            r"F:\NMR\Max\20230706_100mM_HN-P"
-            r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
-        self.assertEqual(exp._file,r"F:\NMR\Max\20230706_100mM_HN-P"
-            r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
-
-    def test_get_number_of_scans(self):
-        exp = _Experiment(
-            r"F:\NMR\Max\20230706_100mM_HN-P"
-            r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
-        exp._get_values()
-        self.assertEqual(exp.NS, 64)
-
-    def test_get_x_axis(self):
-        exp = _Experiment(
-            r"F:\NMR\Max\20230706_100mM_HN-P"
-            r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
-        exp._get_values()
-        self.assertEqual(len(exp.x_axis), 16384)
-
-    def test_get_y_axis(self):
-        exp = _Experiment(
-            r"F:\NMR\Max\20230706_100mM_HN-P"
-            r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
-        exp._get_values()
-        self.assertEqual(len(exp.y_axis), 16384)
-
-    def test_get_normalize_y_data_to_number_of_scans(self):
-        exp = _Experiment(
-            r"F:\NMR\Max\20230706_100mM_HN-P"
-            r"-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/24/pdata/103")
-        exp._get_values()
-        self.assertEqual(round(min(exp.y_axis)), -144)
+    def test_import_of_set_nmr_data(self):
+        self.fake_input()
+        self.dataset._setup_correct_topspin_importer()
+        self.dataset.importer.import_topspin_data()
+        self.assertEqual(len(self.dataset.experiments),3)
 

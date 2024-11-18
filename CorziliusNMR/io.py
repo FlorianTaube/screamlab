@@ -1,9 +1,11 @@
 """
 io module of the CorziliusNMR package.
 """
+import CorziliusNMR.dataset
 import numpy as np
-import CorziliusNMR as corz
-
+from bruker.data.nmr import *
+import bruker.api.topspin as top
+import os
 
 '''
 def generate_csv_from_scream_set(path, output_file, expno, procnos=[103]):
@@ -81,68 +83,85 @@ def generate_csv_from_scream_set(path, output_file, expno, procnos=[103]):
 
 
 
-class TopspinExporter:
+class TopspinImporter:
 
     def __init__(self,dataset):
         self._dataset = dataset
+        self._top = top.Topspin()
+        self._data_provider = self._top.getDataProvider()
+        self._current_path_to_exp = None
+        self._nmr_data = None
 
-    def export(self):
-        self.read_in_topspin_data()
-        self.save_data_in_csv()
-        pass
-
-    def read_in_topspin_data(self):
-        pass
-
-    def save_data_in_csv(self):
+    def import_topspin_data(self):
         pass
 
 
 
-class ScreamExporter(TopspinExporter):
+
+
+class ScreamImporter(TopspinImporter):
 
     def __init__(self,dataset):
         super().__init__(dataset)
 
-    def export(self):
-        super().export()
-        return
-
-    def read_in_topspin_data(self):
-        path = self._dataset._fileNames.path_to_topspin_experiment
-        procno =self._dataset._fileNames.procno_of_topspin_experiment
+    def import_topspin_data(self):
+        path = self._dataset.file_name_generator.path_to_topspin_experiment
+        procno =self._dataset.file_name_generator.procno_of_topspin_experiment
         for expno_nr,expno in \
-                enumerate(self._dataset._fileNames.expno_of_topspin_experiment):
-            self._dataset.experiments.append(corz.dataset._Experiment(f"{path}"
-                                                          f"/{expno}/pdata"
-                                                 f"/{procno}"))
-            self._dataset.experiments[expno_nr]._get_values()
+                enumerate(self._dataset.file_name_generator.expno_of_topspin_experiment):
+            self._dataset.experiments.append(CorziliusNMR.dataset.Experiment())
+            self._current_path_to_exp = r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K"
+            self._nmr_data = self._data_provider.getNMRData(
+                os.path.join(path, str(expno), "pdata", str(procno)))
+            print(os.path.join(path, str(expno), "pdata", str(procno)))
+            print(self._nmr_data)
 
-    def save_data_in_csv(self):
-        file = self._dataset._fileNames.generate_output_csv_file_name()
-        delay_times = [spectrum.tbup for spectrum in self._dataset.experiments]
-        spectra = np.vstack(
-            [np.vstack((spectrum.x_axis, spectrum.y_axis)) for spectrum in
-             self._dataset.experiments]).transpose()
+            #self._dataset._set_values()
 
-        with open(file, 'w') as csv_file:
-            csv_file.write('; '.join(map(str, delay_times)) + '\n')
-            csv_file.writelines(
-                ';'.join(map(str, row)) + '\n' for row in spectra)
+    def _set_values(self):
+        self._get_number_of_scans()
+        self._get_buildup_time()
+        self._get_x_axis()
+        self._get_y_axis()
+        self._normalize_y_values_to_number_of_scans()
 
-
-
+    #def _set_nmr_data():
 
 
+    #def _get_number_of_scans(self):
+    #    self.NS = int(self._nmr_metadata.getPar("NS"))
+
+    '''
+    def _get_buildup_time(self):
+        self.tbup = int(self._nmr_metadata.getPar("L 20")) / 4
+
+    def _get_x_axis(self):
+        _physicalRange = self._nmr_spectral_data['physicalRanges'][0]
+        _number_of_datapoints = self._nmr_spectral_data['dataPoints']
+        self.x_axis = np.linspace(float(_physicalRange['start']),
+                                  float(_physicalRange[ 'end']),
+                                  len(_number_of_datapoints))
+
+    def _get_y_axis(self):
+        self.y_axis = self._nmr_spectral_data['dataPoints']
+
+    def _normalize_y_values_to_number_of_scans(self):
+        self.y_axis = np.divide(self.y_axis, self.NS)
+'''
 
 
 
-class Pseudo2DExporter(TopspinExporter):
+
+
+
+
+
+class Pseudo2DImporter(TopspinImporter):
 
     def __init__(self,dataset):
         super().__init__(dataset)
 
-    def export(self):
+    def import_topspin_data(self):
         return
 
     def read_in_topspin_data():
@@ -152,19 +171,7 @@ class Pseudo2DExporter(TopspinExporter):
 
 
 
-class _FileNameHandler():
 
-    def __init__(self):
-        self.path_to_topspin_experiment = None
-        self.procno_of_topspin_experiment = None
-        self.expno_of_topspin_experiment = None
-        self.output_file_name = None
-
-    def generate_output_csv_file_name(self):
-        return self.output_file_name + ".csv"
-
-    def generate_export_output_pdf_file_name(self):
-        return self.output_file_name +".pdf"
 
 
 

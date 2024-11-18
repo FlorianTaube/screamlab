@@ -8,54 +8,53 @@ import bruker.api.topspin as top
 class Dataset:
 
     def __init__(self):
-        self._fileNames = io._FileNameHandler()
-        self._topspin_exporter = None
+        self.file_name_generator = FileNameHandler()
+        self.importer = None
         self.experiments = []
-        self.peak_dict = None
-        self.spectrum_fitting_type = ["max_value","fit","global_fit"]
+        self.peak_dict = dict()
+        self.spectrum_fitting_type = ["max_value"]
 
     @property
     def path_to_topspin_experiment(self):
-        return self._fileNames.path_to_topspin_experiment
+        return self.file_name_generator.path_to_topspin_experiment
 
     @path_to_topspin_experiment.setter
     def path_to_topspin_experiment(self, path):
-        self._fileNames.path_to_topspin_experiment = path
+        self.file_name_generator.path_to_topspin_experiment = path
 
     @property
     def output_file_name(self):
-        return self._fileNames.output_file_name
+        return self.file_name_generator.output_file_name
 
     @output_file_name.setter
     def output_file_name(self, file):
-        self._fileNames.output_file_name = file
+        self.file_name_generator.output_file_name = file
 
     @property
-    def procnoOfTopspinExperiment(self):
-        return self._fileNames.procno_of_topspin_experiment
+    def procno_of_topspin_experiment(self):
+        return self.file_name_generator.procno_of_topspin_experiment
 
-    @procnoOfTopspinExperiment.setter
-    def procnoOfTopspinExperiment(self, procno):
-        self._fileNames.procno_of_topspin_experiment = str(procno)
+    @procno_of_topspin_experiment.setter
+    def procno_of_topspin_experiment(self, procno):
+        self.file_name_generator.procno_of_topspin_experiment = str(procno)
 
     @property
     def expno_of_topspin_experiment(self):
-        return self._fileNames.expno_of_topspin_experiment
+        return self.file_name_generator.expno_of_topspin_experiment
 
     @expno_of_topspin_experiment.setter
     def expno_of_topspin_experiment(self, expno):
         if type(expno) != list:
             sys.exit("Wrong format. List expected.")
         if len(expno) == 2:
-            self._fileNames.expno_of_topspin_experiment = np.arange(expno[0], expno[1] + 1)
+            self.file_name_generator.expno_of_topspin_experiment = np.arange(expno[0], expno[1] + 1)
         else:
-            self._fileNames.expno_of_topspin_experiment = expno
+            self.file_name_generator.expno_of_topspin_experiment = expno
 
 
     def start_buildup_fit_from_topspin_export(self):
         self._read_in_data_from_topspin()
         self._calculate_peak_intensities()
-        #self._
 
 
     def start_buildup_fit_from_spectra(self):
@@ -66,17 +65,16 @@ class Dataset:
     def start_buildup_from_intensitys(self):
         return
 
-    def _setup_correct_topspin_exporter(self):
+    def _setup_correct_topspin_importer(self):
         if len(self.expno_of_topspin_experiment) == 1:
-            self._topspin_exporter = io.Pseudo2DExporter(self)
+            self.importer = io.Pseudo2DImporter(self)
         else:
-            self._topspin_exporter = io.ScreamExporter(self)
+            self.importer = io.ScreamImporter(self)
 
     def _read_in_data_from_topspin(self):
-        self._setup_correct_topspin_exporter()
-        self._topspin_exporter.export()
-        _plotter = plotter.ExperimentalSpectraPlotter(self)
-        _plotter.plot()
+        self._setup_correct_topspin_importer()
+        self.importer.import_topspin_data()
+
 
     def _read_in_data_from_csv(self):
         #TODO
@@ -111,54 +109,25 @@ class Dataset:
 
 
 
-class _Experiment():
+class Experiment():
 
-    def __init__(self,file):
-        self._file = file
+    def __init__(self):
+        self.file = ""
         self.NS = ""
         self.tbup = ""
         self.x_axis = None
         self.y_axis = []
-        self._top = top.Topspin()
-        self._data_provider = self._top.getDataProvider()
-        self._nmr_metadata = self._data_provider.getNMRData(self._file)
-        self._nmr_spectral_data = self._nmr_metadata.getSpecDataPoints()
         self.peaks = []
 
-    def _get_values(self):
-        self._get_number_of_scans()
-        self._get_buildup_time()
-        self._get_x_axis()
-        self._get_y_axis()
-        self._normalize_y_values_to_number_of_scans()
-
-    def _get_number_of_scans(self):
-        self.NS = int(self._nmr_metadata.getPar("NS"))
-
-    def _get_buildup_time(self):
-        self.tbup = int(self._nmr_metadata.getPar("L 20")) / 4
-
-    def _get_x_axis(self):
-        _physicalRange = self._nmr_spectral_data['physicalRanges'][0]
-        _number_of_datapoints = self._nmr_spectral_data['dataPoints']
-        self.x_axis = np.linspace(float(_physicalRange['start']),
-                                  float(_physicalRange[ 'end']),
-                                  len(_number_of_datapoints))
-
-    def _get_y_axis(self):
-        self.y_axis = self._nmr_spectral_data['dataPoints']
-
-    def _normalize_y_values_to_number_of_scans(self):
-        self.y_axis = np.divide(self.y_axis, self.NS)
-
     def add_peak(self,peak_dict):
+        print(peak_dict)
         try:
             for peak in sorted(peak_dict.keys(), key=lambda x: int(x),
-                           reverse=True):
+                       reverse=True):
                 self.peaks.append(_Peak(peak,peak_dict[peak],self))
         except:
             print("ERROR: No peaks given. Try dataset.something")#TODO
-            # Write correct function as information
+             #Write correct function as information
             pass
 
 class _Peak():
@@ -174,7 +143,6 @@ class _Peak():
         self.peak_dict = peak_dict
         self.experiment = experminent
         self.fitting_model = None
-        self._assign_values_from_dict()
 
     def _assign_values_from_dict(self):
         self._set_sign()
@@ -207,8 +175,11 @@ class _Peak():
             self.fitting_group = 999
 
     def _set_fitting_model(self):
-        try:
+
+        #try:
+            print("hellao")
             if self.peak_dict['fitting_model'] in ["voigt","gauss","lorentz"]:
+                print("test")
                 self.fitting_model = peak_dict['fitting_model']
             else:
                 print(f"ERROR: Unknown fitting model: "
@@ -217,8 +188,9 @@ class _Peak():
                       f"to "
                       f"default.")
                 self.fitting_model = "voigt"
-        except:
-            self.fitting_model = "voigt"
+        #except:
+        #    print("test2")
+        #    self.fitting_model = "voigt"
 
     def _set_hight(self):
         subspectrum = utils.generate_subspectrum(self.experiment,
@@ -230,3 +202,17 @@ class _Peak():
         index = np.where(self.experiment.y_axis == y_val)
         x_val = self.experiment.x_axis[index]
         self.hight = {'index':index[0],'x_val':x_val[0],'y_val':y_val}
+
+class FileNameHandler():
+
+    def __init__(self):
+        self.path_to_topspin_experiment = None
+        self.procno_of_topspin_experiment = None
+        self.expno_of_topspin_experiment = None
+        self.output_file_name = None
+
+    def generate_output_csv_file_name(self):
+        return self.output_file_name + ".csv"
+
+    def generate_output_pdf_file_name(self):
+        return self.output_file_name + ".pdf"
