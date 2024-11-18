@@ -95,6 +95,22 @@ class TopspinImporter:
     def import_topspin_data(self):
         pass
 
+    def _set_values(self):
+        self._set_number_of_scans()
+        self._set_buildup_time()
+        #self._set_x_data()
+        #self._get_y_axis()
+        #self._normalize_y_values_to_number_of_scans()
+
+    def _set_number_of_scans(self):
+        pass
+
+    def _set_buildup_time(self):
+        pass
+
+    def _set_x_data(self):
+        pass
+
 
 
 
@@ -109,39 +125,30 @@ class ScreamImporter(TopspinImporter):
         procno =self._dataset.file_name_generator.procno_of_topspin_experiment
         for expno_nr,expno in \
                 enumerate(self._dataset.file_name_generator.expno_of_topspin_experiment):
-            self._dataset.experiments.append(CorziliusNMR.dataset.Experiment())
-            self._current_path_to_exp = r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K"
-            self._nmr_data = self._data_provider.getNMRData(
-                os.path.join(path, str(expno), "pdata", str(procno)))
-            print(os.path.join(path, str(expno), "pdata", str(procno)))
-            print(self._nmr_data)
-
-            #self._dataset._set_values()
+            file = os.path.join(path, str(expno), "pdata", str(procno))
+            self._dataset.experiments.append(CorziliusNMR.dataset.Experiment(
+                file))
+            self._nmr_data = self._data_provider.getNMRData(file)
+            self._set_values()
 
     def _set_values(self):
-        self._get_number_of_scans()
-        self._get_buildup_time()
-        self._get_x_axis()
-        self._get_y_axis()
-        self._normalize_y_values_to_number_of_scans()
+        super()._set_values()
 
-    #def _set_nmr_data():
+    def _set_number_of_scans(self):
+        self._dataset.experiments[-1].NS = int(self._nmr_data.getPar("NS"))
+
+    def _set_buildup_time(self):
+        self._dataset.experiments[-1].tbup = int(self._nmr_data.getPar("L 20")) / 4
 
 
-    #def _get_number_of_scans(self):
-    #    self.NS = int(self._nmr_metadata.getPar("NS"))
-
-    '''
-    def _get_buildup_time(self):
-        self.tbup = int(self._nmr_metadata.getPar("L 20")) / 4
-
-    def _get_x_axis(self):
+    def _set_x_data(self):
         _physicalRange = self._nmr_spectral_data['physicalRanges'][0]
         _number_of_datapoints = self._nmr_spectral_data['dataPoints']
         self.x_axis = np.linspace(float(_physicalRange['start']),
                                   float(_physicalRange[ 'end']),
                                   len(_number_of_datapoints))
 
+    '''
     def _get_y_axis(self):
         self.y_axis = self._nmr_spectral_data['dataPoints']
 

@@ -111,8 +111,8 @@ class Dataset:
 
 class Experiment():
 
-    def __init__(self):
-        self.file = ""
+    def __init__(self,file):
+        self.file = file
         self.NS = ""
         self.tbup = ""
         self.x_axis = None
