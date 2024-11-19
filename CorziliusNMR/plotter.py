@@ -5,7 +5,7 @@ class Plotter():
 
     def __init__(self,dataset):
         self._dataset = dataset
-        self._experiments = dataset.experiments
+        self._experiments = dataset.spectra
         self._output_file_info = \
             dataset.file_name_generator.generate_export_output_pdf_file_name()
         print(self._output_file_info)

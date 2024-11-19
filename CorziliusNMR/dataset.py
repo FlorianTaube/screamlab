@@ -10,7 +10,7 @@ class Dataset:
     def __init__(self):
         self.file_name_generator = FileNameHandler()
         self.importer = None
-        self.experiments = []
+        self.spectra = []
         self.peak_dict = dict()
         self.spectrum_fitting_type = ["max_value"]
 
@@ -90,7 +90,7 @@ class Dataset:
 
 
     def _add_peaks_to_all_exp(self):
-        for spectrum in self.experiments:
+        for spectrum in self.spectra:
             spectrum.add_peak(self.peak_dict)
 
     def _perform_spectrum_fit(self):
@@ -102,14 +102,7 @@ class Dataset:
     def _get_intensities(self):
         pass
 
-
-
-
-
-
-
-
-class Experiment():
+class Spectra():
 
     def __init__(self,file):
         self.file = file
@@ -120,31 +113,30 @@ class Experiment():
         self.peaks = []
 
     def add_peak(self,peak_dict):
-        print(peak_dict)
         try:
             for peak in sorted(peak_dict.keys(), key=lambda x: int(x),
                        reverse=True):
-                self.peaks.append(_Peak(peak,peak_dict[peak],self))
+                self.peaks.append(Peak(self,peak,peak_dict))
         except:
-            print("ERROR: No peaks given. Try dataset.something")#TODO
-             #Write correct function as information
+            print("ERROR: No peaks given. Try dataset.peak_dict = dict()")#TODO
             pass
 
-class _Peak():
+class Peak():
 
-    def __init__(self,peak,peak_dict,experminent):
-        self.sign = None
+    def __init__(self,spectrum,peak,peak_dict):
         self.peak_center_rounded = int(peak)
+        self.spectrum = spectrum
+        self.peak_dict = peak_dict[peak]
+        self.sign = None
         self.peak_label = None
         self.hight = None
         self.fwhm = None
         self.area_under_peak = None
         self.fitting_group = None
-        self.peak_dict = peak_dict
-        self.experiment = experminent
+
         self.fitting_model = None
 
-    def _assign_values_from_dict(self):
+    def assign_values_from_dict(self):
         self._set_sign()
         self._set_peak_label()
         self._set_fitting_group()
@@ -175,12 +167,9 @@ class _Peak():
             self.fitting_group = 999
 
     def _set_fitting_model(self):
-
-        #try:
-            print("hellao")
+        try:
             if self.peak_dict['fitting_model'] in ["voigt","gauss","lorentz"]:
-                print("test")
-                self.fitting_model = peak_dict['fitting_model']
+                self.fitting_model = self.peak_dict['fitting_model']
             else:
                 print(f"ERROR: Unknown fitting model: "
                       f"{self.peak_dict['fitting_model']}. \'voigt\',"
@@ -188,19 +177,18 @@ class _Peak():
                       f"to "
                       f"default.")
                 self.fitting_model = "voigt"
-        #except:
-        #    print("test2")
-        #    self.fitting_model = "voigt"
+        except:
+            self.fitting_model = "voigt"
 
     def _set_hight(self):
-        subspectrum = utils.generate_subspectrum(self.experiment,
-                                                 self.peak_center_rounded, 4)
+        subspectrum = utils.generate_subspectrum(
+            self.spectrum, self.peak_center_rounded, 4)
         if np.trapz(subspectrum) < 0:
             y_val = min(subspectrum)
         else:
             y_val = max(subspectrum)
-        index = np.where(self.experiment.y_axis == y_val)
-        x_val = self.experiment.x_axis[index]
+        index = np.where(self.spectrum.y_axis == y_val)[0]
+        x_val = self.spectrum.x_axis[index]
         self.hight = {'index':index[0],'x_val':x_val[0],'y_val':y_val}
 
 class FileNameHandler():

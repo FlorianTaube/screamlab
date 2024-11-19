@@ -98,9 +98,9 @@ class TopspinImporter:
     def _set_values(self):
         self._set_number_of_scans()
         self._set_buildup_time()
-        #self._set_x_data()
-        #self._get_y_axis()
-        #self._normalize_y_values_to_number_of_scans()
+        self._set_x_data()
+        self._set_y_axis()
+        self._normalize_y_values_to_number_of_scans()
 
     def _set_number_of_scans(self):
         pass
@@ -111,6 +111,11 @@ class TopspinImporter:
     def _set_x_data(self):
         pass
 
+    def _set_y_data(self):
+        pass
+
+    def _normalize_y_values_to_number_of_scans(self):
+        pass
 
 
 
@@ -126,7 +131,7 @@ class ScreamImporter(TopspinImporter):
         for expno_nr,expno in \
                 enumerate(self._dataset.file_name_generator.expno_of_topspin_experiment):
             file = os.path.join(path, str(expno), "pdata", str(procno))
-            self._dataset.experiments.append(CorziliusNMR.dataset.Experiment(
+            self._dataset.spectra.append(CorziliusNMR.dataset.Spectra(
                 file))
             self._nmr_data = self._data_provider.getNMRData(file)
             self._set_values()
@@ -135,26 +140,30 @@ class ScreamImporter(TopspinImporter):
         super()._set_values()
 
     def _set_number_of_scans(self):
-        self._dataset.experiments[-1].NS = int(self._nmr_data.getPar("NS"))
+        self._dataset.spectra[-1].NS = int(self._nmr_data.getPar("NS"))
 
     def _set_buildup_time(self):
-        self._dataset.experiments[-1].tbup = int(self._nmr_data.getPar("L 20")) / 4
+        self._dataset.spectra[-1].tbup = int(self._nmr_data.getPar("L 20")) / 4
 
 
     def _set_x_data(self):
-        _physicalRange = self._nmr_spectral_data['physicalRanges'][0]
-        _number_of_datapoints = self._nmr_spectral_data['dataPoints']
-        self.x_axis = np.linspace(float(_physicalRange['start']),
-                                  float(_physicalRange[ 'end']),
-                                  len(_number_of_datapoints))
+        _physicalRange = self._nmr_data.getSpecDataPoints()['physicalRanges'][0]
+        _number_of_datapoints = len(self._nmr_data.getSpecDataPoints()[
+            'dataPoints'])
+        self._dataset.spectra[-1].x_axis = np.linspace(float(_physicalRange[
+                                                             'start']),
+                                                       float(_physicalRange[ 'end']),
+                                                       _number_of_datapoints)
 
-    '''
-    def _get_y_axis(self):
-        self.y_axis = self._nmr_spectral_data['dataPoints']
+    def _set_y_axis(self):
+        self._dataset.spectra[-1].y_axis = \
+            self._nmr_data.getSpecDataPoints()['dataPoints']
 
     def _normalize_y_values_to_number_of_scans(self):
-        self.y_axis = np.divide(self.y_axis, self.NS)
-'''
+        self._dataset.spectra[-1].y_axis = np.divide(
+            self._dataset.spectra[-1].y_axis, self._dataset.spectra[
+                -1].NS)
+
 
 
 

@@ -11,8 +11,6 @@ class Fitter:
         pass
 
 
-
-
 def generate_subspectrum(experiment,peak_center,offset):
     closest_index = (np.abs(experiment.x_axis -
                             (int(peak_center) - offset)).argmin(),
