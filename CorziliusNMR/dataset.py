@@ -12,7 +12,9 @@ class Dataset:
         self.importer = None
         self.spectra = []
         self.peak_dict = dict()
-        self.spectrum_fitting_type = ["max_value"]
+        self.spectrum_fitting_type = ["global_fit"]
+        self.fitter = None
+        self.buildup_type = ["biexponential"]
 
     @property
     def path_to_topspin_experiment(self):
@@ -60,7 +62,7 @@ class Dataset:
     def start_buildup_fit_from_spectra(self):
         self._read_in_data_from_csv()
         self._calculate_peak_intensities()
-        return
+        self._buidup_fit_global()
 
     def start_buildup_from_intensitys(self):
         return
@@ -87,17 +89,33 @@ class Dataset:
         if "global_fit" in self.spectrum_fitting_type:
             self._perform_global_spectrum_fit()
 
-
+    def _buidup_fit_global(self):
+        for peak_nr, peak in enumerate(self.spectra[0].peaks):
+            time_values = []
+            intensity_values = []
+            for spectrum in self.spectra:
+                intensity_values.append(spectrum.peaks[peak_nr].area_under_peak[
+                                      'global'])
+                time_values.append(spectrum.tbup)
+            for type in self.buildup_type:
+                buildup_type = ["biexponential"]
+                if type == "biexponential":
+                    buildup_fitter = utils.BiexpFitter(self)
+                    buildup_fitter.set
 
     def _add_peaks_to_all_exp(self):
         for spectrum in self.spectra:
             spectrum.add_peak(self.peak_dict)
+            for peak in spectrum.peaks:
+                peak.assign_values_from_dict()
 
     def _perform_spectrum_fit(self):
         pass
 
     def _perform_global_spectrum_fit(self):
-        pass
+        self.fitter = utils.GlobalSpectrumFitter(self)
+        self.fitter.set_model()
+        self.fitter.fit()
 
     def _get_intensities(self):
         pass
@@ -131,9 +149,10 @@ class Peak():
         self.peak_label = None
         self.hight = None
         self.fwhm = None
-        self.area_under_peak = None
+        self.area_under_peak = dict()
+        self.simulated_peak = dict()
+        self.fitting_parameter = dict()
         self.fitting_group = None
-
         self.fitting_model = None
 
     def assign_values_from_dict(self):
@@ -158,7 +177,8 @@ class Peak():
         try:
             self.peak_label = self.peak_dict['label']
         except:
-            self.peak_label = f"Peak_at_{self.peak_center_rounded}_ppm"
+            self.peak_label = f"Peak_at_{self.peak_center_rounded}_ppm_" \
+                              f"{self.spectrum.tbup}_s"
 
     def _set_fitting_group(self):
         try:

@@ -5,6 +5,7 @@ from CorziliusNMR.dataset import Dataset, Spectra
 import unittest
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.special import wofz
 
 class TestDataset(unittest.TestCase):
 
@@ -24,6 +25,42 @@ class TestDataset(unittest.TestCase):
         }
         self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
         self.dataset.spectra[0].peaks[0]._set_hight()
+
+    def voigt_profile(self,x, center, sigma, gamma, amplitude):
+        z = ((x - center) + 1j * gamma) / (sigma * np.sqrt(2))
+        return amplitude * np.real(wofz(z)) / (sigma * np.sqrt(2 * np.pi))
+
+    def fake_spectrum_for_fitting(self):
+        self.dataset.spectra.append(Spectra(self.dataset))
+        self.dataset.spectra.append(Spectra(self.dataset))
+        self.dataset.spectra[0].tbup = 0.25
+        self.dataset.spectra[1].tbup = 0.5
+        self.dataset.spectra[0].x_axis = np.linspace(0, 300, num=3001)
+        self.dataset.spectra[0].y_axis = self.voigt_profile(
+            self.dataset.spectra[0].x_axis,150,3,2,200000)+self.voigt_profile(
+            self.dataset.spectra[0].x_axis,50,3,2,150000)+\
+             np.random.normal(0, 500, size=len(self.dataset.spectra[0].x_axis))
+        self.dataset.peak_dict = {
+            '149': dict(sign="+"),
+            '50':dict(sign="+")
+        }
+        self.dataset.spectra[1].x_axis = np.linspace(0, 300, num=3001)
+        self.dataset.spectra[1].y_axis = self.voigt_profile(
+            self.dataset.spectra[1].x_axis,150,3,2,300000)+self.voigt_profile(
+            self.dataset.spectra[1].x_axis,50,3,2,250000)+\
+             np.random.normal(0, 500, size=len(self.dataset.spectra[1].x_axis))
+        self.dataset.peak_dict = {
+            '149': dict(sign="+"),
+            '50':dict(sign="+")
+        }
+        plt.plot(self.dataset.spectra[0].x_axis,self.dataset.spectra[
+            0].y_axis)
+        plt.plot(self.dataset.spectra[1].x_axis, self.dataset.spectra[
+            1].y_axis)
+        #plt.show()
+        plt.close()
+
+        self.dataset._add_peaks_to_all_exp()
 
 
     def test_set_path_to_experiment(self):
@@ -130,23 +167,24 @@ class TestDataset(unittest.TestCase):
 
     def test_add_peak_set_peak_label(self):
         self.dataset.peak_dict = {
-            '172': dict(sign="hallo",label="Hallo")
+            '172': dict(sign="hallo",label="Test")
         }
         self.dataset.spectra.append(Spectra(self.dataset))
         self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
         self.dataset.spectra[0].peaks[0]._set_peak_label()
         self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].peak_label,"Hallo")
+                              0].peak_label,"Test")
 
-    def test_add_peak_set_peak_default(self):
+    def test_add_peak_set_peak_label_default(self):
         self.dataset.peak_dict = {
             '172': dict(sign="hallo")
         }
         self.dataset.spectra.append(Spectra(self.dataset))
         self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
+        self.dataset.spectra[0].tbup=2
         self.dataset.spectra[0].peaks[0]._set_peak_label()
         self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].peak_label,"Peak_at_172_ppm")
+                              0].peak_label,"Peak_at_172_ppm_2_s")
 
     def test_add_peak_set_peak_default(self):
         self.dataset.peak_dict = {
@@ -240,3 +278,39 @@ class TestDataset(unittest.TestCase):
         self.fake_spectrum()
         self.assertEqual(self.dataset.spectra[0].peaks[0].hight['index'],150)
 
+    def test_set_hight_index(self):
+        self.fake_spectrum()
+        self.dataset.spectra[0].peaks[0].assign_values_from_dict()
+        self.assertEqual(self.dataset.spectra[0].peaks[0].hight['index'],150)
+
+    def test_add_peaks_to_all_exp(self):
+        self.dataset.spectra.append(Spectra(self.dataset))
+        self.dataset.spectra[0].x_axis = np.linspace(0, 300, num=301)
+        self.dataset.spectra[0].y_axis = \
+            200000 * np.exp(-((self.dataset.spectra[0].x_axis - 150) ** 2) / (
+                2 * 3 ** 2))
+        self.dataset.peak_dict = {
+            '149': dict(sign="+"),
+            '50':dict(sign="+")
+        }
+        self.dataset._add_peaks_to_all_exp()
+        self.assertEqual(self.dataset.spectra[0].peaks[0].hight['index'],150)
+
+    def test_setup_spectrum_fitter(self):
+        self.fake_spectrum_for_fitting()
+        self.dataset.fitter = CorziliusNMR.utils.GlobalSpectrumFitter(self.dataset)
+        self.dataset.fitter.set_model()
+        self.dataset.fitter.fit()
+        self.assertAlmostEqual(self.dataset.spectra[0].
+                               peaks[0].area_under_peak['global'],
+                               1983017,delta=200000)
+
+    def test_setup_spectrum_fitter(self):
+        self.fake_spectrum_for_fitting()
+        self.dataset.fitter = CorziliusNMR.utils.GlobalSpectrumFitter(self.dataset)
+        self.dataset.fitter.set_model()
+        self.dataset.fitter.fit()
+        self.dataset._buidup_fit_global()
+        self.assertAlmostEqual(self.dataset.spectra[0].
+                               peaks[0].area_under_peak['global'],
+                               1983017,delta=200000)

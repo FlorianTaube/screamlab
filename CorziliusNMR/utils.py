@@ -1,15 +1,155 @@
+import lmfit
 import numpy as np
-
+from collections import defaultdict
+from scipy.special import wofz
+import matplotlib.pyplot as plt
 class Fitter:
 
     def __init__(self,dataset):
         self.dataset = dataset
         self.model = None
-        self.params = None
+        self.result = None
 
-    def _set_model(self):
+    def set_model(self):
         pass
 
+    def fit(self):
+        pass
+
+
+class GlobalSpectrumFitter(Fitter):
+    def __init__(self,dataset):
+        super().__init__(dataset)
+        self.lineshapes = defaultdict(list)
+
+    def set_model(self):
+        for spectrum in self.dataset.spectra:
+            for peak in spectrum.peaks:
+                if peak.fitting_model == "voigt":
+                    tmp_voigt = Voigt(spectrum,peak)
+                    tmp_voigt.set_init_params()
+                    self.lineshapes[peak.fitting_group].append(tmp_voigt)
+
+    def fit(self):
+        for keys in self.lineshapes:
+            params = lmfit.Parameters()
+            for fit_peak in self.lineshapes[keys]:
+                for param_name, param_attrs in fit_peak.params.items():
+                    param_name = param_name.replace('.','_')
+                    params.add(param_name, **param_attrs)
+            self.result = lmfit.minimize(peak_objective,params,
+                                         args=(self.lineshapes[keys],))
+            for voigt in self.lineshapes[keys]:
+                voigt.sim_spectrum(self.result,"global")
+
+
+
+
+
+
+
+
+class BiexpFitter(Fitter):
+    def __init__(self,dataset):
+        super().__init__()
+
+class ExpFitter(Fitter):
+    def __init__(self,dataset):
+        super().__init__()
+
+class StrechedFitter(Fitter):
+    def __init__(self,dataset):
+        super().__init__()
+
+
+
+
+
+class Lineshape():
+    def __init__(self,spectrum,peak):
+        self.x_axis = spectrum.x_axis
+        self.y_axis = spectrum.y_axis
+        self.peak = peak
+        self.params = None
+        pass
+
+    def set_init_params(self):
+        pass
+
+    def peak_calculator(self, params, spectrum_nr, x_data):
+        pass
+
+    def sim_spectrum(self,result,fitting_type):
+        pass
+
+    def get_correct_param_set(self, params, peak_label):
+        pass
+
+class Voigt(Lineshape):
+    def __init__(self,spectrum,peak):
+        super().__init__(spectrum,peak)
+
+    def set_init_params(self):
+        self.params = {
+        f"{self.peak.peak_label}_amplitude": dict(value=200, min=0) if
+        self.peak.sign == "+" else dict(value=-200, max=0),
+        f"{self.peak.peak_label}_center": dict(value=self.peak.hight['x_val'],
+                                               min=self.peak.hight['x_val'] - 2,
+                                                max=self.peak.hight['x_val'] + 2),
+        f"{self.peak.peak_label}_sigma": dict(value=0.2, min=0, max=3),
+        f"{self.peak.peak_label}_gamma": dict(value=0.2, min=0, max=3)}
+        pass
+
+    def peak_calculator(self, params, spectrum_nr, x_data):
+        amp, cen, gam, sig = self.get_correct_param_set(params,
+                                                    self.peak.peak_label)
+        return voigt_profile(x_data, cen, sig, gam, amp)
+
+    def sim_spectrum(self,result,fitting_type):
+        amp, cen, gam, sig = self.get_correct_param_set(result.params,
+                                                    self.peak.peak_label.replace(".","_"))
+        simulated_spectrum = voigt_profile(self.x_axis, cen, sig, gam, amp)
+        parameter = {"amp":amp,"cen":cen,"sig":sig,"gam":gam}
+        self.peak.fitting_parameter = self.peak.fitting_parameter | {
+            fitting_type:parameter}
+        self.peak.simulated_peak = self.peak.simulated_peak | {fitting_type:simulated_spectrum}
+        self.peak.area_under_peak = self.peak.area_under_peak | {fitting_type:np.trapz(simulated_spectrum)}
+        #plt.plot(self.x_axis,self.y_axis)
+        #plt.plot(self.x_axis,simulated_spectrum)
+        #plt.show()
+
+
+    def get_correct_param_set(self,params,peak_label):
+        amp = cen = gam = sig = None
+        for key, value in params.items():
+            if peak_label.replace('.','_') in key:
+                if "amplitude" in key:
+                    amp = value
+                if "center" in key:
+                    cen = value
+                if "sigma" in key:
+                    sig = value
+                if "gamma" in key:
+                    gam = value
+        return amp, cen, gam, sig
+
+#class Gauss(Lineshape):
+#    def __init__(self):
+#        super().__init__()
+
+#class Lorentz(Lineshape):
+
+def peak_objective(params,lineshapes):
+    residual = [[] for _ in range(len(lineshapes))]
+    for spectrum_nr,spectrum in enumerate(lineshapes):
+        residual[spectrum_nr] = np.zeros_like(spectrum.y_axis)
+        residual[spectrum_nr] = spectrum.y_axis - spectrum.peak_calculator(
+            params, spectrum_nr, spectrum.x_axis)
+    return np.concatenate(residual)
+
+def voigt_profile(x, center, sigma, gamma, amplitude):
+    z = ((x - center) + 1j * gamma) / (sigma * np.sqrt(2))
+    return amplitude * np.real(wofz(z)) / (sigma * np.sqrt(2 * np.pi))
 
 def generate_subspectrum(experiment,peak_center,offset):
     closest_index = (np.abs(experiment.x_axis -
@@ -21,6 +161,20 @@ def generate_subspectrum(experiment,peak_center,offset):
 
 
 
+'''
+        #lmfit.minimize(voigt_objective, param, args=(x_data, y_data))
+        def voigt_objective(params, x_data, y_data):
+            residual = np.zeros_like(y_data)
+            for spectrum_nr, spectrum in enumerate(y_data):
+                residual[spectrum_nr] = y_data[spectrum_nr] - voigt_dataset(
+                    params, spectrum_nr, x_data[spectrum_nr])
+            return residual.flatten()
+
+    def voigt_dataset(params, spectrum_nr, x_data):
+        amp, cen, gam, sig = get_correct_param_set(params, spectrum_nr)
+        return voigt_profile(x_data, amp, cen, sig, gam)
+        pass
+        '''
 
 
 
