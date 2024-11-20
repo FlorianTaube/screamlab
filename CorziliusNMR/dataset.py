@@ -90,18 +90,11 @@ class Dataset:
             self._perform_global_spectrum_fit()
 
     def _buidup_fit_global(self):
-        for peak_nr, peak in enumerate(self.spectra[0].peaks):
-            time_values = []
-            intensity_values = []
-            for spectrum in self.spectra:
-                intensity_values.append(spectrum.peaks[peak_nr].area_under_peak[
-                                      'global'])
-                time_values.append(spectrum.tbup)
-            for type in self.buildup_type:
-                buildup_type = ["biexponential"]
-                if type == "biexponential":
-                    buildup_fitter = utils.BiexpFitter(self)
-                    buildup_fitter.set
+        for type in self.buildup_type:
+            buildup_type = ["biexponential"]
+            if type == "biexponential":
+                buildup_fitter = utils.BiexpFitter(self)
+                buildup_fitter.perform_fit()
 
     def _add_peaks_to_all_exp(self):
         for spectrum in self.spectra:

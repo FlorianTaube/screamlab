@@ -305,7 +305,7 @@ class TestDataset(unittest.TestCase):
                                peaks[0].area_under_peak['global'],
                                1983017,delta=200000)
 
-    def test_setup_spectrum_fitter(self):
+    def test_setup_buildup_fitter(self):
         self.fake_spectrum_for_fitting()
         self.dataset.fitter = CorziliusNMR.utils.GlobalSpectrumFitter(self.dataset)
         self.dataset.fitter.set_model()

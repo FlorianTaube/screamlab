@@ -45,15 +45,53 @@ class GlobalSpectrumFitter(Fitter):
 
 
 
+class BuildupFitter():
 
-
-
-
-class BiexpFitter(Fitter):
     def __init__(self,dataset):
-        super().__init__()
+        self.dataset = dataset
+        self.x_val = None
+        self.y_val = None
 
-class ExpFitter(Fitter):
+    def perform_fit(self):
+        for peak_nr, peak in enumerate(self.dataset.spectra[0].peaks):
+            time_values = []
+            intensity_values = []
+            for spectrum in self.dataset.spectra:
+                intensity_values.append(spectrum.peaks[peak_nr].area_under_peak[
+                                      'global'])
+                time_values.append(spectrum.tbup)
+            self.y_val = np.array(intensity_values)
+            self.x_val = np.array(time_values)
+            self.fit_buildup()
+
+    def fit_buildup(self):
+        pass
+
+
+
+class BiexpFitter(BuildupFitter):
+    def __init__(self,dataset):
+        super().__init__(dataset)
+
+    def perform_fit(self):
+        super().perform_fit()
+
+    def fit_buildup(self):
+        model = lmfit.models.ExpressionModel("A1*(1-exp(-x/x1))+A2*(1-exp(-x/x2))")
+        param_dict =  {'A1': dict(value=10),
+            'A2': dict(value=10),
+            'x1':dict(value=5, min=0),
+            'x2':dict(value=5, min=0)}
+        params = model.make_params(**param_dict)
+        print(type(self.x_val[0]))
+        print(self.y_val)
+        result = model.fit(self.y_val,params,x=(self.x_val))
+        plt.plot(self.x_val,self.y_val)
+        plt.plot(self.x_val,result.best_fit)
+        plt.show()
+
+
+class ExpFitter(BuildupFitter):
     def __init__(self,dataset):
         super().__init__()
 
