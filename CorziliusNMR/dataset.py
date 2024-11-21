@@ -1,8 +1,9 @@
-from CorziliusNMR import io,plotter,utils
+from CorziliusNMR import io,utils
 import numpy as np
 import sys
 from bruker.data.nmr import *
 import bruker.api.topspin as top
+import os
 
 
 class Dataset:
@@ -12,7 +13,7 @@ class Dataset:
         self.importer = None
         self.spectra = []
         self.peak_dict = dict()
-        self.spectrum_fitting_type = ["global_fit"]
+        self.spectrum_fitting_type = ["global"]
         self.fitter = None
         self.buildup_type = ["biexponential"]
 
@@ -57,7 +58,14 @@ class Dataset:
     def start_buildup_fit_from_topspin_export(self):
         self._read_in_data_from_topspin()
         self._calculate_peak_intensities()
+        self._buidup_fit_global()
+        self._print()
 
+
+    def _print(self):
+        exporter = io.Exporter(self)
+        exporter.print_all()
+        pass
 
     def start_buildup_fit_from_spectra(self):
         self._read_in_data_from_csv()
@@ -78,6 +86,7 @@ class Dataset:
         self.importer.import_topspin_data()
 
 
+
     def _read_in_data_from_csv(self):
         #TODO
         pass
@@ -86,7 +95,7 @@ class Dataset:
         self._add_peaks_to_all_exp()
         if "fit" in self.spectrum_fitting_type:
             self._perform_spectrum_fit()
-        if "global_fit" in self.spectrum_fitting_type:
+        if "global" in self.spectrum_fitting_type:
             self._perform_global_spectrum_fit()
 
     def _buidup_fit_global(self):
@@ -107,9 +116,11 @@ class Dataset:
 
     def _perform_global_spectrum_fit(self):
         self.fitter = utils.GlobalSpectrumFitter(self)
+        print("h1")
         self.fitter.set_model()
+        print("h2")
         self.fitter.fit()
-
+        print("h3")
     def _get_intensities(self):
         pass
 
@@ -145,6 +156,7 @@ class Peak():
         self.area_under_peak = dict()
         self.simulated_peak = dict()
         self.fitting_parameter = dict()
+        self.fitting_report = dict()
         self.fitting_group = None
         self.fitting_model = None
 
@@ -172,6 +184,7 @@ class Peak():
         except:
             self.peak_label = f"Peak_at_{self.peak_center_rounded}_ppm_" \
                               f"{self.spectrum.tbup}_s"
+            self.peak_label = self.peak_label.replace("-","m")
 
     def _set_fitting_group(self):
         try:
@@ -193,9 +206,11 @@ class Peak():
         except:
             self.fitting_model = "voigt"
 
+
     def _set_hight(self):
         subspectrum = utils.generate_subspectrum(
             self.spectrum, self.peak_center_rounded, 4)
+
         if np.trapz(subspectrum) < 0:
             y_val = min(subspectrum)
         else:
@@ -214,6 +229,15 @@ class FileNameHandler():
 
     def generate_output_csv_file_name(self):
         return self.output_file_name + ".csv"
+
+    def generate_txt_fitting_report(self,peak_label,fitting_type):
+        return f"{self.output_file_name}_{peak_label}_{fitting_type}.txt"
+
+    def generate_spectrum_fit_pdf(self,fitting_type, tbup):
+        output_folder = f"{self.output_file_name}_fit_per_spectrum/"
+        os.makedirs(output_folder, exist_ok=True)
+        return f"{output_folder}Delay_time_{tbup}" \
+               f"_{fitting_type}.pdf"
 
     def generate_output_pdf_file_name(self):
         return self.output_file_name + ".pdf"

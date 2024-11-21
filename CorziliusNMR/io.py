@@ -5,83 +5,8 @@ import CorziliusNMR.dataset
 import numpy as np
 from bruker.data.nmr import *
 import bruker.api.topspin as top
+import matplotlib.pyplot as plt
 import os
-
-'''
-def generate_csv_from_scream_set(path, output_file, expno, procnos=[103]):
-### Path to the Topspin files
-    expno = np.arange(expno[0], expno[1] + 1)
-    for procno in procnos:
-        ### Name of the output file
-        par_out = np.zeros(shape=(4,len(expno)))
-
-        counter = 1
-        for exp in expno:
-            try:
-                PROTON = sys.argv[1]
-            except:
-                #PROTON = top.getInstallationDirectory() + '\examdata'
-                p3  = r"pdata"
-                PROTON = os.path.join(path, str(exp), p3, str(procno))
-                #PROTON = p1 + p2
-
-            proton = dp.getNMRData(PROTON)
-            if proton == None:
-                raise Exception('Dataset {} does not exist'.format(PROTON))
-            ns = float(proton.getPar("NS"))
-            phc0 = float(proton.getPar("PHC0"))
-            phc1 = float(proton.getPar("PHC1"))
-            par_out[0,counter-1] = ns
-            par_out[1,counter-1] = phc0
-            par_out[2,counter-1] = phc1
-
-            l20 = float(proton.getPar("L 20"))
-            tbup = l20/4
-
-            par_out[3,counter-1] = tbup
-
-            specData = proton.getSpecDataPoints()
-            pr = specData['physicalRanges'][0]
-            left = float(pr['start'])
-            right = float(pr['end'])
-
-            ### Frequency domain points
-            axis = np.linspace(left,right,len(specData['dataPoints']))
-            if counter == 1:
-                npout = axis
-                header = "# 13C chemical shift / ppm,"
-            else:
-                npout  = np.vstack((npout,axis))
-            ### Intensity domain points
-            ydata = np.divide(specData['dataPoints'],ns)
-            #ydata = ydata + counter*-1e5*numpy.ones_like(specData['dataPoints'])
-            npout = np.vstack((npout,ydata))
-            header += "Normalized Intensity after " + str(tbup) + " s / arb. units,"
-            plt.plot(axis,ydata,label=exp)
-            plt.legend()
-            plt.xlabel("chemical shift / ppm")
-            plt.ylabel("Intensity normalized to number of scans / a.u.")
-
-            counter += 1
-
-        today = str(date.today())
-        npout = np.transpose(npout)
-        comment = "#Date of generation: " + today + "\n"
-        comment += "#Each experiment was divided by the applied number of scans to retrieve the normalized intensity after the corresponding buildup time. \n"
-        comment += "#Number of points: " + str(len(ydata)) + "\n"
-        comment += "#Number of scans:\n#" + np.array2string(par_out[0,:], max_line_width=100, precision=2,separator=",") + "\n"
-        comment += "#Phase correction 0th order / degree:\n#" + np.array2string(par_out[1,:], max_line_width=100, precision=2,separator=",") + "\n"
-        comment += "#Phase correction 1st order / degree:\n#" + np.array2string(par_out[2,:], max_line_width=100, precision=2,separator=",") + "\n"
-        np.set_printoptions(suppress=True)
-        comment += "#Delay time for build up / s:\n#" + np.array2string(par_out[3,:], max_line_width=120, precision=2,separator=",") + "\n"
-        plt.savefig(output_file+"_"+str(procno)+".pdf", dpi='figure',
-                                        format="pdf")
-        np.savetxt((output_file+"_"+str(procno)+".csv"),npout,header=header,
-                   delimiter=",",comments = comment, fmt="%10.5f")
-        plt.close()
-'''
-
-
 
 class TopspinImporter:
 
@@ -116,9 +41,6 @@ class TopspinImporter:
 
     def _normalize_y_values_to_number_of_scans(self):
         pass
-
-
-
 
 class ScreamImporter(TopspinImporter):
 
@@ -164,14 +86,6 @@ class ScreamImporter(TopspinImporter):
             self._dataset.spectra[-1].y_axis, self._dataset.spectra[
                 -1].NS)
 
-
-
-
-
-
-
-
-
 class Pseudo2DImporter(TopspinImporter):
 
     def __init__(self,dataset):
@@ -185,6 +99,86 @@ class Pseudo2DImporter(TopspinImporter):
 
 
 
+
+class Exporter:
+
+    def __init__(self,dataset):
+        self.dataset = dataset
+        pass
+
+    def print_all(self):
+        self.print_csv_from_import()
+        self.print_pdf_from_import()
+        #self.print_fit_per_fitting_spectrum()
+        #self.print_fitting_report()
+        #self.print_table_with_fitting_results()
+        #self.print_biexp_fits()
+        #self.print_biexp_table()
+
+    def print_pdf_from_import(self):
+        for spectrum in self.dataset.spectra:
+            plt.plot(spectrum.x_axis,spectrum.y_axis, label=f"$t_{{del}}$ = "
+                                                            f"{spectrum.tbup} s")
+        plt.legend()
+        plt.xlabel("$chemical\ shift$ / ppm", fontsize=14)
+        plt.ylabel("$scan\ normalized\ signal\ intensity$ / a.u.", fontsize=14)
+        plt.gca().invert_xaxis()  # Invert the x-axis
+        plt.tight_layout()
+        file = self.dataset.file_name_generator.ge
+        plt.savefig(file, format="pdf", bbox_inches="tight")  # Save as PDF
+        #plt.show()
+        plt.close()
+
+    def print_csv_from_import(self):
+        output = None
+        delay_times = []
+        for spectrum_nr,spectrum in enumerate(self.dataset.spectra):
+            delay_times.append(str(spectrum.tbup))
+            delay_times.append("")
+            if spectrum_nr == 0:
+                output = spectrum.x_axis
+            else:
+                output = np.vstack((output,spectrum.x_axis))
+            output = np.vstack((output, spectrum.y_axis))
+        np.savetxt(self.dataset.file_name_generator
+        .generate_output_csv_file_name(), output.transpose(), delimiter=";",
+                   header=";".join(delay_times))
+
+    def print_fitting_report(self):
+        for fitting_type in self.dataset.spectrum_fitting_type:
+            if fitting_type == "global":
+                for peak in self.dataset.spectra[0].peaks:
+                    file = \
+                        self.dataset.file_name_generator.\
+                            generate_txt_fitting_report\
+                            ("_".join(peak.peak_label.split("_")[0:4]),fitting_type)
+                    with open(file, "w") as txt_file:
+                        txt_file.write(str(peak.fitting_report[fitting_type]))
+
+    def print_fit_per_fitting_spectrum(self):
+        for fitting_type in self.dataset.spectrum_fitting_type:
+            if fitting_type == "global":
+                for spectrum in self.dataset.spectra:
+                    plt.plot(spectrum.x_axis,spectrum.y_axis,color="black",
+                             label="Experiment")
+                    sim = 0
+                    for peak in spectrum.peaks:
+                        plt.plot(spectrum.x_axis,peak.simulated_peak[
+                            fitting_type],"b:",alpha=0.9)
+                        sim += peak.simulated_peak[
+                            fitting_type]
+                    plt.plot(spectrum.x_axis,sim,"r--",label="Simulation")
+                    plt.xlabel("$chemical\ shift$ / ppm", fontsize=14)
+                    plt.ylabel("$scan\ normalized\ signal\ intensity$ / a.u.",
+                               fontsize=14)
+                    plt.gca().invert_xaxis()  # Invert the x-axis
+                    plt.tight_layout()
+                    plt.legend()
+                    plt.savefig(self.dataset.file_name_generator
+                                .generate_spectrum_fit_pdf(fitting_type,
+                                                           spectrum.tbup),
+                                format="pdf",
+                                bbox_inches="tight")  # Save as PDF
 
 
 
