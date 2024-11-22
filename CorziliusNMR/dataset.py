@@ -13,9 +13,11 @@ class Dataset:
         self.importer = None
         self.spectra = []
         self.peak_dict = dict()
-        self.spectrum_fitting_type = ["global"]
+        self.spectrum_fitting_type = ["hight"]
         self.fitter = None
-        self.buildup_type = ["biexponential"]
+        self.buildup_type = ["biexponential","biexponential_with_offset",
+                            "exponential","exponential_with_offset"]
+        self._exp_fit = dict()
 
     @property
     def path_to_topspin_experiment(self):
@@ -56,16 +58,16 @@ class Dataset:
 
 
     def start_buildup_fit_from_topspin_export(self):
+        print(f"Start loading data from topspin: {self.path_to_topspin_experiment}")
         self._read_in_data_from_topspin()
+        print("Start peak fitting.")
         self._calculate_peak_intensities()
+        print("Start buildup fit.")
         self._buidup_fit_global()
         self._print()
 
 
-    def _print(self):
-        exporter = io.Exporter(self)
-        exporter.print_all()
-        pass
+
 
     def start_buildup_fit_from_spectra(self):
         self._read_in_data_from_csv()
@@ -85,7 +87,10 @@ class Dataset:
         self._setup_correct_topspin_importer()
         self.importer.import_topspin_data()
 
-
+    def _print(self):
+        exporter = io.Exporter(self)
+        exporter.print_all()
+        pass
 
     def _read_in_data_from_csv(self):
         #TODO
@@ -100,9 +105,18 @@ class Dataset:
 
     def _buidup_fit_global(self):
         for type in self.buildup_type:
-            buildup_type = ["biexponential"]
+
             if type == "biexponential":
                 buildup_fitter = utils.BiexpFitter(self)
+                buildup_fitter.perform_fit()
+            elif type == "biexponential_with_offset":
+                buildup_fitter = utils.BiexpFitterWithOffset(self)
+                buildup_fitter.perform_fit()
+            elif type == "exponential":
+                buildup_fitter = utils.ExpFitter(self)
+                buildup_fitter.perform_fit()
+            elif type == "exponential_with_offset":
+                buildup_fitter = utils.ExpFitterWithOffset(self)
                 buildup_fitter.perform_fit()
 
     def _add_peaks_to_all_exp(self):
@@ -116,11 +130,8 @@ class Dataset:
 
     def _perform_global_spectrum_fit(self):
         self.fitter = utils.GlobalSpectrumFitter(self)
-        print("h1")
         self.fitter.set_model()
-        print("h2")
         self.fitter.fit()
-        print("h3")
     def _get_intensities(self):
         pass
 
@@ -240,4 +251,10 @@ class FileNameHandler():
                f"_{fitting_type}.pdf"
 
     def generate_output_pdf_file_name(self):
-        return self.output_file_name + ".pdf"
+        return f"{self.output_file_name}.pdf"
+
+    def generate_buildup_pdf(self,fitting_type):
+        return f"{self.output_file_name}_buildup_{fitting_type}.pdf"
+
+    def generate_buildup_txt(self, fitting_type):
+        return f"{self.output_file_name}_buildup_{fitting_type}.txt"
