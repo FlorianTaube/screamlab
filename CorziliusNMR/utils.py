@@ -16,6 +16,9 @@ class Fitter:
     def set_model(self):
         pass
 
+    def start_prefit(self):
+        pass
+
     def fit(self):
         pass
 
@@ -24,6 +27,114 @@ class GlobalSpectrumFitter(Fitter):
     def __init__(self,dataset):
         super().__init__(dataset)
         self.lineshapes = defaultdict(list)
+
+    def start_prefit(self):
+        # Extract bounds and initial values from parameters
+        param_names = []
+        param_bounds = []
+        for peak in self.dataset.spectra[-1].peaks:
+            if peak.fitting_model == "voigt":
+                tmp_lineshape = Voigt(self.dataset.spectra[-1], peak)
+            tmp_lineshape.set_init_params()
+            self.lineshapes['prefit'].append(tmp_lineshape)
+
+        params = lmfit.Parameters()
+        for fit_peak in self.lineshapes['prefit']:
+            for param_name, param_attrs in fit_peak.params.items():
+                param_name = param_name.replace('.', '_')
+                params.add(param_name, **param_attrs)
+                # Collect parameter bounds for LHS
+                if 'min' in param_attrs and 'max' in param_attrs:
+                    param_names.append(param_name)
+                    param_bounds.append(
+                        (param_attrs['min'], param_attrs['max']))
+        n_samples = 1
+        lhs_samples = lhs(len(param_names), samples=n_samples)
+        sampled_params = []
+        for sample in lhs_samples:
+            scaled_sample = []
+            for i, (low, high) in enumerate(param_bounds):
+                scaled_sample.append(low + sample[i] * (high - low))
+            sampled_params.append(scaled_sample)
+        results = []
+        best_result = None
+        best_chisquared = np.inf
+        for sample_nr,sample in enumerate(sampled_params):
+            print(f"{sample_nr+1}/{n_samples}")
+            for i, value in enumerate(sample):
+                params[param_names[i]].value = value
+
+            result = lmfit.minimize(prefit_objective, params,
+                                    args=(self.lineshapes['prefit'],))
+
+            print(f"Number of function evaluations: {result.nfev}")
+            if result.chisqr < best_chisquared:
+                best_result = result
+                best_chisquared = result.chisqr
+                print(best_chisquared)
+
+        bestfit = np.zeros(len(self.dataset.spectra[-1].y_axis))
+        sim_params = []
+        for key_nr,key in enumerate(best_result.params):
+            sim_params.append(best_result.params[key].value)
+            if (key_nr + 1) % 4 == 0:
+                bestfit = bestfit + voigt_profile(self.dataset.spectra[-1].x_axis,
+                                         sim_params[1],sim_params[2],
+                                         sim_params[3],sim_params[0])
+                plt.plot(self.dataset.spectra[-1].x_axis,voigt_profile(self.dataset.spectra[-1].x_axis,
+                                         sim_params[1],sim_params[2],
+                                         sim_params[3],sim_params[0]),"b")
+                sim_params = []
+        plt.plot(self.dataset.spectra[-1].x_axis,self.dataset.spectra[-1].y_axis)
+        plt.plot(self.dataset.spectra[-1].x_axis,bestfit,"r--")
+        plt.savefig(self.dataset.file_name_generator.get_prefit_pdf())
+        file = self.dataset.file_name_generator.get_prefit_txt()
+        with open(file, "w") as txt_file:
+            txt_file.write(lmfit.fit_report(best_result))
+
+        for peak in self.dataset.spectra[-1].peaks:
+            peak.prefit_dict={
+                f"{peak.peak_label}_amplitude":
+                    dict(value=200, min=0,max=1e8) if
+                    peak.sign == "+" else dict(value=-200, min= -1e8,max=0),
+                f"{peak.peak_label}_center":
+                    dict(value=
+                         best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_center"].value,
+                    min=best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_center"].value - 0.1,
+                    max=best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_center"].value +0.1),
+                f"{peak.peak_label}_sigma":
+                    dict(value=best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_sigma"].value,
+                         min=best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_sigma"].value -
+                             best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_sigma"].value*0.05,
+                         max=best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_sigma"].value +
+                             best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_sigma"].value*0.05),
+                f"{peak.peak_label}_gamma":
+                    dict(value=best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_gamma"].value,
+                         min=best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_gamma"].value -
+                             best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_gamma"].value*0.05,
+                         max=best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_gamma"].value +
+                             best_result.params
+                         [f"{peak.peak_label.replace('.', '_')}_gamma"].value*0.05),}
+        self.lineshapes = defaultdict(list)
+
+
+
+
+
+
+
 
     def set_model(self):
         for spectrum in self.dataset.spectra:
@@ -34,7 +145,10 @@ class GlobalSpectrumFitter(Fitter):
                     tmp_lineshape = Gauss(spectrum,peak)
                 elif peak.fitting_model == "lorentz":
                     tmp_lineshape= Lorentz(spectrum,peak)
-                tmp_lineshape.set_init_params()
+                if peak.prefit_dict == None:
+                    tmp_lineshape.set_init_params()
+                else:
+                    tmp_lineshape.params = peak.prefit_dict
                 self.lineshapes[peak.fitting_group].append(tmp_lineshape)
 
 
@@ -150,10 +264,11 @@ class BuildupFitter:
                 time_values = []
                 intensity_values = []
                 for spectrum in self.dataset.spectra:
-                    if buildup_type == "hight":
+                    if buildup_type == "global":
+                        intensity_values.append(spectrum.peaks[
+                                  peak_nr].area_under_peak['global'])
                         #intensity_values.append(spectrum.peaks[
-                    # peak_nr].area_under_peak['global']
-                        intensity_values.append(spectrum.peaks[peak_nr].hight['y_val'])
+                         # peak_nr].hight['y_val'])
                     time_values.append(spectrum.tbup)
                 self.y_val = np.array(intensity_values)
                 self.x_val = np.array(time_values)
@@ -181,7 +296,6 @@ class BuildupFitter:
         best_chisq = np.inf
         skipped_fits = 0
         for sample_idx, sample in enumerate(sampled_params):
-            print(sample_idx)
             try:
                 params = model.make_params()
                 for i, param_name in enumerate(param_names):
@@ -288,7 +402,7 @@ class BiexpFitterWithOffset(BuildupFitter):
                     > 0 else dict(value=10, max=0, min=self.y_val[-1]*2),
             'x1': dict(value=5, min=0, max=self.x_val[-1]*2),
             'x2': dict(value=self.x_val[-3], min=0,max=self.x_val[-1]*2),
-            'x0': dict(value=0, min=-10,max=10)
+            'x0': dict(value=0, min=-1.5,max=1)
             }
 
 
@@ -347,7 +461,7 @@ class ExpFitterWithOffset(BuildupFitter):
             'A1': dict(value=10, min=0, max=self.y_val[-1]*2) if self.y_val[-1]
                     > 0 else dict(value=10, max=0, min=self.y_val[-1]*2),
             'x1': dict(value=5, min=0,max=self.x_val[-1]*2),
-            'x0': dict(value=0, min=-20, max=20)
+            'x0': dict(value=0, min=-1.5, max=1)
         }
 
 
@@ -378,17 +492,16 @@ class Voigt(Lineshape):
 
     def set_init_params(self):
         self.params = {
-        f"{self.peak.peak_label}_amplitude": dict(value=200, min=0) if
-        self.peak.sign == "+" else dict(value=-200, max=0),
+        f"{self.peak.peak_label}_amplitude": dict(value=200, min=0,max=1e8) if
+        self.peak.sign == "+" else dict(value=-200, min= -1e8,max=0),
         f"{self.peak.peak_label}_center": dict(value=self.peak.hight['x_val'],
                                                min=self.peak.hight['x_val'] -
-                                                   1.5,
+                                                   1,
                                                 max=self.peak.hight['x_val']
-                                                    + 1.5),
-        f"{self.peak.peak_label}_sigma": dict(value=1.5, min=0, max=2.5),
-        f"{self.peak.peak_label}_gamma": dict(value=0.3, min=0, max=1)}
+                                                    + 1),
+        f"{self.peak.peak_label}_sigma": dict(value=1, min=0.1, max=3),
+        f"{self.peak.peak_label}_gamma": dict(value=1, min=0.1, max=3)}
 
-        pass
 
     def peak_calculator(self, params, x_data):
         amp, cen, gam, sig = self.get_correct_param_set(params,
@@ -428,9 +541,10 @@ class Gauss(Lineshape):
         f"{self.peak.peak_label}_amplitude": dict(value=200, min=0) if
         self.peak.sign == "+" else dict(value=-200, max=0),
         f"{self.peak.peak_label}_center": dict(value=self.peak.hight['x_val'],
-                                               min=self.peak.hight['x_val'] - 3,
+                                               min=self.peak.hight['x_val'] -
+                                                   0.1,
                                                 max=self.peak.hight['x_val']
-                                                    + 3),
+                                                    + 0.1),
         f"{self.peak.peak_label}_sigma": dict(value=1.5, min=1, max=2)}
 
         pass
@@ -507,6 +621,12 @@ class Lorentz(Lineshape):
                     gam = value
         return amp, cen, gam
 
+def prefit_objective(params, lineshapes):
+    residual = lineshapes[0].y_axis
+    for i, voigt in enumerate(lineshapes):
+        residual = residual - voigt.peak_calculator(params, voigt.x_axis)
+    return residual
+
 def peak_objective(params, lineshapes):
     peak_names = {"_".join(param.split("_")[:4]) for param in params}
     number_of_peaks = len(peak_names)
@@ -519,33 +639,10 @@ def peak_objective(params, lineshapes):
             residual[-1] -= calc
     return np.concatenate(residual)
 
-
-'''
-def peak_objective(params,lineshapes):
-    number_of_peaks = 0
-    last_peak_name = []
-    for value in params:
-        if "_".join(value.split("_")[0:4]) not in last_peak_name:
-            last_peak_name.append("_".join(value.split("_")[0:4]))
-            number_of_peaks += 1
-    residual = [[] for _ in (range(len(lineshapes)))]
-    counter = -1
-    for voigt_nr,voigt in enumerate(lineshapes):
-        if voigt_nr % number_of_peaks == 0:
-            counter += 1
-            residual[counter] = voigt.y_axis - voigt.peak_calculator(
-                        params, voigt.x_axis)
-        else:
-            residual[counter] = residual[counter] - voigt.peak_calculator(
-                params, voigt.x_axis)
-
-    return np.concatenate(residual)
-'''
 def voigt_profile(x, center, sigma, gamma, amplitude):
     z = ((x - center) + 1j * gamma) / (sigma * np.sqrt(2))
     return amplitude * np.real(wofz(z)) / (sigma * np.sqrt(2 * np.pi))
 
-import numpy as np
 
 def gauss_profile(x, center, sigma, amplitude):
     return amplitude * np.exp(-0.5 * ((x - center) / sigma) ** 2) / (sigma * np.sqrt(2 * np.pi))

@@ -13,7 +13,7 @@ class Dataset:
         self.importer = None
         self.spectra = []
         self.peak_dict = dict()
-        self.spectrum_fitting_type = ["hight"]
+        self.spectrum_fitting_type = ["global"]
         self.fitter = None
         self.buildup_type = ["biexponential","biexponential_with_offset",
                             "exponential","exponential_with_offset"]
@@ -130,6 +130,7 @@ class Dataset:
 
     def _perform_global_spectrum_fit(self):
         self.fitter = utils.GlobalSpectrumFitter(self)
+        self.fitter.start_prefit()
         self.fitter.set_model()
         self.fitter.fit()
     def _get_intensities(self):
@@ -170,6 +171,7 @@ class Peak():
         self.fitting_report = dict()
         self.fitting_group = None
         self.fitting_model = None
+        self.prefit_dict = None
 
     def assign_values_from_dict(self):
         self._set_sign()
@@ -220,7 +222,7 @@ class Peak():
 
     def _set_hight(self):
         subspectrum = utils.generate_subspectrum(
-            self.spectrum, self.peak_center_rounded, 4)
+            self.spectrum, self.peak_center_rounded, 1)
 
         if np.trapz(subspectrum) < 0:
             y_val = min(subspectrum)
@@ -252,6 +254,12 @@ class FileNameHandler():
 
     def generate_output_pdf_file_name(self):
         return f"{self.output_file_name}.pdf"
+
+    def get_prefit_pdf(self):
+        return f"{self.output_file_name}_prefit.pdf"
+
+    def get_prefit_txt(self):
+        return f"{self.output_file_name}_prefit.txt"
 
     def generate_buildup_pdf(self,fitting_type):
         return f"{self.output_file_name}_buildup_{fitting_type}.pdf"
