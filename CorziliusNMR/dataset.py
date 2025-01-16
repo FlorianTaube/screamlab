@@ -16,8 +16,12 @@ class Dataset:
         self.spectrum_fitting_type = ["global"]
         self.fitter = None
         self.buildup_type = ["biexponential","biexponential_with_offset",
-                            "exponential","exponential_with_offset"]
+                             "exponential","exponential_with_offset"]
         self._exp_fit = dict()
+        self._print_each_peak_fit_seperate = False
+        self._print_complete_fit_report = False
+        self._print_prefit = True
+        self._spectrum_number_for_prefit = -1
 
     @property
     def path_to_topspin_experiment(self):
@@ -222,7 +226,7 @@ class Peak():
 
     def _set_hight(self):
         subspectrum = utils.generate_subspectrum(
-            self.spectrum, self.peak_center_rounded, 1)
+            self.spectrum, self.peak_center_rounded, 2)
 
         if np.trapz(subspectrum) < 0:
             y_val = min(subspectrum)
@@ -241,7 +245,7 @@ class FileNameHandler():
         self.output_file_name = None
 
     def generate_output_csv_file_name(self):
-        return self.output_file_name + ".csv"
+        return self.output_file_name + "_as_exported.csv"
 
     def generate_txt_fitting_report(self,peak_label,fitting_type):
         return f"{self.output_file_name}_{peak_label}_{fitting_type}.txt"
@@ -252,8 +256,12 @@ class FileNameHandler():
         return f"{output_folder}Delay_time_{tbup}" \
                f"_{fitting_type}.pdf"
 
+    def generate_all_spectrum_fit_pdf(self,fitting_type):
+        return f"{self.output_file_name}_all_spectra_simulated" \
+               f"_{fitting_type}.pdf"
+
     def generate_output_pdf_file_name(self):
-        return f"{self.output_file_name}.pdf"
+        return f"{self.output_file_name}_as_exported.pdf"
 
     def get_prefit_pdf(self):
         return f"{self.output_file_name}_prefit.pdf"
@@ -266,3 +274,6 @@ class FileNameHandler():
 
     def generate_buildup_txt(self, fitting_type):
         return f"{self.output_file_name}_buildup_{fitting_type}.txt"
+
+    def generate_summary_txt(self):
+        return f"{self.output_file_name}_summary.csv"

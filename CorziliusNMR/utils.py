@@ -32,9 +32,13 @@ class GlobalSpectrumFitter(Fitter):
         # Extract bounds and initial values from parameters
         param_names = []
         param_bounds = []
-        for peak in self.dataset.spectra[-1].peaks:
+        for peak in self.dataset.spectra[self.dataset._spectrum_number_for_prefit].peaks:
             if peak.fitting_model == "voigt":
-                tmp_lineshape = Voigt(self.dataset.spectra[-1], peak)
+                tmp_lineshape = Voigt(self.dataset.spectra[self.dataset._spectrum_number_for_prefit],
+                                      peak)
+            elif peak.fitting_model == "lorentz":
+                tmp_lineshape = Lorentz(self.dataset.spectra[
+                                            self.dataset._spectrum_number_for_prefit],peak)
             tmp_lineshape.set_init_params()
             self.lineshapes['prefit'].append(tmp_lineshape)
 
@@ -48,7 +52,7 @@ class GlobalSpectrumFitter(Fitter):
                     param_names.append(param_name)
                     param_bounds.append(
                         (param_attrs['min'], param_attrs['max']))
-        n_samples = 1
+        n_samples = 200
         lhs_samples = lhs(len(param_names), samples=n_samples)
         sampled_params = []
         for sample in lhs_samples:
@@ -73,60 +77,73 @@ class GlobalSpectrumFitter(Fitter):
                 best_chisquared = result.chisqr
                 print(best_chisquared)
 
-        bestfit = np.zeros(len(self.dataset.spectra[-1].y_axis))
+        bestfit = np.zeros(len(self.dataset.spectra[self.dataset._spectrum_number_for_prefit].y_axis))
         sim_params = []
         for key_nr,key in enumerate(best_result.params):
             sim_params.append(best_result.params[key].value)
             if (key_nr + 1) % 4 == 0:
-                bestfit = bestfit + voigt_profile(self.dataset.spectra[-1].x_axis,
+                bestfit = bestfit + voigt_profile(self.dataset.spectra[self.dataset._spectrum_number_for_prefit].x_axis,
                                          sim_params[1],sim_params[2],
                                          sim_params[3],sim_params[0])
-                plt.plot(self.dataset.spectra[-1].x_axis,voigt_profile(self.dataset.spectra[-1].x_axis,
+                plt.plot(self.dataset.spectra[self.dataset._spectrum_number_for_prefit].x_axis,voigt_profile(self.dataset.spectra[self.dataset._spectrum_number_for_prefit].x_axis,
                                          sim_params[1],sim_params[2],
                                          sim_params[3],sim_params[0]),"b")
                 sim_params = []
-        plt.plot(self.dataset.spectra[-1].x_axis,self.dataset.spectra[-1].y_axis)
-        plt.plot(self.dataset.spectra[-1].x_axis,bestfit,"r--")
-        plt.savefig(self.dataset.file_name_generator.get_prefit_pdf())
-        file = self.dataset.file_name_generator.get_prefit_txt()
-        with open(file, "w") as txt_file:
-            txt_file.write(lmfit.fit_report(best_result))
-
-        for peak in self.dataset.spectra[-1].peaks:
-            peak.prefit_dict={
-                f"{peak.peak_label}_amplitude":
-                    dict(value=200, min=0,max=1e8) if
-                    peak.sign == "+" else dict(value=-200, min= -1e8,max=0),
-                f"{peak.peak_label}_center":
+        plt.plot(self.dataset.spectra[self.dataset._spectrum_number_for_prefit].x_axis,self.dataset.spectra[self.dataset._spectrum_number_for_prefit].y_axis)
+        plt.plot(self.dataset.spectra[self.dataset._spectrum_number_for_prefit].x_axis,bestfit,"r:",alpha=0.6)
+        if self.dataset._print_prefit:
+            plt.savefig(self.dataset.file_name_generator.get_prefit_pdf())
+            file = self.dataset.file_name_generator.get_prefit_txt()
+            with open(file, "w") as txt_file:
+                txt_file.write(lmfit.fit_report(best_result))
+        plt.close()
+        for peak_nr, peak in enumerate(self.dataset.spectra[
+            self.dataset._spectrum_number_for_prefit].peaks):
+            horst = self.dataset.spectra[-1].peaks[peak_nr].peak_label
+            self.dataset.spectra[-1].peaks[peak_nr].prefit_dict = {
+                f"{horst}_amplitude":
+                    dict(value=200, min=0, max=1e8) if
+                    peak.sign == "+" else dict(value=-200, min=-1e8, max=0),
+                f"{horst}_center":
                     dict(value=
                          best_result.params
                          [f"{peak.peak_label.replace('.', '_')}_center"].value,
-                    min=best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_center"].value - 0.1,
-                    max=best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_center"].value +0.1),
-                f"{peak.peak_label}_sigma":
-                    dict(value=best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_sigma"].value,
                          min=best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_sigma"].value -
-                             best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_sigma"].value*0.05,
+                             [
+                                 f"{peak.peak_label.replace('.', '_')}_center"].value - 0.1,
                          max=best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_sigma"].value +
-                             best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_sigma"].value*0.05),
-                f"{peak.peak_label}_gamma":
+                             [
+                                 f"{peak.peak_label.replace('.', '_')}_center"].value + 0.1),
+                f"{horst}_sigma":
                     dict(value=best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_gamma"].value,
+                    [f"{peak.peak_label.replace('.', '_')}_sigma"].value,
                          min=best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_gamma"].value -
+                             [
+                                 f"{peak.peak_label.replace('.', '_')}_sigma"].value -
                              best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_gamma"].value*0.05,
+                             [
+                                 f"{peak.peak_label.replace('.', '_')}_sigma"].value * 0.2,
                          max=best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_gamma"].value +
+                             [
+                                 f"{peak.peak_label.replace('.', '_')}_sigma"].value +
                              best_result.params
-                         [f"{peak.peak_label.replace('.', '_')}_gamma"].value*0.05),}
+                             [
+                                 f"{peak.peak_label.replace('.', '_')}_sigma"].value * 0.2),
+                f"{horst}_gamma":
+                    dict(value=best_result.params
+                    [f"{peak.peak_label.replace('.', '_')}_gamma"].value,
+                         min=best_result.params
+                             [
+                                 f"{peak.peak_label.replace('.', '_')}_gamma"].value -
+                             best_result.params
+                             [
+                                 f"{peak.peak_label.replace('.', '_')}_gamma"].value * 0.2,
+                         max=best_result.params
+                             [
+                                 f"{peak.peak_label.replace('.', '_')}_gamma"].value +
+                             best_result.params
+                             [
+                                 f"{peak.peak_label.replace('.', '_')}_gamma"].value * 0.2), }
         self.lineshapes = defaultdict(list)
 
 
@@ -165,6 +182,7 @@ class GlobalSpectrumFitter(Fitter):
                     parts = irgendwas.split('_')
                     result = '_'.join(parts[3:7])
                 elif result not in irgendwas:
+                    pass
                     if "sigma" in irgendwas:
                         tmp1 = irgendwas.split('_')
                         tmp2 = "_".join(tmp1[0:3])
@@ -175,11 +193,11 @@ class GlobalSpectrumFitter(Fitter):
                         tmp2 = "_".join(tmp1[0:3])
                         tmp = f"{tmp2}_{result}_gamma"
                         params[irgendwas].expr = tmp
-                    elif "center" in irgendwas:
-                        tmp1 = irgendwas.split('_')
-                        tmp2 = "_".join(tmp1[0:3])
-                        tmp = f"{tmp2}_{result}_center"
-                        params[irgendwas].expr = tmp
+                    #elif "center" in irgendwas:
+                    #    tmp1 = irgendwas.split('_')
+                    #    tmp2 = "_".join(tmp1[0:3])
+                    #    tmp = f"{tmp2}_{result}_center"
+                    #    params[irgendwas].expr = tmp
             self.result = lmfit.minimize(peak_objective,params,
                                          args=(self.lineshapes[keys],))
             for voigt in self.lineshapes[keys]:
@@ -305,6 +323,7 @@ class BuildupFitter:
                         max=param_dict[param_name]['max']
                     )
                 result = model.fit(self.y_val, params, x=self.x_val)
+
                 if not np.isfinite(result.chisqr):
                     raise ValueError("Chi-squared value is NaN or Inf.")
                 if result.chisqr < best_chisq:
@@ -314,6 +333,9 @@ class BuildupFitter:
                 skipped_fits += 1
                 print(f"Skipping sample {sample_idx} due to error: {e}")
         print(f"Total skipped fits: {skipped_fits}/{num_samples}")
+        print(best_result.fit_report())
+
+
         result_dict = {
             'x_axis': self.x_val,
             'y_axis': self.y_val,
@@ -321,6 +343,7 @@ class BuildupFitter:
             'params': result.params,
             'result': best_result
         }
+        print(best_result.rsquared)
         self.fit_results.update({"_".join(self.peak_label.split("_")[0:4]): result_dict})
 
     def get_expression_model(self):
@@ -429,8 +452,8 @@ class ExpFitter(BuildupFitter):
         Return the initial parameter dictionary for the exponential model.
         """
         return {
-            'A1': dict(value=10, min=0, max=self.y_val[-1]*3) if self.y_val[-1]
-                    > 0 else dict(value=10, max=0, min=self.y_val[-1]*2),
+            'A1': dict(value=10, min=0, max=self.y_val[-1]*10) if self.y_val[-1]
+                    > 0 else dict(value=10, max=0, min=self.y_val[-1]*10),
             'x1': dict(value=5, min=0,max=self.x_val[-1]*2)
         }
 
@@ -458,8 +481,8 @@ class ExpFitterWithOffset(BuildupFitter):
         Return the initial parameter dictionary for the exponential model with offset.
         """
         return {
-            'A1': dict(value=10, min=0, max=self.y_val[-1]*2) if self.y_val[-1]
-                    > 0 else dict(value=10, max=0, min=self.y_val[-1]*2),
+            'A1': dict(value=10, min=0, max=self.y_val[-1]*10) if self.y_val[-1]
+                    > 0 else dict(value=10, max=0, min=self.y_val[-1]*10),
             'x1': dict(value=5, min=0,max=self.x_val[-1]*2),
             'x0': dict(value=0, min=-1.5, max=1)
         }
@@ -499,8 +522,8 @@ class Voigt(Lineshape):
                                                    1,
                                                 max=self.peak.hight['x_val']
                                                     + 1),
-        f"{self.peak.peak_label}_sigma": dict(value=1, min=0.1, max=3),
-        f"{self.peak.peak_label}_gamma": dict(value=1, min=0.1, max=3)}
+        f"{self.peak.peak_label}_sigma": dict(value=1, min=1e-12, max=3),
+        f"{self.peak.peak_label}_gamma": dict(value=1, min=1e-12, max=3)}
 
 
     def peak_calculator(self, params, x_data):
@@ -585,9 +608,8 @@ class Lorentz(Lineshape):
         f"{self.peak.peak_label}_amplitude": dict(value=200, min=0) if
         self.peak.sign == "+" else dict(value=-200, max=0),
         f"{self.peak.peak_label}_center": dict(value=self.peak.hight['x_val'],
-                                               min=self.peak.hight['x_val'] - 3,
-                                                max=self.peak.hight['x_val']
-                                                    + 3),
+                                               min=self.peak.hight['x_val'] - 0.5,
+                                                max=self.peak.hight['x_val'] + 0.5),
         f"{self.peak.peak_label}_sigma": dict(value=1.5, min=1, max=2),
         f"{self.peak.peak_label}_gamma": dict(value=0.3, min=0, max=1)}
 
@@ -657,3 +679,18 @@ def generate_subspectrum(experiment,peak_center,offset):
                      np.abs(experiment.x_axis -
                             (int(peak_center) + offset)).argmin())
     return experiment.y_axis[closest_index[1]:closest_index[0]]
+
+def generate_subspectrum_2(x_axis,return_axis, max, min, offset):
+    x_axis = np.array(x_axis)
+    closest_index = (np.abs(x_axis - (int(min) - offset)).argmin(),
+                     np.abs(x_axis - (int(max) + offset)).argmin())
+    return return_axis[closest_index[1]:closest_index[0]]
+
+def fwhm_gaussian(sigma):
+    return 2 * np.sqrt(2 * np.log(2)) * sigma
+
+def fwhm_lorentzian(gamma):
+    return 2 * gamma
+
+def fwhm_voigt(sigma, gamma):
+    return 0.5346 * (2 * gamma) + np.sqrt(0.2166 * (2 * gamma)**2 + 4 * np.log(2) * sigma**2)

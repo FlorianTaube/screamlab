@@ -2,12 +2,15 @@
 io module of the CorziliusNMR package.
 """
 import CorziliusNMR.dataset
+from CorziliusNMR import utils
 import numpy as np
 from bruker.data.nmr import *
 import bruker.api.topspin as top
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
+from collections import defaultdict
 import os
+import sys
 from tabulate import tabulate
 
 class TopspinImporter:
@@ -18,6 +21,7 @@ class TopspinImporter:
         self._data_provider = self._top.getDataProvider()
         self._current_path_to_exp = None
         self._nmr_data = None
+        self._len = 0
 
     def import_topspin_data(self):
         pass
@@ -74,14 +78,42 @@ class ScreamImporter(TopspinImporter):
         _physicalRange = self._nmr_data.getSpecDataPoints()['physicalRanges'][0]
         _number_of_datapoints = len(self._nmr_data.getSpecDataPoints()[
             'dataPoints'])
-        self._dataset.spectra[-1].x_axis = np.linspace(float(_physicalRange[
-                                                             'start']),
-                                                       float(_physicalRange[ 'end']),
+        axis = np.linspace(float(_physicalRange['start']), float(_physicalRange[ 'end']),
                                                        _number_of_datapoints)
+        self._dataset.spectra[-1].x_axis = \
+            utils.generate_subspectrum_2(axis,axis,
+                    max(list(map(int, self._dataset.peak_dict.keys()))),
+                    min(list(map(int, self._dataset.peak_dict.keys()))),50)
+        if self._len == 0:
+            self._len = len(self._dataset.spectra[-1].x_axis)
+        else:
+            if self._len > len(self._dataset.spectra[-1].x_axis):
+                diff = self._len - len(self._dataset.spectra[-1].x_axis)
+                count = 0
+                while count < diff:
+                    self._dataset.spectra[-1].x_axis = np.append(self._dataset.spectra[-1].x_axis,0)
+                    count += 1
 
     def _set_y_axis(self):
+        axis = self._nmr_data.getSpecDataPoints()['dataPoints']
+        _physicalRange = self._nmr_data.getSpecDataPoints()['physicalRanges'][0]
+        _number_of_datapoints = len(self._nmr_data.getSpecDataPoints()[
+                                        'dataPoints'])
+        x_axis = np.linspace(float(_physicalRange['start']), float(
+            _physicalRange[ 'end']), _number_of_datapoints)
         self._dataset.spectra[-1].y_axis = \
-            self._nmr_data.getSpecDataPoints()['dataPoints']
+            utils.generate_subspectrum_2(x_axis,axis,
+                    max(list(map(int, self._dataset.peak_dict.keys()))),
+                    min(list(map(int, self._dataset.peak_dict.keys()))), 50)
+        if self._len == 0:
+            self._len = len(self._dataset.spectra[-1].y_axis)
+        else:
+            if self._len > len(self._dataset.spectra[-1].y_axis):
+                diff = self._len - len(self._dataset.spectra[-1].y_axis)
+                count = 0
+                while count < diff:
+                    self._dataset.spectra[-1].y_axis = np.append(self._dataset.spectra[-1].y_axis,0)
+                    count += 1
 
     def _normalize_y_values_to_number_of_scans(self):
         self._dataset.spectra[-1].y_axis = np.divide(
@@ -100,8 +132,6 @@ class Pseudo2DImporter(TopspinImporter):
         pass
 
 
-
-
 class Exporter:
 
     def __init__(self,dataset):
@@ -111,12 +141,16 @@ class Exporter:
     def print_all(self):
         self.print_csv_from_import()
         self.print_pdf_from_import()
-        self.print_fit_per_fitting_spectrum()
-        self.print_fitting_report()
-        #self.print_table_with_fitting_results()
+        if self.dataset._print_each_peak_fit_seperate:
+            self.print_fit_per_fitting_spectrum()
+
+        if self.dataset._print_complete_fit_report:
+            self.print_fitting_report()
+        self.print_summary_as_txt()
         for fitting_type in self.dataset.buildup_type:
             self.print_biexp_fits(fitting_type)
             self.print_biexp_table(fitting_type)
+        self.print_all_fits_in_one()
 
     def print_pdf_from_import(self):
         for spectrum in self.dataset.spectra:
@@ -125,7 +159,7 @@ class Exporter:
         plt.legend()
         plt.xlabel("$chemical\ shift$ / ppm", fontsize=12)
         plt.ylabel("$scan\ normalized\ signal\ intensity$ / a.u.", fontsize=12)
-        plt.gca().invert_xaxis()  # Invert the x-axis
+        plt.gca().invert_xaxis()  # Invert the x-x_axis
         plt.tight_layout()
         file = self.dataset.file_name_generator.generate_output_pdf_file_name()
         plt.savefig(file, format="pdf", bbox_inches="tight")  # Save as PDF
@@ -200,6 +234,33 @@ class Exporter:
                         bbox_inches="tight")
                     plt.close()
 
+    def print_all_fits_in_one(self):
+        plt.close()
+        for fitting_type in self.dataset.spectrum_fitting_type:
+            if fitting_type == "global":
+                for spectrum in self.dataset.spectra:
+                    plt.plot(spectrum.x_axis, spectrum.y_axis, color="black")
+                    sim = 0
+                    for peak in spectrum.peaks:
+                        #plt.plot(spectrum.x_axis,
+                         #        peak.simulated_peak[fitting_type], "r--",
+                          #       alpha=0.9)
+                        sim += peak.simulated_peak[fitting_type]
+                    plt.plot(spectrum.x_axis, sim, "r--", linewidth=0.7, alpha=0.75)
+                ax = plt.gca()
+                ax.spines['right'].set_visible(False)
+                ax.spines['top'].set_visible(False)
+                plt.xlabel(r"$\delta (^{13}\text{C})$ / ppm", fontsize=13)
+                plt.ylabel("$I$ / a.u.", fontsize=13)
+                plt.legend(["Experiment", "Simulation"])
+                plt.gca().invert_xaxis()
+                plt.savefig(
+                    self.dataset.file_name_generator.generate_all_spectrum_fit_pdf(
+                        fitting_type), format="pdf",
+                    bbox_inches="tight"
+                )
+                plt.close()
+
     def print_biexp_fits(self,fitting_type):
         colors = plt.cm.Set2.colors  # Example: 10 colors from the tab10 colormap
         for idx, (peak_label, peak_data) in enumerate(
@@ -215,10 +276,10 @@ class Exporter:
         plt.ylabel("$signal\ intensity$ \ a.u.",fontsize=14)
         plt.legend()
         plt.tight_layout()
+        #plt.xlim([0,20])
         file = self.dataset.file_name_generator.generate_buildup_pdf(fitting_type)
         plt.savefig(file, format="pdf", bbox_inches="tight")
         plt.close()
-
 
 
     def print_biexp_table(self, fitting_type):
@@ -244,7 +305,61 @@ class Exporter:
                   "w") as file:
             file.write(table_output)
 
+    def print_summary_as_txt(self):
+        time_list = defaultdict(list)
+        amp_list = defaultdict(list)
+        integral = defaultdict(list)
+        for spectrum in self.dataset.spectra:
+            cen_list = defaultdict(list)
+            sig_list = defaultdict(list)
+            gam_list = defaultdict(list)
+            for peak in spectrum.peaks:
+                key = " ".join(peak.peak_label.split("_")[0:3])
+                time = " ".join(peak.peak_label.split("_")[4:-1])
+                time_list[key].append(time)
+                integral[key].append(peak.area_under_peak["global"])
+                for param_name, param_value in peak.fitting_parameter[
+                    'global'].items():
+                    if param_name == "amp":
+                        amp_list[key].append(param_value.value)
+                    if param_name == "cen":
+                        cen_list[key].append(param_value.value)
+                    if param_name == "gam":
+                        gam_list[key].append(param_value.value)
+                    if param_name == "sig":
+                        sig_list[key].append(param_value.value)
+        lorentz = defaultdict(list)
+        gauss = defaultdict(list)
+        voigt = defaultdict(list)
+        for keys in sig_list:
+            lorentz[keys] = utils.fwhm_lorentzian(gam_list[keys][0])
+            gauss[keys] = utils.fwhm_gaussian(sig_list[keys][0])
+            voigt[keys] = utils.fwhm_voigt(sig_list[keys][0],gam_list[keys][0])
 
+        with open(self.dataset.file_name_generator.generate_summary_txt(),
+                "w") as txt_file:
+            txt_file.write(" ;cen;sig;gam")
+            for time in time_list[key]:
+                txt_file.write(f";amp({time})")
+            txt_file.write(" ;FWHM Lorentzian;FWHM Gaussian;FWHM Voigt")
+            for time in time_list[key]:
+                txt_file.write(f";integral({time})")
+            txt_file.write("\n")
+            for keys in cen_list:
+                txt_file.write(f"{keys};{cen_list[keys][0]};{sig_list[keys][0]};"
+                               f"{gam_list[keys][0]}")
+                for amp in amp_list[key]:
+                    txt_file.write(f";{amp}")
+                txt_file.write(f";{lorentz[keys]};{gauss[keys]};{voigt[keys]}")
+                for int in integral[key]:
+                    txt_file.write(f";{int}")
+                txt_file.write("\n")
+            txt_file.write("\n")
+            txt_file.write("\n")
+
+
+
+        pass
 
 
 
