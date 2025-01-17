@@ -1,8 +1,6 @@
-from CorziliusNMR import io,utils
+from CorziliusNMR import io, utils
 import numpy as np
 import sys
-from bruker.data.nmr import *
-import bruker.api.topspin as top
 import os
 
 
@@ -15,8 +13,12 @@ class Dataset:
         self.peak_dict = dict()
         self.spectrum_fitting_type = ["global"]
         self.fitter = None
-        self.buildup_type = ["biexponential","biexponential_with_offset",
-                             "exponential","exponential_with_offset"]
+        self.buildup_type = [
+            "biexponential",
+            "biexponential_with_offset",
+            "exponential",
+            "exponential_with_offset",
+        ]
         self._exp_fit = dict()
         self._print_each_peak_fit_seperate = False
         self._print_complete_fit_report = False
@@ -56,22 +58,22 @@ class Dataset:
         if type(expno) != list:
             sys.exit("Wrong format. List expected.")
         if len(expno) == 2:
-            self.file_name_generator.expno_of_topspin_experiment = np.arange(expno[0], expno[1] + 1)
+            self.file_name_generator.expno_of_topspin_experiment = np.arange(
+                expno[0], expno[1] + 1
+            )
         else:
             self.file_name_generator.expno_of_topspin_experiment = expno
 
-
     def start_buildup_fit_from_topspin_export(self):
-        print(f"Start loading data from topspin: {self.path_to_topspin_experiment}")
+        print(
+            f"Start loading data from topspin: {self.path_to_topspin_experiment}"
+        )
         self._read_in_data_from_topspin()
         print("Start peak fitting.")
         self._calculate_peak_intensities()
         print("Start buildup fit.")
         self._buidup_fit_global()
         self._print()
-
-
-
 
     def start_buildup_fit_from_spectra(self):
         self._read_in_data_from_csv()
@@ -97,7 +99,7 @@ class Dataset:
         pass
 
     def _read_in_data_from_csv(self):
-        #TODO
+        # TODO
         pass
 
     def _calculate_peak_intensities(self):
@@ -137,12 +139,14 @@ class Dataset:
         self.fitter.start_prefit()
         self.fitter.set_model()
         self.fitter.fit()
+
     def _get_intensities(self):
         pass
 
-class Spectra():
 
-    def __init__(self,file):
+class Spectra:
+
+    def __init__(self, file):
         self.file = file
         self.NS = ""
         self.tbup = ""
@@ -150,18 +154,22 @@ class Spectra():
         self.y_axis = []
         self.peaks = []
 
-    def add_peak(self,peak_dict):
+    def add_peak(self, peak_dict):
         try:
-            for peak in sorted(peak_dict.keys(), key=lambda x: int(x),
-                       reverse=True):
-                self.peaks.append(Peak(self,peak,peak_dict))
+            for peak in sorted(
+                peak_dict.keys(), key=lambda x: int(x), reverse=True
+            ):
+                self.peaks.append(Peak(self, peak, peak_dict))
         except:
-            print("ERROR: No peaks given. Try dataset.peak_dict = dict()")#TODO
+            print(
+                "ERROR: No peaks given. Try dataset.peak_dict = dict()"
+            )  # TODO
             pass
 
-class Peak():
 
-    def __init__(self,spectrum,peak,peak_dict):
+class Peak:
+
+    def __init__(self, spectrum, peak, peak_dict):
         self.peak_center_rounded = int(peak)
         self.spectrum = spectrum
         self.peak_dict = peak_dict[peak]
@@ -186,47 +194,57 @@ class Peak():
 
     def _set_sign(self):
         try:
-            if self.peak_dict['sign'] in ["+","-"]:
-                self.sign = self.peak_dict['sign']
+            if self.peak_dict["sign"] in ["+", "-"]:
+                self.sign = self.peak_dict["sign"]
             else:
-                print("ERROR: Wrong input for peak sign. Must be \"+\" or "
-                      "\"-\". Set peak sign to default value.")
+                print(
+                    'ERROR: Wrong input for peak sign. Must be "+" or '
+                    '"-". Set peak sign to default value.'
+                )
                 self.sign = "+"
         except:
             self.sign = "+"
 
     def _set_peak_label(self):
         try:
-            self.peak_label = self.peak_dict['label']
+            self.peak_label = self.peak_dict["label"]
         except:
-            self.peak_label = f"Peak_at_{self.peak_center_rounded}_ppm_" \
-                              f"{self.spectrum.tbup}_s"
-            self.peak_label = self.peak_label.replace("-","m")
+            self.peak_label = (
+                f"Peak_at_{self.peak_center_rounded}_ppm_"
+                f"{self.spectrum.tbup}_s"
+            )
+            self.peak_label = self.peak_label.replace("-", "m")
 
     def _set_fitting_group(self):
         try:
-            self.fitting_group = int(self.peak_dict['fitting_group'])
+            self.fitting_group = int(self.peak_dict["fitting_group"])
         except:
             self.fitting_group = 999
 
     def _set_fitting_model(self):
         try:
-            if self.peak_dict['fitting_model'] in ["voigt","gauss","lorentz"]:
-                self.fitting_model = self.peak_dict['fitting_model']
+            if self.peak_dict["fitting_model"] in [
+                "voigt",
+                "gauss",
+                "lorentz",
+            ]:
+                self.fitting_model = self.peak_dict["fitting_model"]
             else:
-                print(f"ERROR: Unknown fitting model: "
-                      f"{self.peak_dict['fitting_model']}. \'voigt\',"
-                      f"\'gauss\' or \'lorentz\' expected. Set fitting_model "
-                      f"to "
-                      f"default.")
+                print(
+                    f"ERROR: Unknown fitting model: "
+                    f"{self.peak_dict['fitting_model']}. 'voigt',"
+                    f"'gauss' or 'lorentz' expected. Set fitting_model "
+                    f"to "
+                    f"default."
+                )
                 self.fitting_model = "voigt"
         except:
             self.fitting_model = "voigt"
 
-
     def _set_hight(self):
         subspectrum = utils.generate_subspectrum(
-            self.spectrum, self.peak_center_rounded, 2)
+            self.spectrum, self.peak_center_rounded, 2
+        )
 
         if np.trapz(subspectrum) < 0:
             y_val = min(subspectrum)
@@ -234,9 +252,10 @@ class Peak():
             y_val = max(subspectrum)
         index = np.where(self.spectrum.y_axis == y_val)[0]
         x_val = self.spectrum.x_axis[index]
-        self.hight = {'index':index[0],'x_val':x_val[0],'y_val':y_val}
+        self.hight = {"index": index[0], "x_val": x_val[0], "y_val": y_val}
 
-class FileNameHandler():
+
+class FileNameHandler:
 
     def __init__(self):
         self.path_to_topspin_experiment = None
@@ -247,18 +266,19 @@ class FileNameHandler():
     def generate_output_csv_file_name(self):
         return self.output_file_name + "_as_exported.csv"
 
-    def generate_txt_fitting_report(self,peak_label,fitting_type):
+    def generate_txt_fitting_report(self, peak_label, fitting_type):
         return f"{self.output_file_name}_{peak_label}_{fitting_type}.txt"
 
-    def generate_spectrum_fit_pdf(self,fitting_type, tbup):
+    def generate_spectrum_fit_pdf(self, fitting_type, tbup):
         output_folder = f"{self.output_file_name}_fit_per_spectrum/"
         os.makedirs(output_folder, exist_ok=True)
-        return f"{output_folder}Delay_time_{tbup}" \
-               f"_{fitting_type}.pdf"
+        return f"{output_folder}Delay_time_{tbup}" f"_{fitting_type}.pdf"
 
-    def generate_all_spectrum_fit_pdf(self,fitting_type):
-        return f"{self.output_file_name}_all_spectra_simulated" \
-               f"_{fitting_type}.pdf"
+    def generate_all_spectrum_fit_pdf(self, fitting_type):
+        return (
+            f"{self.output_file_name}_all_spectra_simulated"
+            f"_{fitting_type}.pdf"
+        )
 
     def generate_output_pdf_file_name(self):
         return f"{self.output_file_name}_as_exported.pdf"
@@ -269,7 +289,7 @@ class FileNameHandler():
     def get_prefit_txt(self):
         return f"{self.output_file_name}_prefit.txt"
 
-    def generate_buildup_pdf(self,fitting_type):
+    def generate_buildup_pdf(self, fitting_type):
         return f"{self.output_file_name}_buildup_{fitting_type}.pdf"
 
     def generate_buildup_txt(self, fitting_type):

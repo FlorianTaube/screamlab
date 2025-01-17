@@ -15,6 +15,6 @@ An alphabetic list of the modules available within the CorziliusNMR package. The
     CorziliusNMR.fitting
     CorziliusNMR.io
     CorziliusNMR.start_voigt_fitting
-
+    CorziliusNMR.utils
 
 
