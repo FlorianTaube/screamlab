@@ -6,7 +6,9 @@ class Properties:
         self,
         prefit: bool = False,
         buildup_types: list = ["exponential"],
+        spectrum_fit_type: list = ["global"],
         spectrum_for_prefit: int = 0,
+        plot_prefit=True,
     ):
         self._prefit = None
         self.prefit = prefit
@@ -14,6 +16,31 @@ class Properties:
         self.buildup_types = buildup_types
         self._spectrum_for_prefit = None
         self.spectrum_for_prefit = spectrum_for_prefit
+        self._spectrum_fit_type = None
+        self.spectrum_fit_type = spectrum_fit_type
+
+    @property
+    def spectrum_fit_type(self) -> list:
+        return self._spectrum_fit_type
+
+    @spectrum_fit_type.setter
+    def spectrum_fit_type(self, value: Any):
+        allowed_values = {
+            "global",
+            "individual",
+            "hight",
+        }
+        if not isinstance(value, list):
+            raise TypeError(
+                f"Expected 'spectrum_fit_type' to be of type 'list', got {type(value).__name__}."
+            )
+        if not all(item in allowed_values for item in value):
+            raise ValueError(
+                f"All elements in 'spectrum_fit_type' must be one of {allowed_values}."
+            )
+        if not value:
+            raise ValueError("'spectrum_fit_type' cannot be an empty list.")
+        self._spectrum_fit_type = value
 
     @property
     def spectrum_for_prefit(self) -> list:
@@ -47,6 +74,8 @@ class Properties:
             raise ValueError(
                 f"All elements in 'buildup_types' must be one of {allowed_values}."
             )
+        if not value:
+            raise ValueError("'buildup_types' cannot be an empty list.")
         self._buildup_types = value
 
     @property
