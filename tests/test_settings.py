@@ -1,4 +1,5 @@
 import unittest
+import os
 from CorziliusNMR.settings import Properties
 
 
@@ -189,3 +190,108 @@ class TestProperties(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             props.spectrum_fit_type = ["exponential", "invalid_type"]
         self.assertIn("must be one of", str(context.exception))
+
+    def test_path_to_experiment_default_value(self):
+        props = Properties()
+        self.assertEqual(
+            props.path_to_experiment,
+            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR",
+        )
+
+    def test_path_to_experiment_initial_value(self):
+        props = Properties(path_to_experiment="/testfolder/test/test")
+        self.assertEqual(props.path_to_experiment, "/testfolder/test/test")
+
+    def test_path_to_experiment_set_valid_value(self):
+        props = Properties()
+        props.path_to_experiment = "/testfolder/test/test"
+        self.assertEqual(props.path_to_experiment, "/testfolder/test/test")
+
+    def test_path_to_experiment_set_invalid_value(self):
+        props = Properties()
+        with self.assertRaises(TypeError) as context:
+            props.path_to_experiment = 12
+        self.assertEqual(
+            str(context.exception),
+            "Expected 'path_to_experiment' to be of type 'str', got int.",
+        )
+
+    def test_path_to_experiment_empty_str(self):
+        props = Properties()
+        with self.assertRaises(ValueError) as context:
+            props.path_to_experiment = ""
+        self.assertEqual(
+            str(context.exception),
+            "'path_to_experiment' cannot be an empty str.",
+        )
+
+    def test_path_to_experiment_change_value(self):
+        props = Properties(path_to_experiment="/testfolder/test")
+        props.path_to_experiment = "/testfolder/test/test"
+        self.assertTrue(props.path_to_experiment, "/testfolder/test/test")
+
+    def test_path_to_experiment_private_variable(self):
+        props = Properties(path_to_experiment="/testfolder/test/test")
+        self.assertEqual(props._path_to_experiment, "/testfolder/test/test")
+
+    def test_procno_default_value(self):
+        props = Properties()
+        self.assertEqual(props.procno, "103")
+
+    def test_procno_initial_value(self):
+        props = Properties(procno=102)
+        self.assertEqual(props.procno, "102")
+
+    def test_procno_set_valid_value(self):
+        props = Properties()
+        props.procno = 111
+        self.assertEqual(props.procno, "111")
+
+    def test_procno_set_invalid_value(self):
+        props = Properties()
+        with self.assertRaises(TypeError) as context:
+            props.procno = "12"
+        self.assertEqual(
+            str(context.exception),
+            "Expected 'procno' to be of type 'int', got str.",
+        )
+
+    def test_procno_change_value(self):
+        props = Properties(procno=111)
+        props.procno = 2
+        self.assertTrue(props.procno, "2")
+
+    def test_procno_private_variable(self):
+        props = Properties(procno=2)
+        self.assertEqual(props._procno, "2")
+
+    def test_expno_default_value(self):
+        props = Properties()
+        self.assertListEqual(props.expno, [])
+
+    def test_expno_initial_value(self):
+        props = Properties(expno=[200, 50])
+        self.assertListEqual(props.expno, [200, 50])
+
+    def test_expno_set_valid_value(self):
+        props = Properties()
+        props.expno = [111]
+        self.assertListEqual(props.expno, [111])
+
+    def test_expno_set_invalid_value(self):
+        props = Properties()
+        with self.assertRaises(TypeError) as context:
+            props.expno = "12"
+        self.assertEqual(
+            str(context.exception),
+            "Expected 'expno' to be of type 'list', got str.",
+        )
+
+    def test_expno_change_value(self):
+        props = Properties(expno=[111])
+        props.expno = [111, 112]
+        self.assertListEqual(props.expno, [111, 112])
+
+    def test_expno_private_variable(self):
+        props = Properties(expno=[2])
+        self.assertListEqual(props._expno, [2])

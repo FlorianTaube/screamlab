@@ -1,14 +1,52 @@
 from typing import Any
+import os
 
 
 class Properties:
+    """
+    A class to manage and validate properties related to spectral fitting and buildup types.
+
+    Parameters
+    ----------
+    prefit : bool, optional
+        Indicates whether prefit mode is enabled. Default is False.
+    buildup_types : list of str, optional
+        A list specifying the types of buildup to be used. Default is ["exponential"].
+    spectrum_fit_type : list of str, optional
+        A list specifying the spectrum fit type. Default is ["global"].
+    spectrum_for_prefit : int, optional
+        Specifies the spectrum index to be used for prefit. Default is 0.
+    plot_prefit : bool, optional
+        Indicates whether to plot the prefit. Default is True.
+    path_to_experiment : str or None, optional
+        Path to the experiment data. Default is None.
+    expno : Any, optional
+        Experiment number. Default is None.
+    procno : Any, optional
+        Process number. Default is None.
+
+    Attributes
+    ----------
+    prefit : bool
+        Indicates whether prefit mode is enabled.
+    buildup_types : list of str
+        A list of allowed buildup types.
+    spectrum_fit_type : list of str
+        A list of allowed spectrum fit types.
+    spectrum_for_prefit : int
+        The spectrum index to be used for prefit.
+    """
+
     def __init__(
         self,
         prefit: bool = False,
         buildup_types: list = ["exponential"],
         spectrum_fit_type: list = ["global"],
         spectrum_for_prefit: int = 0,
-        plot_prefit=True,
+        plot_prefit: bool = True,
+        path_to_experiment: str = os.path.dirname(os.path.abspath(__file__)),
+        procno: int = 103,
+        expno: list = [],
     ):
         self._prefit = None
         self.prefit = prefit
@@ -18,13 +56,81 @@ class Properties:
         self.spectrum_for_prefit = spectrum_for_prefit
         self._spectrum_fit_type = None
         self.spectrum_fit_type = spectrum_fit_type
+        self._path_to_experiment = None
+        self.path_to_experiment = path_to_experiment
+        self._procno = None
+        self.procno = procno
+        self._expno = None
+        self.expno = expno
+
+    @property
+    def expno(self) -> list:
+        return self._expno
+
+    @expno.setter
+    def expno(self, value: Any):
+        if not isinstance(value, list):
+            raise TypeError(
+                f"Expected 'expno' to be of type 'list', got {type(value).__name__}."
+            )
+        self._expno = value
+
+    @property
+    def procno(self) -> int:
+        return self._procno
+
+    @procno.setter
+    def procno(self, value: Any):
+        if not isinstance(value, int):
+            raise TypeError(
+                f"Expected 'procno' to be of type 'int', got {type(value).__name__}."
+            )
+        self._procno = str(value)
+
+    @property
+    def path_to_experiment(self) -> str:
+        return self._path_to_experiment
+
+    @path_to_experiment.setter
+    def path_to_experiment(self, value: Any):
+        if not isinstance(value, str):
+            raise TypeError(
+                f"Expected 'path_to_experiment' to be of type 'str', got {type(value).__name__}."
+            )
+        if not value:
+            raise ValueError("'path_to_experiment' cannot be an empty str.")
+        self._path_to_experiment = value
 
     @property
     def spectrum_fit_type(self) -> list:
+        """
+        Get the spectrum fit type.
+
+        Returns
+        -------
+        list of str
+            The current spectrum fit type.
+        """
         return self._spectrum_fit_type
 
     @spectrum_fit_type.setter
     def spectrum_fit_type(self, value: Any):
+        """
+        Set and validate the spectrum fit type.
+
+        Parameters
+        ----------
+        value : list of str
+            A list specifying the spectrum fit type. Allowed values are
+            {"global", "individual", "hight"}.
+
+        Raises
+        ------
+        TypeError
+            If the input is not a list.
+        ValueError
+            If the input list contains invalid elements or is empty.
+        """
         allowed_values = {
             "global",
             "individual",
@@ -43,11 +149,32 @@ class Properties:
         self._spectrum_fit_type = value
 
     @property
-    def spectrum_for_prefit(self) -> list:
+    def spectrum_for_prefit(self) -> int:
+        """
+        Get the spectrum index used for prefit.
+
+        Returns
+        -------
+        int
+            The spectrum index for prefit.
+        """
         return self._spectrum_for_prefit
 
     @spectrum_for_prefit.setter
     def spectrum_for_prefit(self, value: Any):
+        """
+        Set and validate the spectrum index for prefit.
+
+        Parameters
+        ----------
+        value : int
+            The spectrum index to be used for prefit.
+
+        Raises
+        ------
+        TypeError
+            If the input is not an integer.
+        """
         if not isinstance(value, int):
             raise TypeError(
                 f"Expected 'spectrum_for_prefit' to be of type 'int', got {type(value).__name__}."
@@ -56,10 +183,34 @@ class Properties:
 
     @property
     def buildup_types(self) -> list:
+        """
+        Get the buildup types.
+
+        Returns
+        -------
+        list of str
+            The current buildup types.
+        """
         return self._buildup_types
 
     @buildup_types.setter
     def buildup_types(self, value: Any):
+        """
+        Set and validate the buildup types.
+
+        Parameters
+        ----------
+        value : list of str
+            A list specifying the buildup types. Allowed values are
+            {"exponential", "biexponential", "biexponential_with_offset", "exponential_with_offset"}.
+
+        Raises
+        ------
+        TypeError
+            If the input is not a list.
+        ValueError
+            If the input list contains invalid elements or is empty.
+        """
         allowed_values = {
             "exponential",
             "biexponential",
@@ -80,10 +231,31 @@ class Properties:
 
     @property
     def prefit(self) -> bool:
+        """
+        Get the prefit status.
+
+        Returns
+        -------
+        bool
+            The current prefit status.
+        """
         return self._prefit
 
     @prefit.setter
     def prefit(self, value: Any):
+        """
+        Set and validate the prefit status.
+
+        Parameters
+        ----------
+        value : bool
+            Indicates whether prefit mode is enabled.
+
+        Raises
+        ------
+        TypeError
+            If the input is not a boolean.
+        """
         if not isinstance(value, bool):
             raise TypeError(
                 f"Expected 'prefit' to be of type 'bool', got {type(value).__name__}."
