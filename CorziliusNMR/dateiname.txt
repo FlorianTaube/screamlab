@@ -1,0 +1,1518 @@
+Messages
+========
+
+CorziliusNMR.utils (utils.py):
+    L33:4 GlobalSpectrumFitter.start_prefit: pylint - too-many-locals
+    Too many local variables (31/15)
+
+utils.py:
+    L33:- GlobalSpectrumFitter.start_prefit: mccabe - MC0001
+    GlobalSpectrumFitter.start_prefit is too complex (16)
+
+CorziliusNMR.utils (utils.py):
+    L227:19 GlobalSpectrumFitter.set_model: pylint - singleton-comparison
+    Comparison 'peak.prefit_dict == None' should be 'peak.prefit_dict is None'
+
+CorziliusNMR.utils (utils.py):
+    L1:- None: pylint - cyclic-import
+    Cyclic import (CorziliusNMR.dataset -> CorziliusNMR.io)
+
+CorziliusNMR.utils (utils.py):
+    L1:- None: pylint - unused-import
+    Unused import sys
+
+CorziliusNMR.utils (utils.py):
+    L76:8 GlobalSpectrumFitter.start_prefit: pylint - unused-variable
+    Unused variable 'results'
+
+CorziliusNMR.utils (utils.py):
+    L289:- None: pylint - reimported
+    Reimport 'numpy' (imported line 4)
+
+CorziliusNMR.utils (utils.py):
+    L289:- None: pylint - wrong-import-position
+    Import "import numpy as np" should be placed at the top of the module
+
+utils.py:
+    L289:1 None: pyflakes - F811
+    redefinition of unused 'np' from line 4
+
+CorziliusNMR.utils (utils.py):
+    L290:- None: pylint - reimported
+    Reimport 'lmfit' (imported line 3)
+
+CorziliusNMR.utils (utils.py):
+    L290:- None: pylint - wrong-import-position
+    Import "import lmfit" should be placed at the top of the module
+
+utils.py:
+    L290:1 None: pyflakes - F811
+    redefinition of unused 'lmfit' from line 3
+
+CorziliusNMR.utils (utils.py):
+    L38:12 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L43:24 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L50:24 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L54:12 GlobalSpectrumFitter.start_prefit: pylint - possibly-used-before-assignment
+    Possibly using variable 'tmp_lineshape' before assignment
+
+CorziliusNMR.utils (utils.py):
+    L97:20 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L107:24 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L116:24 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L120:28 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L132:16 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L135:16 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L140:16 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L146:11 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _print_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L149:17 GlobalSpectrumFitter.start_prefit: pylint - unspecified-encoding
+    Using open without explicitly specifying an encoding
+
+CorziliusNMR.utils (utils.py):
+    L154:16 GlobalSpectrumFitter.start_prefit: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L160:20 GlobalSpectrumFitter.start_prefit: pylint - use-dict-literal
+    Consider using '{"value": 200, "min": 0, "max": 100000000.0}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L162:25 GlobalSpectrumFitter.start_prefit: pylint - use-dict-literal
+    Consider using '{"value": -200, "min": -100000000.0, "max": 0}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L164:35 GlobalSpectrumFitter.start_prefit: pylint - use-dict-literal
+    Consider using '{"value": best_result.params[f"{peak.peak_label.replace('.', '_')}_center"].value, ... }' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L177:34 GlobalSpectrumFitter.start_prefit: pylint - use-dict-literal
+    Consider using '{"value": best_result.params[f"{peak.peak_label.replace('.', '_')}_sigma"].value, ... }' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L196:34 GlobalSpectrumFitter.start_prefit: pylint - use-dict-literal
+    Consider using '{"value": best_result.params[f"{peak.peak_label.replace('.', '_')}_gamma"].value, ... }' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L228:20 GlobalSpectrumFitter.set_model: pylint - possibly-used-before-assignment
+    Possibly using variable 'tmp_lineshape' before assignment
+
+CorziliusNMR.utils (utils.py):
+    L248:20 GlobalSpectrumFitter.fit: pylint - unnecessary-pass
+    Unnecessary pass statement
+
+CorziliusNMR.utils (utils.py):
+    L272:- None: pylint - pointless-string-statement
+    String statement has no effect
+
+CorziliusNMR.utils (utils.py):
+    L338:27 BuildupFitter.__init__: pylint - use-dict-literal
+    Consider using '{}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L360:12 BuildupFitter.perform_fit: pylint - protected-access
+    Access to a protected member _exp_fit of a client class
+
+CorziliusNMR.utils (utils.py):
+    L364:4 BuildupFitter.fit_buildup: pylint - too-many-locals
+    Too many local variables (19/15)
+
+CorziliusNMR.utils (utils.py):
+    L462:16 BiexpFitter.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "min": 0, "max": self.y_val[-1] * 3}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L464:21 BiexpFitter.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "max": 0, "min": self.y_val[-1] * 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L467:16 BiexpFitter.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "min": 0, "max": self.y_val[-1] * 3}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L469:21 BiexpFitter.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "max": 0, "min": self.y_val[-1] * 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L471:18 BiexpFitter.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 5, "min": 0, "max": self.x_val[-1] * 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L472:18 BiexpFitter.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": self.x_val[-3], "min": 0, "max": self.x_val[-1] * 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L501:16 BiexpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "min": 0, "max": self.y_val[-1] * 3}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L503:21 BiexpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "max": 0, "min": self.y_val[-1] * 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L506:16 BiexpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "min": 0, "max": self.y_val[-1] * 3}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L508:21 BiexpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "max": 0, "min": self.y_val[-1] * 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L510:18 BiexpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 5, "min": 0, "max": self.x_val[-1] * 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L511:18 BiexpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": self.x_val[-3], "min": 0, "max": self.x_val[-1] * 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L512:18 BiexpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 0, "min": -1.5, "max": 1}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L540:16 ExpFitter.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "min": 0, "max": self.y_val[-1] * 10}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L542:21 ExpFitter.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "max": 0, "min": self.y_val[-1] * 10}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L544:18 ExpFitter.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 5, "min": 0, "max": self.x_val[-1] * 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L572:16 ExpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "min": 0, "max": self.y_val[-1] * 10}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L574:21 ExpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 10, "max": 0, "min": self.y_val[-1] * 10}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L576:18 ExpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 5, "min": 0, "max": self.x_val[-1] * 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L577:18 ExpFitterWithOffset.get_param_dict: pylint - use-dict-literal
+    Consider using '{"value": 0, "min": -1.5, "max": 1}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L587:8 Lineshape.__init__: pylint - unnecessary-pass
+    Unnecessary pass statement
+
+CorziliusNMR.utils (utils.py):
+    L603:4 Voigt.__init__: pylint - useless-parent-delegation
+    Useless parent or super() delegation in method '__init__'
+
+CorziliusNMR.utils (utils.py):
+    L609:16 Voigt.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": 200, "min": 0, "max": 100000000.0}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L611:21 Voigt.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": -200, "min": -100000000.0, "max": 0}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L613:46 Voigt.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": self.peak.hight['x_val'], "min": self.peak.hight['x_val'] - 1, ... }' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L618:45 Voigt.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": 1, "min": 1e-12, "max": 3}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L619:45 Voigt.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": 1, "min": 1e-12, "max": 3}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L660:4 Gauss.__init__: pylint - useless-parent-delegation
+    Useless parent or super() delegation in method '__init__'
+
+CorziliusNMR.utils (utils.py):
+    L666:16 Gauss.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": 200, "min": 0}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L668:21 Gauss.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": -200, "max": 0}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L670:46 Gauss.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": self.peak.hight['x_val'], "min": self.peak.hight['x_val'] - 0.1, ... }' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L675:45 Gauss.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": 1.5, "min": 1, "max": 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L678:8 Gauss.set_init_params: pylint - unnecessary-pass
+    Unnecessary pass statement
+
+CorziliusNMR.utils (utils.py):
+    L710:4 Lorentz.__init__: pylint - useless-parent-delegation
+    Useless parent or super() delegation in method '__init__'
+
+CorziliusNMR.utils (utils.py):
+    L716:16 Lorentz.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": 200, "min": 0}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L718:21 Lorentz.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": -200, "max": 0}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L720:46 Lorentz.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": self.peak.hight['x_val'], "min": self.peak.hight['x_val'] - 0.5, ... }' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L725:45 Lorentz.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": 1.5, "min": 1, "max": 2}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L726:45 Lorentz.set_init_params: pylint - use-dict-literal
+    Consider using '{"value": 0.3, "min": 0, "max": 1}' instead of a call to 'dict'.
+
+CorziliusNMR.utils (utils.py):
+    L729:8 Lorentz.set_init_params: pylint - unnecessary-pass
+    Unnecessary pass statement
+
+CorziliusNMR.utils (utils.py):
+    L732:8 Lorentz.peak_calculator: pylint - unbalanced-tuple-unpacking
+    Possible unbalanced tuple unpacking with sequence defined at line 763: left side has 4 labels, right side has 3 values
+
+CorziliusNMR.utils (utils.py):
+    L732:23 Lorentz.peak_calculator: pylint - unused-variable
+    Unused variable 'sig'
+
+CorziliusNMR.utils (utils.py):
+    L768:8 prefit_objective: pylint - unused-variable
+    Unused variable 'i'
+
+CorziliusNMR.utils (utils.py):
+    L815:48 generate_subspectrum_2: pylint - redefined-builtin
+    Redefining built-in 'max'
+
+CorziliusNMR.utils (utils.py):
+    L815:53 generate_subspectrum_2: pylint - redefined-builtin
+    Redefining built-in 'min'
+
+dataset.py:
+    L58:12 None: pycodestyle - E721
+    do not compare types, for exact checks use `is` / `is not`, for instance checks use `isinstance()`
+
+CorziliusNMR.dataset (dataset.py):
+    L58:11 Dataset.expno_of_topspin_experiment: pylint - unidiomatic-typecheck
+    Use isinstance() rather than type() for a typecheck.
+
+CorziliusNMR.dataset (dataset.py):
+    L163:8 Spectra.add_peak: pylint - bare-except
+    No exception type(s) specified
+
+CorziliusNMR.dataset (dataset.py):
+    L205:8 Peak._set_sign: pylint - bare-except
+    No exception type(s) specified
+
+CorziliusNMR.dataset (dataset.py):
+    L211:8 Peak._set_peak_label: pylint - bare-except
+    No exception type(s) specified
+
+CorziliusNMR.dataset (dataset.py):
+    L221:8 Peak._set_fitting_group: pylint - bare-except
+    No exception type(s) specified
+
+CorziliusNMR.dataset (dataset.py):
+    L241:8 Peak._set_fitting_model: pylint - bare-except
+    No exception type(s) specified
+
+CorziliusNMR.dataset (dataset.py):
+    L13:25 Dataset.__init__: pylint - use-dict-literal
+    Consider using '{}' instead of a call to 'dict'.
+
+CorziliusNMR.dataset (dataset.py):
+    L22:24 Dataset.__init__: pylint - use-dict-literal
+    Consider using '{}' instead of a call to 'dict'.
+
+CorziliusNMR.dataset (dataset.py):
+    L99:8 Dataset._print: pylint - unnecessary-pass
+    Unnecessary pass statement
+
+CorziliusNMR.dataset (dataset.py):
+    L113:12 Dataset._buidup_fit_global: pylint - redefined-builtin
+    Redefining built-in 'type'
+
+CorziliusNMR.dataset (dataset.py):
+    L160:38 Spectra.add_peak.<lambda>: pylint - unnecessary-lambda
+    Lambda may not be necessary
+
+CorziliusNMR.dataset (dataset.py):
+    L167:12 Spectra.add_peak: pylint - unnecessary-pass
+    Unnecessary pass statement
+
+CorziliusNMR.dataset (dataset.py):
+    L180:31 Peak.__init__: pylint - use-dict-literal
+    Consider using '{}' instead of a call to 'dict'.
+
+CorziliusNMR.dataset (dataset.py):
+    L181:30 Peak.__init__: pylint - use-dict-literal
+    Consider using '{}' instead of a call to 'dict'.
+
+
+CorziliusNMR.dataset (dataset.py):
+    L182:33 Peak.__init__: pylint - use-dict-literal
+    Consider using '{}' instead of a call to 'dict'.
+
+CorziliusNMR.dataset (dataset.py):
+    L183:30 Peak.__init__: pylint - use-dict-literal
+    Consider using '{}' instead of a call to 'dict'.
+
+io.py:
+    L160:30 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+io.py:
+    L161:26 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+io.py:
+    L161:38 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+io.py:
+    L161:46 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+io.py:
+    L190:29 None: pycodestyle - E131
+    continuation line unaligned for hanging indent
+
+io.py:
+    L191:29 None: pycodestyle - E131
+    continuation line unaligned for hanging indent
+
+io.py:
+    L214:31 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+io.py:
+    L214:43 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+io.py:
+    L214:51 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+io.py:
+    L225:46 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+io.py:
+    L246:26 None: pycodestyle - E114
+    indentation is not a multiple of 4 (comment)
+
+io.py:
+    L246:26 None: pycodestyle - E117
+    over-indented (comment)
+
+io.py:
+    L247:27 None: pycodestyle - E114
+    indentation is not a multiple of 4 (comment)
+
+io.py:
+    L247:27 None: pycodestyle - E117
+    over-indented (comment)
+
+io.py:
+    L275:27 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+io.py:
+    L276:28 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+io.py:
+    L276:41 None: pycodestyle - W605
+    invalid escape sequence '\ '
+
+CorziliusNMR.io (io.py):
+    L7:- None: pylint - unused-wildcard-import
+    Unused imports from wildcard import: (s)
+
+io.py:
+    L7:1 None: pyflakes - F401
+    'bruker.data.nmr.*' imported but unused
+
+CorziliusNMR.io (io.py):
+    L13:- None: pylint - unused-import
+    Unused import sys
+
+CorziliusNMR.io (io.py):
+    L53:4 ScreamImporter.__init__: pylint - useless-parent-delegation
+    Useless parent or super() delegation in method '__init__'
+
+CorziliusNMR.io (io.py):
+    L59:12 ScreamImporter.import_topspin_data: pylint - unused-variable
+    Unused variable 'expno_nr'
+
+CorziliusNMR.io (io.py):
+    L67:4 ScreamImporter._set_values: pylint - useless-parent-delegation
+    Useless parent or super() delegation in method '_set_values'
+
+CorziliusNMR.io (io.py):
+    L125:4 Pseudo2DImporter.__init__: pylint - useless-parent-delegation
+    Useless parent or super() delegation in method '__init__'
+
+CorziliusNMR.io (io.py):
+    L131:4 Pseudo2DImporter.read_in_topspin_data: pylint - no-method-argument
+    Method 'read_in_topspin_data' has no argument
+
+CorziliusNMR.io (io.py):
+    L139:8 Exporter.__init__: pylint - unnecessary-pass
+    Unnecessary pass statement
+
+CorziliusNMR.io (io.py):
+    L144:11 Exporter.print_all: pylint - protected-access
+    Access to a protected member _print_each_peak_fit_seperate of a client class
+
+CorziliusNMR.io (io.py):
+    L147:11 Exporter.print_all: pylint - protected-access
+    Access to a protected member _print_complete_fit_report of a client class
+
+CorziliusNMR.io (io.py):
+    L192:25 Exporter.print_fitting_report: pylint - unspecified-encoding
+    Using open without explicitly specifying an encoding
+
+CorziliusNMR.io (io.py):
+    L267:16 Exporter.print_biexp_fits: pylint - protected-access
+    Access to a protected member _exp_fit of a client class
+
+CorziliusNMR.io (io.py):
+    L289:12 Exporter.print_biexp_table: pylint - unused-variable
+    Unused variable 'idx'
+
+CorziliusNMR.io (io.py):
+    L290:16 Exporter.print_biexp_table: pylint - protected-access
+    Access to a protected member _exp_fit of a client class
+
+CorziliusNMR.io (io.py):
+    L294:37 Exporter.print_biexp_table: pylint - protected-access
+    Access to a protected member _exp_fit of a client class
+
+CorziliusNMR.io (io.py):
+    L304:13 Exporter.print_biexp_table: pylint - unspecified-encoding
+    Using open without explicitly specifying an encoding
+
+CorziliusNMR.io (io.py):
+    L308:4 Exporter.print_summary_as_txt: pylint - too-many-locals
+    Too many local variables (20/15)
+
+CorziliusNMR.io (io.py):
+    L339:13 Exporter.print_summary_as_txt: pylint - unspecified-encoding
+    Using open without explicitly specifying an encoding
+
+CorziliusNMR.io (io.py):
+    L354:20 Exporter.print_summary_as_txt: pylint - redefined-builtin
+    Redefining built-in 'int'
+
+CorziliusNMR.io (io.py):
+    L362:8 Exporter.print_summary_as_txt: pylint - unnecessary-pass
+    Unnecessary pass statement
+
+CorziliusNMR.io (io.py):
+    L369:- None: pylint - trailing-newlines
+    Trailing newlines
+
+CorziliusNMR.proline_data (proline_data.py):
+    L9:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L31:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L52:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L70:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L88:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L107:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L125:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L143:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L164:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L185:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L205:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L224:27 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L242:27 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L260:27 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L278:27 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L296:27 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L314:27 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L332:27 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L350:27 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L369:4 None: pylint - f-string-without-interpolation
+    Using an f-string that does not have any interpolated variables
+
+CorziliusNMR.proline_data (proline_data.py):
+    L12:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L13:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L14:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L15:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L16:9 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L18:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L24:- None: pylint - unreachable
+    Unreachable code
+
+CorziliusNMR.proline_data (proline_data.py):
+    L34:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L40:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L47:- None: pylint - unreachable
+    Unreachable code
+
+CorziliusNMR.proline_data (proline_data.py):
+    L55:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L56:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L57:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L58:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L59:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L61:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L73:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L74:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L75:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L76:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L77:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L79:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L91:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L92:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L93:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L94:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L95:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L97:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L111:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L112:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L113:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L114:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L116:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L128:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L129:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L130:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L131:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L132:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L134:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L146:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L147:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L148:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L149:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L150:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L152:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L167:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L168:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L169:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L170:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L171:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L173:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L188:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L189:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L190:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L191:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L192:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L194:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L208:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L209:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L210:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L211:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L212:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L214:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L226:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L227:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L228:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L229:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L230:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L232:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L244:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L245:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L246:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L247:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L248:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L250:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L262:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L263:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L264:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L265:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L266:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L268:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L280:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L281:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L282:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L283:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L284:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L286:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L298:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L299:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L300:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L301:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L302:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L304:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L316:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L317:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L318:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L319:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L320:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L322:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L334:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L335:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L336:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L337:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L338:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L340:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L352:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L353:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L354:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L355:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L356:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L358:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.proline_data (proline_data.py):
+    L373:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L374:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L375:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L376:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.proline_data (proline_data.py):
+    L378:- None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.S45F_evaluation (S45F_evaluation.py):
+    L2:- None: pylint - unused-import
+    Unused import sys
+
+CorziliusNMR.S45F_evaluation (S45F_evaluation.py):
+    L4:- None: pylint - redefined-builtin
+    Redefining built-in 'list'
+
+CorziliusNMR.S45F_evaluation (S45F_evaluation.py):
+    L14:14 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.S45F_evaluation (S45F_evaluation.py):
+    L16:4 None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.S45F_evaluation (S45F_evaluation.py):
+    L29:14 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.S45F_evaluation (S45F_evaluation.py):
+    L31:4 None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.my_data (my_data.py):
+    L4:- None: pylint - redefined-builtin
+    Redefining built-in 'list'
+
+CorziliusNMR.my_data (my_data.py):
+    L15:15 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L17:4 None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.my_data (my_data.py):
+    L22:- None: pylint - unreachable
+    Unreachable code
+
+CorziliusNMR.my_data (my_data.py):
+    L29:14 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L31:4 None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.my_data (my_data.py):
+    L64:15 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L66:4 None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.my_data (my_data.py):
+    L76:4 None: pylint - protected-access
+    Access to a protected member _spectrum_number_for_prefit of a client class
+
+CorziliusNMR.my_data (my_data.py):
+    L78:15 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 1, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L89:- None: pylint - unreachable
+    Unreachable code
+
+CorziliusNMR.my_data (my_data.py):
+    L96:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L97:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L98:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L99:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L100:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L104:- None: pylint - unreachable
+    Unreachable code
+
+CorziliusNMR.my_data (my_data.py):
+    L112:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L113:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L114:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_mospdel": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L115:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L116:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L125:- None: pylint - unreachable
+    Unreachable code
+
+CorziliusNMR.my_data (my_data.py):
+    L133:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L134:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L135:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L136:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L147:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L148:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L149:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L150:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L151:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L163:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L164:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L165:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L166:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L167:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L178:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L179:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L180:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L181:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L182:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L194:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L195:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L196:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L197:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L198:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L210:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L211:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L212:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L213:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L225:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L226:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L227:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L228:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L241:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L242:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L243:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L244:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L245:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L257:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L258:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L259:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L260:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L261:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L273:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L274:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L275:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L276:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L277:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L290:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L291:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L292:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L293:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L294:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L306:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L307:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L308:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L309:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L310:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L322:11 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 2, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L323:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L324:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L325:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.my_data (my_data.py):
+    L326:10 None: pylint - use-dict-literal
+    Consider using '{"sign": '+', "fitting_group": 4, "fitting_model": 'voigt'}' instead of a call to 'dict'.
+
+CorziliusNMR.setting2 (setting2.py):
+    L40:4 Properties: pylint - unnecessary-pass
+    Unnecessary pass statement
+
+CorziliusNMR.setting2 (setting2.py):
+    L43:4 Properties.my_function: pylint - no-method-argument
+    Method 'my_function' has no argument
+
+CorziliusNMR.setting2 (setting2.py):
+    L63:4 Properties: pylint - unnecessary-pass
+    Unnecessary pass statement
+
+CorziliusNMR.setting2 (setting2.py):
+    L64:- None: pylint - trailing-newlines
+    Trailing newlines
+
+CorziliusNMR.settings (settings.py):
+    L33:4 Properties.__init__: pylint - dangerous-default-value
+    Dangerous default value [] as argument
+
+CorziliusNMR.settings (settings.py):
+    L33:4 Properties.__init__: pylint - dangerous-default-value
+    Dangerous default value [] as argument
+
+CorziliusNMR.settings (settings.py):
+    L33:4 Properties.__init__: pylint - dangerous-default-value
+    Dangerous default value [] as argument
+
+CorziliusNMR.settings (settings.py):
+    L33:4 Properties.__init__: pylint - too-many-arguments
+    Too many arguments (9/5)
+
+CorziliusNMR.settings (settings.py):
+    L33:4 Properties.__init__: pylint - too-many-positional-arguments
+    Too many positional arguments (9/5)
+
+CorziliusNMR.settings (settings.py):
+    L39:8 Properties.__init__: pylint - unused-argument
+    Unused argument 'plot_prefit'
+
+
+
+Check Information
+=================
+         Started: 2025-01-21 12:09:44.228921
+        Finished: 2025-01-21 12:10:06.118938
+      Time Taken: 21.89 seconds
+       Formatter: text
+        Profiles: default, no_doc_warnings, no_test_warnings, strictness_medium, strictness_high, strictness_veryhigh, no_member_warnings
+      Strictness: None
+  Libraries Used: 
+       Tools Run: dodgy, mccabe, profile-validator, pycodestyle, pyflakes, pylint
+  Messages Found: 375
+
