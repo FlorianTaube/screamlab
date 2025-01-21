@@ -82,15 +82,12 @@ class TestProperties(unittest.TestCase):
         with self.assertRaises(ValueError):
             props.buildup_types = ["exponential", 42, "constant"]
 
-    def test_buildup_types_valid_in_possibilitys(self):
+    def test_buildup_types_valid_in_possibilities(self):
         props = Properties()
-        try:
-            props.buildup_types = ["exponential", "biexponential"]
-            self.assertEqual(
-                props.buildup_types, ["exponential", "biexponential"]
-            )
-        except Exception as e:
-            self.fail(f"Valid values raised an exception: {e}")
+        props.buildup_types = ["exponential", "biexponential"]
+        self.assertEqual(
+            props.buildup_types, ["exponential", "biexponential"]
+        )
 
     def test_buildup_types_invalid(self):
         props = Properties()

@@ -12,9 +12,13 @@ An alphabetic list of the modules available within the CorziliusNMR package. The
 .. toctree::
     :maxdepth: 1
 
+    CorziliusNMR.dataset
     CorziliusNMR.fitting
     CorziliusNMR.io
-    CorziliusNMR.start_voigt_fitting
+    CorziliusNMR.setting2
+    CorziliusNMR.settings
     CorziliusNMR.utils
+
+
 
 

@@ -6,14 +6,17 @@ class Properties:
     """
     A class to manage and validate properties related to spectral fitting and buildup types.
 
-    Parameters
+    Attributes
     ----------
     prefit : bool, optional
         Indicates whether prefit mode is enabled. Default is False.
+
     buildup_types : list of str, optional
         A list specifying the types of buildup to be used. Default is ["exponential"].
+
     spectrum_fit_type : list of str, optional
         A list specifying the spectrum fit type. Default is ["global"].
+
     spectrum_for_prefit : int, optional
         Specifies the spectrum index to be used for prefit. Default is 0.
     plot_prefit : bool, optional
@@ -25,16 +28,6 @@ class Properties:
     procno : Any, optional
         Process number. Default is None.
 
-    Attributes
-    ----------
-    prefit : bool
-        Indicates whether prefit mode is enabled.
-    buildup_types : list of str
-        A list of allowed buildup types.
-    spectrum_fit_type : list of str
-        A list of allowed spectrum fit types.
-    spectrum_for_prefit : int
-        The spectrum index to be used for prefit.
     """
 
     def __init__(
@@ -46,7 +39,7 @@ class Properties:
         plot_prefit: bool = True,
         path_to_experiment: str = os.path.dirname(os.path.abspath(__file__)),
         procno: int = 103,
-        expno: list = [],
+        expno: list = None,
     ):
         self._prefit = None
         self.prefit = prefit

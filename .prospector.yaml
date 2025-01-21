@@ -4,6 +4,9 @@
 ignore-paths:
   - templates
   - build
+  - my_data
+  - S45F_evaluation
+  - proline_data
 
 inherits:
   - strictness_high
