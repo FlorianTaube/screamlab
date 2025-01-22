@@ -1,5 +1,7 @@
 from typing import Any
 import os
+import lmfit
+import numpy
 
 
 class Properties:

@@ -1,4 +1,4 @@
-from CorziliusNMR import io, utils
+from CorziliusNMR import io, utils, settings
 import numpy as np
 import sys
 import os
@@ -10,6 +10,7 @@ class Dataset:
         self.file_name_generator = FileNameHandler()
         self.importer = None
         self.spectra = []
+        self.props = settings.Properties()
         self.peak_dict = dict()
         self.spectrum_fitting_type = ["global"]
         self.fitter = None
