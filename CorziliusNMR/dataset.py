@@ -1,71 +1,16 @@
 from CorziliusNMR import io, utils, settings
 import numpy as np
-import sys
-import os
 
 
 class Dataset:
 
     def __init__(self):
-        self.file_name_generator = FileNameHandler()
         self.importer = None
-        self.spectra = []
         self.props = settings.Properties()
-        self.peak_dict = dict()
-        self.spectrum_fitting_type = ["global"]
+        self.spectra = None
         self.fitter = None
-        self.buildup_type = [
-            "biexponential",
-            "biexponential_with_offset",
-            "exponential",
-            "exponential_with_offset",
-        ]
-        self._exp_fit = dict()
-        self._print_each_peak_fit_seperate = False
-        self._print_complete_fit_report = False
-        self._print_prefit = True
-        self._spectrum_number_for_prefit = -1
 
-    @property
-    def path_to_topspin_experiment(self):
-        return self.file_name_generator.path_to_topspin_experiment
-
-    @path_to_topspin_experiment.setter
-    def path_to_topspin_experiment(self, path):
-        self.file_name_generator.path_to_topspin_experiment = path
-
-    @property
-    def output_file_name(self):
-        return self.file_name_generator.output_file_name
-
-    @output_file_name.setter
-    def output_file_name(self, file):
-        self.file_name_generator.output_file_name = file
-
-    @property
-    def procno_of_topspin_experiment(self):
-        return self.file_name_generator.procno_of_topspin_experiment
-
-    @procno_of_topspin_experiment.setter
-    def procno_of_topspin_experiment(self, procno):
-        self.file_name_generator.procno_of_topspin_experiment = str(procno)
-
-    @property
-    def expno_of_topspin_experiment(self):
-        return self.file_name_generator.expno_of_topspin_experiment
-
-    @expno_of_topspin_experiment.setter
-    def expno_of_topspin_experiment(self, expno):
-        if type(expno) != list:
-            sys.exit("Wrong format. List expected.")
-        if len(expno) == 2:
-            self.file_name_generator.expno_of_topspin_experiment = np.arange(
-                expno[0], expno[1] + 1
-            )
-        else:
-            self.file_name_generator.expno_of_topspin_experiment = expno
-
-    def start_buildup_fit_from_topspin_export(self):
+    def start_buildup_fit_from_topspin_export(self):  # TODO Test
         print(
             f"Start loading data from topspin: {self.path_to_topspin_experiment}"
         )
@@ -84,15 +29,15 @@ class Dataset:
     def start_buildup_from_intensitys(self):
         return
 
+    def _read_in_data_from_topspin(self):  # TODO test
+        self._setup_correct_topspin_importer()
+        self.importer.import_topspin_data()
+
     def _setup_correct_topspin_importer(self):
-        if len(self.expno_of_topspin_experiment) == 1:
+        if len(self.props.expno) == 1:
             self.importer = io.Pseudo2DImporter(self)
         else:
             self.importer = io.ScreamImporter(self)
-
-    def _read_in_data_from_topspin(self):
-        self._setup_correct_topspin_importer()
-        self.importer.import_topspin_data()
 
     def _print(self):
         exporter = io.Exporter(self)
@@ -111,8 +56,7 @@ class Dataset:
             self._perform_global_spectrum_fit()
 
     def _buidup_fit_global(self):
-        for type in self.buildup_type:
-
+        for type in self.props.buildup_types:
             if type == "biexponential":
                 buildup_fitter = utils.BiexpFitter(self)
                 buildup_fitter.perform_fit()
@@ -254,47 +198,3 @@ class Peak:
         index = np.where(self.spectrum.y_axis == y_val)[0]
         x_val = self.spectrum.x_axis[index]
         self.hight = {"index": index[0], "x_val": x_val[0], "y_val": y_val}
-
-
-class FileNameHandler:
-
-    def __init__(self):
-        self.path_to_topspin_experiment = None
-        self.procno_of_topspin_experiment = None
-        self.expno_of_topspin_experiment = None
-        self.output_file_name = None
-
-    def generate_output_csv_file_name(self):
-        return self.output_file_name + "_as_exported.csv"
-
-    def generate_txt_fitting_report(self, peak_label, fitting_type):
-        return f"{self.output_file_name}_{peak_label}_{fitting_type}.txt"
-
-    def generate_spectrum_fit_pdf(self, fitting_type, tbup):
-        output_folder = f"{self.output_file_name}_fit_per_spectrum/"
-        os.makedirs(output_folder, exist_ok=True)
-        return f"{output_folder}Delay_time_{tbup}" f"_{fitting_type}.pdf"
-
-    def generate_all_spectrum_fit_pdf(self, fitting_type):
-        return (
-            f"{self.output_file_name}_all_spectra_simulated"
-            f"_{fitting_type}.pdf"
-        )
-
-    def generate_output_pdf_file_name(self):
-        return f"{self.output_file_name}_as_exported.pdf"
-
-    def get_prefit_pdf(self):
-        return f"{self.output_file_name}_prefit.pdf"
-
-    def get_prefit_txt(self):
-        return f"{self.output_file_name}_prefit.txt"
-
-    def generate_buildup_pdf(self, fitting_type):
-        return f"{self.output_file_name}_buildup_{fitting_type}.pdf"
-
-    def generate_buildup_txt(self, fitting_type):
-        return f"{self.output_file_name}_buildup_{fitting_type}.txt"
-
-    def generate_summary_txt(self):
-        return f"{self.output_file_name}_summary.csv"

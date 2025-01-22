@@ -39,8 +39,15 @@ class Properties:
         plot_prefit: bool = True,
         path_to_experiment: str = os.path.dirname(os.path.abspath(__file__)),
         procno: int = 103,
-        expno: list = None,
+        expno: list = [1],
     ):
+        self._path_to_experiment = None
+        self.path_to_experiment = path_to_experiment
+        self._procno = None
+        self.procno = procno
+        self._expno = None
+        self.expno = expno
+
         self._prefit = None
         self.prefit = prefit
         self._buildup_types = None
@@ -49,12 +56,6 @@ class Properties:
         self.spectrum_for_prefit = spectrum_for_prefit
         self._spectrum_fit_type = None
         self.spectrum_fit_type = spectrum_fit_type
-        self._path_to_experiment = None
-        self.path_to_experiment = path_to_experiment
-        self._procno = None
-        self.procno = procno
-        self._expno = None
-        self.expno = expno
 
     @property
     def expno(self) -> list:
@@ -66,7 +67,11 @@ class Properties:
             raise TypeError(
                 f"Expected 'expno' to be of type 'list', got {type(value).__name__}."
             )
-        self._expno = value
+        if not all(isinstance(item, int) for item in value):
+            raise ValueError(
+                "All elements in the 'expno' list must be of type 'int'."
+            )
+        self._expno = [str(item) for item in value]
 
     @property
     def procno(self) -> int:

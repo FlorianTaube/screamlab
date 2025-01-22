@@ -264,16 +264,16 @@ class TestProperties(unittest.TestCase):
 
     def test_expno_default_value(self):
         props = Properties()
-        self.assertListEqual(props.expno, [])
+        self.assertListEqual(props.expno, ["1"])
 
     def test_expno_initial_value(self):
         props = Properties(expno=[200, 50])
-        self.assertListEqual(props.expno, [200, 50])
+        self.assertListEqual(props.expno, ["200", "50"])
 
     def test_expno_set_valid_value(self):
         props = Properties()
         props.expno = [111]
-        self.assertListEqual(props.expno, [111])
+        self.assertListEqual(props.expno, ["111"])
 
     def test_expno_set_invalid_value(self):
         props = Properties()
@@ -284,11 +284,20 @@ class TestProperties(unittest.TestCase):
             "Expected 'expno' to be of type 'list', got str.",
         )
 
+    def test_expno_set_not_int_value(self):
+        props = Properties()
+        with self.assertRaises(ValueError) as context:
+            props.expno = [1, "12"]
+        self.assertEqual(
+            str(context.exception),
+            "All elements in the 'expno' list must be of type 'int'.",
+        )
+
     def test_expno_change_value(self):
         props = Properties(expno=[111])
         props.expno = [111, 112]
-        self.assertListEqual(props.expno, [111, 112])
+        self.assertListEqual(props.expno, ["111", "112"])
 
     def test_expno_private_variable(self):
         props = Properties(expno=[2])
-        self.assertListEqual(props._expno, [2])
+        self.assertListEqual(props._expno, ["2"])
