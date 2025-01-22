@@ -39,7 +39,7 @@ class Properties:
         plot_prefit: bool = True,
         path_to_experiment: str = os.path.dirname(os.path.abspath(__file__)),
         procno: int = 103,
-        expno: list = None,
+        expno: list = [],
     ):
         self._prefit = None
         self.prefit = prefit
