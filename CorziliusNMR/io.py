@@ -52,28 +52,32 @@ class TopspinImporter:
     def _generate_path_to_experiment(self):
         pass
 
+    def _add_spectrum(self):
+        self._dataset.spectra.append(CorziliusNMR.dataset.Spectra())
+
 
 class ScreamImporter(TopspinImporter):
 
     def __init__(self, dataset):
         super().__init__(dataset)
 
-    def import_topspin_data(self):
-        for expno_nr, expno in enumerate(
-            self._dataset.file_name_generator.expno_of_topspin_experiment
-        ):
-            file = self._generate_filepath(self._dataset.props)
-
-            file = os.path.join(path, str(expno), "pdata", str(procno))
-            self._dataset.spectra.append(CorziliusNMR.dataset.Spectra(file))
+    def import_topspin_data(self):  # TODO Test
+        files = self._generate_path_to_experiment()
+        for file in files:
+            self._add_spectrum()
             self._nmr_data = self._data_provider.getNMRData(file)
             self._set_values()
+
+    def _add_spectrum(self):
+        super()._add_spectrum()
 
     def _set_values(self):
         super()._set_values()
 
     def _set_number_of_scans(self):
-        self._dataset.spectra[-1].NS = int(self._nmr_data.getPar("NS"))
+        self._dataset.spectra[-1].number_of_scans = int(
+            self._nmr_data.getPar("NS")
+        )
 
     def _set_buildup_time(self):
         self._dataset.spectra[-1].tbup = (
@@ -149,12 +153,12 @@ class ScreamImporter(TopspinImporter):
         )
 
     def _generate_path_to_experiment(self):
-        pathlist = []
-        for expno in self._dataset.props.expno:
-            pathlist.append(
-                rf"{self._dataset.props.path_to_experiment}/{expno}/pdata/{self._dataset.props.procno}"
-            )
-        return pathlist
+        base_path = self._dataset.props.path_to_experiment
+        procno = self._dataset.props.procno
+        return [
+            f"{base_path}/{expno}/pdata/{procno}".replace("\\", "/")
+            for expno in self._dataset.props.expno
+        ]
 
 
 class Pseudo2DImporter(TopspinImporter):

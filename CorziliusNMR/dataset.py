@@ -7,7 +7,7 @@ class Dataset:
     def __init__(self):
         self.importer = None
         self.props = settings.Properties()
-        self.spectra = None
+        self.spectra = []
         self.fitter = None
 
     def start_buildup_fit_from_topspin_export(self):  # TODO Test
@@ -91,25 +91,12 @@ class Dataset:
 
 class Spectra:
 
-    def __init__(self, file):
-        self.file = file
-        self.NS = ""
-        self.tbup = ""
+    def __init__(self):
+        self.number_of_scans = None
+        self.tdel = None
         self.x_axis = None
-        self.y_axis = []
-        self.peaks = []
-
-    def add_peak(self, peak_dict):
-        try:
-            for peak in sorted(
-                peak_dict.keys(), key=lambda x: int(x), reverse=True
-            ):
-                self.peaks.append(Peak(self, peak, peak_dict))
-        except:
-            print(
-                "ERROR: No peaks given. Try dataset.peak_dict = dict()"
-            )  # TODO
-            pass
+        self.y_axis = None
+        self.peaks = None
 
 
 class Peak:

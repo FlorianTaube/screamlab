@@ -46,3 +46,23 @@ class TestDataset(unittest.TestCase):
         # TODO add some real parameters or fake spectrum
         self.ds._read_in_data_from_topspin
         self.assertIsNotNone(self.ds.spectra)
+
+    def test_spectra_init_number_of_scans_is_None(self):
+        spectrum = CorziliusNMR.dataset.Spectra()
+        self.assertIsNone(spectrum.number_of_scans)
+
+    def test_spectra_init_tdel_None(self):
+        spectrum = CorziliusNMR.dataset.Spectra()
+        self.assertIsNone(spectrum.tdel)
+
+    def test_spectra_init_x_axis_is_None(self):
+        spectrum = CorziliusNMR.dataset.Spectra()
+        self.assertIsNone(spectrum.x_axis)
+
+    def test_spectra_init_y_axis_is_None(self):
+        spectrum = CorziliusNMR.dataset.Spectra()
+        self.assertIsNone(spectrum.y_axis)
+
+    def test_spectra_init_peaks_is_None(self):
+        spectrum = CorziliusNMR.dataset.Spectra()
+        self.assertIsNone(spectrum.peaks)

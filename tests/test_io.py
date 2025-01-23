@@ -12,6 +12,18 @@ class TestDataset(unittest.TestCase):
         self.scream_importer = io.ScreamImporter(dataset.Dataset())
         self.pseudo_importer = io.Pseudo2DImporter(dataset.Dataset())
 
+    def set_up_one_real_spectrum(self):
+        # TODO Generate fake spectrum
+        self.scream_importer._nmr_data = (
+            self.scream_importer._data_provider.getNMRData(
+                "../tests/SCREAM_Test_Files/1/pdata/103"
+            )
+        )
+        self.scream_importer._dataset.spectra.append(
+            CorziliusNMR.dataset.Spectra()
+        )
+        self.scream_importer._set_number_of_scans()
+
     def test_scream_init_set_dataset(self):
         self.assertEqual(
             type(self.scream_importer._dataset), CorziliusNMR.dataset.Dataset
@@ -38,13 +50,37 @@ class TestDataset(unittest.TestCase):
         self.assertListEqual(
             pathlist,
             [
-                rf"C:\\Users\\Florian Taube\\Documents\\Programmierung\\CorziliusNMR\\CorziliusNMR/2/pdata/103",
-                rf"C:\\Users\\Florian Taube\\Documents\\Programmierung\\CorziliusNMR\\CorziliusNMR/3/pdata/103'",
+                "C:/Users/Florian Taube/Documents/Programmierung/CorziliusNMR/CorziliusNMR/2/pdata/103",
+                "C:/Users/Florian Taube/Documents/Programmierung/CorziliusNMR/CorziliusNMR/3/pdata/103",
             ],
         )
 
+    def test_add_one_spectrum(self):
+        self.scream_importer._add_spectrum()
+        self.assertEqual(len(self.scream_importer._dataset.spectra), 1)
+
+    def test_add_spectrum_is_list(self):
+        self.scream_importer._add_spectrum()
+        self.assertEqual(type(self.scream_importer._dataset.spectra), list)
+
+    def test_add_spectrum_is_list_of_Spectra(self):
+        self.scream_importer._add_spectrum()
+        self.assertEqual(
+            type(self.scream_importer._dataset.spectra[0]),
+            CorziliusNMR.dataset.Spectra,
+        )
+
+    def test_set_number_of_scans(self):
+        self.set_up_one_real_spectrum()
+        self.assertEqual(
+            self.scream_importer._dataset.spectra[-1].number_of_scans, 2
+        )
+
+    def test_set_values(self):
+        pass  # TODO
+
     def test_scream_import_topspin_data(self):
-        pass
+        pass  # TODO
 
     def test_import_topspin_data(self):
         self.fake_input()
