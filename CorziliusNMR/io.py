@@ -23,12 +23,11 @@ class TopspinImporter:
         self._data_provider = self._top.getDataProvider()
         self._current_path_to_exp = None
         self._nmr_data = None
-        self._len = 0
 
     def import_topspin_data(self):
         pass
 
-    def _set_values(self):
+    def _set_values(self):  # TODO Test
         self._set_number_of_scans()
         self._set_buildup_time()
         self._set_x_data()
@@ -50,6 +49,9 @@ class TopspinImporter:
     def _normalize_y_values_to_number_of_scans(self):
         pass
 
+    def _generate_path_to_experiment(self):
+        pass
+
 
 class ScreamImporter(TopspinImporter):
 
@@ -57,13 +59,11 @@ class ScreamImporter(TopspinImporter):
         super().__init__(dataset)
 
     def import_topspin_data(self):
-        path = self._dataset.file_name_generator.path_to_topspin_experiment
-        procno = (
-            self._dataset.file_name_generator.procno_of_topspin_experiment
-        )
         for expno_nr, expno in enumerate(
             self._dataset.file_name_generator.expno_of_topspin_experiment
         ):
+            file = self._generate_filepath(self._dataset.props)
+
             file = os.path.join(path, str(expno), "pdata", str(procno))
             self._dataset.spectra.append(CorziliusNMR.dataset.Spectra(file))
             self._nmr_data = self._data_provider.getNMRData(file)
@@ -147,6 +147,14 @@ class ScreamImporter(TopspinImporter):
         self._dataset.spectra[-1].y_axis = np.divide(
             self._dataset.spectra[-1].y_axis, self._dataset.spectra[-1].NS
         )
+
+    def _generate_path_to_experiment(self):
+        pathlist = []
+        for expno in self._dataset.props.expno:
+            pathlist.append(
+                rf"{self._dataset.props.path_to_experiment}/{expno}/pdata/{self._dataset.props.procno}"
+            )
+        return pathlist
 
 
 class Pseudo2DImporter(TopspinImporter):
