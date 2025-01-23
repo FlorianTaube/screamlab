@@ -40,6 +40,8 @@ class Properties:
         path_to_experiment: str = os.path.dirname(os.path.abspath(__file__)),
         procno: int = 103,
         expno: list = [1],
+        loop20: str = "L 20",
+        delay20: str = "D 20",
     ):
         self._path_to_experiment = None
         self.path_to_experiment = path_to_experiment
@@ -47,7 +49,6 @@ class Properties:
         self.procno = procno
         self._expno = None
         self.expno = expno
-
         self._prefit = None
         self.prefit = prefit
         self._buildup_types = None
@@ -56,6 +57,28 @@ class Properties:
         self.spectrum_for_prefit = spectrum_for_prefit
         self._spectrum_fit_type = None
         self.spectrum_fit_type = spectrum_fit_type
+        self._loop20 = None  # TODO Test
+        self.loop20 = loop20  # TODO Test
+        self._delay20 = None  # TODO TEst
+        self.delay20 = delay20  # TODO TEst
+
+    @property
+    def delay20(self) -> str:
+        return self._delay20
+
+    @delay20.setter
+    def delay20(self, value: Any):
+        # TODO Write controls
+        self._delay20 = value
+
+    @property
+    def loop20(self) -> str:
+        return self._loop20
+
+    @loop20.setter
+    def loop20(self, value: Any):
+        # TODO Write controls
+        self._loop20 = value
 
     @property
     def expno(self) -> list:
@@ -71,6 +94,10 @@ class Properties:
             raise ValueError(
                 "All elements in the 'expno' list must be of type 'int'."
             )
+        if len(value) == 2:
+            value = list(
+                range(value[0], value[-1] + 1)
+            )  # TODO Test schreiben
         self._expno = [str(item) for item in value]
 
     @property

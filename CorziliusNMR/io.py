@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from collections import defaultdict
 import os
+import re
 
 from tabulate import tabulate
 
@@ -27,11 +28,11 @@ class TopspinImporter:
     def import_topspin_data(self):
         pass
 
-    def _set_values(self):  # TODO Test
+    def _set_values(self):
         self._set_number_of_scans()
         self._set_buildup_time()
         self._set_x_data()
-        self._set_y_axis()
+        self._set_y_data()
         self._normalize_y_values_to_number_of_scans()
 
     def _set_number_of_scans(self):
@@ -54,6 +55,19 @@ class TopspinImporter:
 
     def _add_spectrum(self):
         self._dataset.spectra.append(CorziliusNMR.dataset.Spectra())
+
+    def _get_physical_range(self):
+        return self._nmr_data.getSpecDataPoints()["physicalRanges"][0]
+
+    def _get_num_of_datapoints(self):
+        return len(self._nmr_data.getSpecDataPoints()["dataPoints"])
+
+    def _calc_x_axis(self, physical_range, number_of_datapoints):
+        return np.linspace(
+            float(physical_range["start"]),
+            float(physical_range["end"]),
+            number_of_datapoints,
+        )
 
 
 class ScreamImporter(TopspinImporter):
@@ -80,85 +94,45 @@ class ScreamImporter(TopspinImporter):
         )
 
     def _set_buildup_time(self):
-        self._dataset.spectra[-1].tbup = (
-            int(self._nmr_data.getPar("L 20")) / 4
-        )
+        loop = float(self._nmr_data.getPar(self._dataset.props.loop20))
+        delay = float(self._nmr_data.getPar(self._dataset.props.delay20))
+        self._dataset.spectra[-1].tdel = loop * delay
 
     def _set_x_data(self):
-        _physicalRange = self._nmr_data.getSpecDataPoints()["physicalRanges"][
-            0
-        ]
-        _number_of_datapoints = len(
-            self._nmr_data.getSpecDataPoints()["dataPoints"]
+        physical_range = self._get_physical_range()
+        number_of_datapoints = self._get_num_of_datapoints()
+        self._dataset.spectra[-1].x_axis = self._calc_x_axis(
+            physical_range, number_of_datapoints
         )
-        axis = np.linspace(
-            float(_physicalRange["start"]),
-            float(_physicalRange["end"]),
-            _number_of_datapoints,
-        )
-        self._dataset.spectra[-1].x_axis = utils.generate_subspectrum_2(
-            axis,
-            axis,
-            max(list(map(int, self._dataset.peak_dict.keys()))),
-            min(list(map(int, self._dataset.peak_dict.keys()))),
-            50,
-        )
-        if self._len == 0:
-            self._len = len(self._dataset.spectra[-1].x_axis)
-        else:
-            if self._len > len(self._dataset.spectra[-1].x_axis):
-                diff = self._len - len(self._dataset.spectra[-1].x_axis)
-                count = 0
-                while count < diff:
-                    self._dataset.spectra[-1].x_axis = np.append(
-                        self._dataset.spectra[-1].x_axis, 0
-                    )
-                    count += 1
 
-    def _set_y_axis(self):
-        axis = self._nmr_data.getSpecDataPoints()["dataPoints"]
-        _physicalRange = self._nmr_data.getSpecDataPoints()["physicalRanges"][
-            0
+    def _set_y_data(self):
+        self._dataset.spectra[-1].y_axis = self._nmr_data.getSpecDataPoints()[
+            "dataPoints"
         ]
-        _number_of_datapoints = len(
-            self._nmr_data.getSpecDataPoints()["dataPoints"]
-        )
-        x_axis = np.linspace(
-            float(_physicalRange["start"]),
-            float(_physicalRange["end"]),
-            _number_of_datapoints,
-        )
-        self._dataset.spectra[-1].y_axis = utils.generate_subspectrum_2(
-            x_axis,
-            axis,
-            max(list(map(int, self._dataset.peak_dict.keys()))),
-            min(list(map(int, self._dataset.peak_dict.keys()))),
-            50,
-        )
-        if self._len == 0:
-            self._len = len(self._dataset.spectra[-1].y_axis)
-        else:
-            if self._len > len(self._dataset.spectra[-1].y_axis):
-                diff = self._len - len(self._dataset.spectra[-1].y_axis)
-                count = 0
-                while count < diff:
-                    self._dataset.spectra[-1].y_axis = np.append(
-                        self._dataset.spectra[-1].y_axis, 0
-                    )
-                    count += 1
 
     def _normalize_y_values_to_number_of_scans(self):
         self._dataset.spectra[-1].y_axis = np.divide(
-            self._dataset.spectra[-1].y_axis, self._dataset.spectra[-1].NS
+            self._dataset.spectra[-1].y_axis,
+            self._dataset.spectra[-1].number_of_scans,
         )
+
+    def _get_physical_range(self):
+        return super()._get_physical_range()
+
+    def _get_num_of_datapoints(self):
+        return super()._get_num_of_datapoints()
+
+    def _calc_x_axis(self, physical_range, number_of_datapoints):
+        return super()._calc_x_axis(physical_range, number_of_datapoints)
 
     def _generate_path_to_experiment(self):
         base_path = self._dataset.props.path_to_experiment
         procno = self._dataset.props.procno
-        return [
-            f"{base_path}/{expno}/pdata/{procno}".replace("\\", "/")
+        path_list = [
+            os.path.join(base_path, str(expno), "pdata", str(procno))
             for expno in self._dataset.props.expno
         ]
+        return path_list
 
 
 class Pseudo2DImporter(TopspinImporter):

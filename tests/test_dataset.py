@@ -17,7 +17,7 @@ class TestDataset(unittest.TestCase):
         )
 
     def test_dataset_init_has_none_type_spectra(self):
-        self.assertIsNone(self.ds.spectra)
+        self.assertListEqual(self.ds.spectra, [])
 
     def test_dataset_init_has_none_type_fitter(self):
         self.assertIsNone(self.ds.fitter)
@@ -66,3 +66,7 @@ class TestDataset(unittest.TestCase):
     def test_spectra_init_peaks_is_None(self):
         spectrum = CorziliusNMR.dataset.Spectra()
         self.assertIsNone(spectrum.peaks)
+
+    def test_peak_init(self):
+        peak = CorziliusNMR.dataset.Peaks()
+        self.assertListEqual(peak._peak_list, [])
