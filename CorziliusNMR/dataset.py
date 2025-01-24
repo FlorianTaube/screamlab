@@ -136,6 +136,51 @@ class Peak:
         self._line_broadening = None  # TODO
 
     @property
+    def line_broadening(self) -> str:
+        return self._line_broadening
+
+    @line_broadening.setter
+    def line_broadening(self, value):
+        allowed_values = ["sigma", "gamma"]
+        inner_allowed_values = ["min", "max"]
+        if not isinstance(value, dict):
+            raise TypeError(
+                f"'line_broadening' must be of type 'dict', but got {type(value)}."
+            )
+        if not all(key in allowed_values for key in value.keys()):
+            raise ValueError(
+                f"One or more keys in the dictionary are not in the allowed values: {allowed_values}!"
+            )
+        if not all(isinstance(values, dict) for values in value.values()):
+            raise TypeError(
+                f"Each value in the 'line_broadening' dictionary must be of type 'dict'."
+            )
+        for keys in value.keys():
+            if not all(
+                key in inner_allowed_values for key in value[keys].keys()
+            ):
+                raise ValueError(
+                    f"One or more keys in the dictionary are not in the allowed values: {inner_allowed_values}."
+                )
+        params = self._return_default_dict()
+        if self.fitting_type == "gauss":
+            params = {"sigma": params["sigma"]}
+        if self.fitting_type == "lorentz":
+            params = {"gamma": params["gamma"]}
+        for key in allowed_values:
+            if key in value:
+                for inner_key in inner_allowed_values:
+                    if inner_key in value[key]:
+                        if not isinstance(
+                            value[key][inner_key], (int, float)
+                        ):
+                            raise TypeError(
+                                f"Each value in dicts must be 'int' or 'float', but found {type(value[key][inner_key])}."
+                            )
+                        params[key][inner_key] = float(value[key][inner_key])
+        self._line_broadening = params
+
+    @property
     def peak_sign(self) -> str:
         return self._peak_sign
 
@@ -210,3 +255,9 @@ class Peak:
         if value == "":
             value = f"Peak_at_{int(self.peak_center)}_ppm"
         self._peak_label = value
+
+    def _return_default_dict(self):
+        return {
+            "sigma": {"min": 0, "max": 20},
+            "gamma": {"min": 0, "max": 20},
+        }

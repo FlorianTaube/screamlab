@@ -261,3 +261,111 @@ class TestDataset(unittest.TestCase):
         for peak_sign in self.ds.peak_list:
             peaks.append(peak_sign.peak_sign)
         self.assertListEqual(peaks, ["+", "-"])
+
+    def test_line_broadening_default_gauss(self):
+        self.peak.fitting_type = "gauss"
+        self.peak.line_broadening = dict()
+        self.assertDictEqual(
+            self.peak.line_broadening, {"sigma": {"min": 0, "max": 20}}
+        )
+
+    def test_line_broadening_default_lorentz(self):
+        self.peak.fitting_type = "lorentz"
+        self.peak.line_broadening = dict()
+        self.assertDictEqual(
+            self.peak.line_broadening, {"gamma": {"min": 0, "max": 20}}
+        )
+
+    def test_line_broadening_default_lorentz(self):
+        self.peak.fitting_type = "voigt"
+        self.peak.line_broadening = dict()
+        self.assertDictEqual(
+            self.peak.line_broadening,
+            {"sigma": {"min": 0, "max": 20}, "gamma": {"min": 0, "max": 20}},
+        )
+
+    def test_line_broadening_invalid_type(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.line_broadening = "12"
+        self.assertEqual(
+            str(context.exception),
+            "'line_broadening' must be of type 'dict', but got <class 'str'>.",
+        )
+
+    def test_line_broadening_allowed_keys(self):
+        with self.assertRaises(ValueError) as context:
+            self.peak.line_broadening = {"test": {"min": 0, "max": 20}}
+        self.assertEqual(
+            str(context.exception),
+            "One or more keys in the dictionary are not in the allowed values: ['sigma', 'gamma']!",
+        )
+
+    def test_line_broadening_dict_of_dicts(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.line_broadening = {"sigma": "min"}
+        self.assertEqual(
+            str(context.exception),
+            "Each value in the 'line_broadening' dictionary must be of type 'dict'.",
+        )
+
+    def test_line_broadening_allowed_keys_of_dict_of_dicts(self):
+        with self.assertRaises(ValueError) as context:
+            self.peak.line_broadening = {"sigma": {"min": 20, "invalid": 30}}
+        self.assertEqual(
+            str(context.exception),
+            "One or more keys in the dictionary are not in the allowed values: ['min', 'max'].",
+        )
+
+    def test_line_broadening_with_new_params_gauss(self):
+        self.peak.fitting_type = "gauss"
+        self.peak.line_broadening = {"sigma": {"min": 20, "max": 30}}
+        self.assertDictEqual(
+            self.peak.line_broadening, {"sigma": {"min": 20, "max": 30}}
+        )
+
+    def test_line_broadening_with_new_params_gauss(self):
+        self.peak.fitting_type = "lorentz"
+        self.peak.line_broadening = {"gamma": {"min": 20, "max": 30}}
+        self.assertDictEqual(
+            self.peak.line_broadening, {"gamma": {"min": 20, "max": 30}}
+        )
+
+    def test_line_broadening_with_new_params_voigt(self):
+        self.peak.fitting_type = "voigt"
+        self.peak.line_broadening = {"gamma": {"min": 20, "max": 30}}
+        self.assertDictEqual(
+            self.peak.line_broadening,
+            {"gamma": {"min": 20, "max": 30}, "sigma": {"max": 20, "min": 0}},
+        )
+
+    def test_line_broadening_with_new_params_and_wrong_input(self):
+        self.peak.fitting_type = "voigt"
+        with self.assertRaises(TypeError) as context:
+            self.peak.line_broadening = {"gamma": {"min": 20, "max": "20"}}
+        self.assertEqual(
+            str(context.exception),
+            "Each value in dicts must be 'int' or 'float', but found <class 'str'>.",
+        )
+
+    def test_line_broadening_with_new_params_voigt_private_variable(self):
+        self.peak.fitting_type = "voigt"
+        self.peak.line_broadening = {"gamma": {"min": 20, "max": 30}}
+        self.assertDictEqual(
+            self.peak._line_broadening,
+            {"gamma": {"min": 20, "max": 30}, "sigma": {"max": 20, "min": 0}},
+        )
+
+    def test_dataset_add_two_peaks_check_correct_signs(self):
+        # Next Test
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(14.1, line_broadening="-")
+        peaks = []
+        for peak_sign in self.ds.peak_list:
+            peaks.append(peak_sign.peak_sign)
+        self.assertListEqual(peaks, ["+", "-"])
+
+    def test_return_default_dict(self):
+        self.assertDictEqual(
+            self.peak._return_default_dict(),
+            {"sigma": {"min": 0, "max": 20}, "gamma": {"min": 0, "max": 20}},
+        )
