@@ -7,6 +7,7 @@ class TestDataset(unittest.TestCase):
 
     def setUp(self):
         self.ds = dataset.Dataset()
+        self.peak = dataset.Peak()
 
     def test_dataset_init_has_none_type_importer(self):
         self.assertIsNone(self.ds.importer)
@@ -67,6 +68,196 @@ class TestDataset(unittest.TestCase):
         spectrum = CorziliusNMR.dataset.Spectra()
         self.assertIsNone(spectrum.peaks)
 
-    def test_peak_init(self):
-        peak = CorziliusNMR.dataset.Peaks()
-        self.assertListEqual(peak._peak_list, [])
+    def test_ds_init_peak_list_is_empty_list(self):
+        self.assertListEqual(self.ds.peak_list, [])
+
+    def test_peak_init_center_is_none(self):
+        self.assertIsNone(self.peak._peak_center)
+
+    def test_peak_init_label_is_none(self):
+        self.assertIsNone(self.peak._peak_label)
+
+    def test_peak_init_fitting_group_is_none(self):
+        self.assertIsNone(self.peak._fitting_group)
+
+    def test_peak_init_fitting_type_is_none(self):
+        self.assertIsNone(self.peak._fitting_type)
+
+    def test_peak_init_fitting_type_is_none(self):
+        self.assertIsNone(self.peak._fitting_type)
+
+    def test_peak_init_peak_sing_is_none(self):
+        self.assertIsNone(self.peak._peak_sign)
+
+    def test_peak_init_line_broadening_is_none(self):
+        self.assertIsNone(self.peak._line_broadening)
+
+    def test_peak_center_set_to_int(self):
+        self.peak.peak_center = 1
+        self.assertEqual(self.peak.peak_center, 1.0)
+
+    def test_peak_center_set_to_float(self):
+        self.peak.peak_center = 1.0
+        self.assertEqual(self.peak.peak_center, 1.0)
+
+    def test_peak_center_set_to_invalid_type(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.peak_center = "str"
+        self.assertEqual(
+            str(context.exception),
+            "'peak_center' must be of type 'int' or 'float', but got <class 'str'>.",
+        )
+
+    def test_peak_center_private_variable(self):
+        self.peak.peak_center = 1
+        self.assertEqual(self.peak._peak_center, 1.0)
+
+    def test_dataset_add_one_peak(self):
+        self.ds.add_peak(12)
+        self.assertEqual(len(self.ds.peak_list), 1)
+
+    def test_dataset_add_two_peaks(self):
+        self.ds.add_peak(12)
+        self.ds.add_peak(13)
+        self.assertEqual(len(self.ds.peak_list), 2)
+
+    def test_dataset_add_one_peak_check_correct_peak_center(self):
+        self.ds.add_peak(12)
+        self.assertEqual(self.ds.peak_list[0].peak_center, 12.0)
+
+    def test_dataset_add_two_peaks_check_correct_peak_center(self):
+        self.ds.add_peak(12)
+        self.ds.add_peak(14.1)
+        peaks = []
+        for peak_center in self.ds.peak_list:
+            peaks.append(peak_center.peak_center)
+        self.assertListEqual(peaks, [12.0, 14.1])
+
+    def test_peak_label_default(self):
+        self.peak.peak_center = 1
+        self.peak.peak_label = ""
+        self.assertEqual(self.peak.peak_label, "Peak_at_1_ppm")
+
+    def test_peak_label_own_label(self):
+        self.peak.peak_label = "C_alpha"
+        self.assertEqual(self.peak.peak_label, "C_alpha")
+
+    def test_peak_label_set_to_invalid_type(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.peak_label = ["invalid"]
+        self.assertEqual(
+            str(context.exception),
+            "'peak_label' must be of type 'str', but got <class 'list'>.",
+        )
+
+    def test_peak_label_private_variable(self):
+        self.peak.peak_label = "C_alpha"
+        self.assertEqual(self.peak._peak_label, "C_alpha")
+
+    def test_dataset_add_two_peaks_check_correct_peak_labels(self):
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(14.1, peak_label="C_alpha")
+        peaks = []
+        for peak_label in self.ds.peak_list:
+            peaks.append(peak_label.peak_label)
+        self.assertListEqual(peaks, ["Peak_at_12_ppm", "C_alpha"])
+
+    def test_fitting_group_default(self):
+        self.peak.fitting_group = 1
+        self.assertEqual(self.peak.fitting_group, 1)
+
+    def test_fitting_group_other_than_default(self):
+        self.peak.fitting_group = 2
+        self.assertEqual(self.peak.fitting_group, 2)
+
+    def test_fitting_group_invalid(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.fitting_group = "str"
+        self.assertEqual(
+            str(context.exception),
+            "'fitting_group' must be of type 'int', but got <class 'str'>.",
+        )
+
+    def test_fitting_group_private_varible(self):
+        self.peak.fitting_group = 2
+        self.assertEqual(self.peak._fitting_group, 2)
+
+    def test_dataset_add_two_peaks_check_correct_fitting_groups(self):
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(14.1, fitting_group=3)
+        peaks = []
+        for fitting_group in self.ds.peak_list:
+            peaks.append(fitting_group.fitting_group)
+        self.assertListEqual(peaks, [1, 3])
+
+    def test_fitting_type_default(self):
+        self.peak.fitting_type = "voigt"
+        self.assertEqual(self.peak.fitting_type, "voigt")
+
+    def test_fitting_type_gauss(self):
+        self.peak.fitting_type = "gauss"
+        self.assertEqual(self.peak.fitting_type, "gauss")
+
+    def test_fitting_type(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.fitting_type = 12
+        self.assertEqual(
+            str(context.exception),
+            "'fitting_type' must be of type 'str', but got <class 'int'>.",
+        )
+
+    def test_fitting_type_isinstance_of_gauss_lorentz_voigt(self):
+        with self.assertRaises(ValueError) as context:
+            self.peak.fitting_type = "weibull"
+        self.assertEqual(
+            str(context.exception),
+            "All elements in 'fitting_type' must be one of ['gauss', 'lorentz', 'voigt'].",
+        )
+
+    def test_fitting_type_private_variable(self):
+        self.peak.fitting_type = "gauss"
+        self.assertEqual(self.peak._fitting_type, "gauss")
+
+    def test_dataset_add_two_peaks_check_correct_fitting_types(self):
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(14.1, fitting_type="gauss")
+        peaks = []
+        for fitting_type in self.ds.peak_list:
+            peaks.append(fitting_type.fitting_type)
+        self.assertListEqual(peaks, ["voigt", "gauss"])
+
+    def test_peak_sign_plus(self):
+        self.peak.peak_sign = "+"
+        self.assertEqual(self.peak.peak_sign, "+")
+
+    def test_peak_sign_minus(self):
+        self.peak.peak_sign = "-"
+        self.assertEqual(self.peak.peak_sign, "-")
+
+    def test_peak_sign_invalid_type(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.peak_sign = 12
+        self.assertEqual(
+            str(context.exception),
+            "'peak_sign' must be of type 'str', but got <class 'int'>.",
+        )
+
+    def test_peak_sign_invalid_value(self):
+        with self.assertRaises(ValueError) as context:
+            self.peak.peak_sign = "12"
+        self.assertEqual(
+            str(context.exception),
+            "All elements in 'peak_sign' must be one of ['+', '-'].",
+        )
+
+    def test_peak_sign_private_variable(self):
+        self.peak.peak_sign = "-"
+        self.assertEqual(self.peak._peak_sign, "-")
+
+    def test_dataset_add_two_peaks_check_correct_signs(self):
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(14.1, peak_sign="-")
+        peaks = []
+        for peak_sign in self.ds.peak_list:
+            peaks.append(peak_sign.peak_sign)
+        self.assertListEqual(peaks, ["+", "-"])
