@@ -1,271 +1,59 @@
-import sys
-
-import lmfit
-import numpy as np
-from collections import defaultdict
 from scipy.special import wofz
-import matplotlib.pyplot as plt
-from pyDOE2 import lhs
 
 
 class Fitter:
 
     def __init__(self, dataset):
         self.dataset = dataset
-        self.model = None
-        self.result = None
-
-    def set_model(self):
-        pass
-
-    def start_prefit(self):
-        pass
 
     def fit(self):
+        pass
+
+    def _start_prefit(self):
+        x_axis, y_axis = self._get_axis()
+        model = self._setup_model()
+        params = self._setup_params()
+        self._perform_fit()
+
+    def _get_axis(self):
+        spec_for_prefit = self.dataset.props.spectrum_for_prefit
+        return (
+            self.dataset.spectra[spec_for_prefit].x_axis,
+            self.dataset.spectra[spec_for_prefit].y_axis,
+        )
+
+    def _setup_model(self):
+        pass
+
+    def _setup_params(self):
+        pass
+
+    def _perform_fit(self):
         pass
 
 
 class GlobalSpectrumFitter(Fitter):
     def __init__(self, dataset):
         super().__init__(dataset)
-        self.lineshapes = defaultdict(list)
-
-    def start_prefit(self):
-        # Extract bounds and initial values from parameters
-        param_names = []
-        param_bounds = []
-        for peak in self.dataset.spectra[
-            self.dataset._spectrum_number_for_prefit
-        ].peaks:
-            if peak.fitting_model == "voigt":
-                tmp_lineshape = Voigt(
-                    self.dataset.spectra[
-                        self.dataset._spectrum_number_for_prefit
-                    ],
-                    peak,
-                )
-            elif peak.fitting_model == "lorentz":
-                tmp_lineshape = Lorentz(
-                    self.dataset.spectra[
-                        self.dataset._spectrum_number_for_prefit
-                    ],
-                    peak,
-                )
-            tmp_lineshape.set_init_params()
-            self.lineshapes["prefit"].append(tmp_lineshape)
-
-        params = lmfit.Parameters()
-        for fit_peak in self.lineshapes["prefit"]:
-            for param_name, param_attrs in fit_peak.params.items():
-                param_name = param_name.replace(".", "_")
-                params.add(param_name, **param_attrs)
-                # Collect parameter bounds for LHS
-                if "min" in param_attrs and "max" in param_attrs:
-                    param_names.append(param_name)
-                    param_bounds.append(
-                        (param_attrs["min"], param_attrs["max"])
-                    )
-        n_samples = 10
-        lhs_samples = lhs(len(param_names), samples=n_samples)
-        sampled_params = []
-        for sample in lhs_samples:
-            scaled_sample = []
-            for i, (low, high) in enumerate(param_bounds):
-                scaled_sample.append(low + sample[i] * (high - low))
-            sampled_params.append(scaled_sample)
-        results = []
-        best_result = None
-        best_chisquared = np.inf
-        for sample_nr, sample in enumerate(sampled_params):
-            print(f"{sample_nr+1}/{n_samples}")
-            for i, value in enumerate(sample):
-                params[param_names[i]].value = value
-
-            result = lmfit.minimize(
-                prefit_objective, params, args=(self.lineshapes["prefit"],)
-            )
-
-            print(f"Number of function evaluations: {result.nfev}")
-            if result.chisqr < best_chisquared:
-                best_result = result
-                best_chisquared = result.chisqr
-                print(best_chisquared)
-
-        bestfit = np.zeros(
-            len(
-                self.dataset.spectra[
-                    self.dataset._spectrum_number_for_prefit
-                ].y_axis
-            )
-        )
-        sim_params = []
-        for key_nr, key in enumerate(best_result.params):
-            sim_params.append(best_result.params[key].value)
-            if (key_nr + 1) % 4 == 0:
-                bestfit = bestfit + voigt_profile(
-                    self.dataset.spectra[
-                        self.dataset._spectrum_number_for_prefit
-                    ].x_axis,
-                    sim_params[1],
-                    sim_params[2],
-                    sim_params[3],
-                    sim_params[0],
-                )
-                plt.plot(
-                    self.dataset.spectra[
-                        self.dataset._spectrum_number_for_prefit
-                    ].x_axis,
-                    voigt_profile(
-                        self.dataset.spectra[
-                            self.dataset._spectrum_number_for_prefit
-                        ].x_axis,
-                        sim_params[1],
-                        sim_params[2],
-                        sim_params[3],
-                        sim_params[0],
-                    ),
-                    "b",
-                )
-                sim_params = []
-        plt.plot(
-            self.dataset.spectra[
-                self.dataset._spectrum_number_for_prefit
-            ].x_axis,
-            self.dataset.spectra[
-                self.dataset._spectrum_number_for_prefit
-            ].y_axis,
-        )
-        plt.plot(
-            self.dataset.spectra[
-                self.dataset._spectrum_number_for_prefit
-            ].x_axis,
-            bestfit,
-            "r:",
-            alpha=0.6,
-        )
-        if self.dataset._print_prefit:
-            plt.savefig(self.dataset.file_name_generator.get_prefit_pdf())
-            file = self.dataset.file_name_generator.get_prefit_txt()
-            with open(file, "w") as txt_file:
-                txt_file.write(lmfit.fit_report(best_result))
-        plt.close()
-        for peak_nr, peak in enumerate(
-            self.dataset.spectra[
-                self.dataset._spectrum_number_for_prefit
-            ].peaks
-        ):
-            horst = self.dataset.spectra[-1].peaks[peak_nr].peak_label
-            self.dataset.spectra[-1].peaks[peak_nr].prefit_dict = {
-                f"{horst}_amplitude": (
-                    dict(value=200, min=0, max=1e8)
-                    if peak.sign == "+"
-                    else dict(value=-200, min=-1e8, max=0)
-                ),
-                f"{horst}_center": dict(
-                    value=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_center"
-                    ].value,
-                    min=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_center"
-                    ].value
-                    - 0.1,
-                    max=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_center"
-                    ].value
-                    + 0.1,
-                ),
-                f"{horst}_sigma": dict(
-                    value=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_sigma"
-                    ].value,
-                    min=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_sigma"
-                    ].value
-                    - best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_sigma"
-                    ].value
-                    * 0.05,
-                    max=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_sigma"
-                    ].value
-                    + best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_sigma"
-                    ].value
-                    * 0.05,
-                ),
-                f"{horst}_gamma": dict(
-                    value=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_gamma"
-                    ].value,
-                    min=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_gamma"
-                    ].value
-                    - best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_gamma"
-                    ].value
-                    * 0.05,
-                    max=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_gamma"
-                    ].value
-                    + best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_gamma"
-                    ].value
-                    * 0.05,
-                ),
-            }
-        self.lineshapes = defaultdict(list)
-
-    def set_model(self):
-        for spectrum in self.dataset.spectra:
-            for peak in spectrum.peaks:
-                if peak.fitting_model == "voigt":
-                    tmp_lineshape = Voigt(spectrum, peak)
-                elif peak.fitting_model == "gauss":
-                    tmp_lineshape = Gauss(spectrum, peak)
-                elif peak.fitting_model == "lorentz":
-                    tmp_lineshape = Lorentz(spectrum, peak)
-                if peak.prefit_dict == None:
-                    tmp_lineshape.set_init_params()
-                else:
-                    tmp_lineshape.params = peak.prefit_dict
-                self.lineshapes[peak.fitting_group].append(tmp_lineshape)
 
     def fit(self):
-        for keys in self.lineshapes:
-            params = lmfit.Parameters()
-            for fit_peak in self.lineshapes[keys]:
-                for param_name, param_attrs in fit_peak.params.items():
-                    param_name = param_name.replace(".", "_")
-                    params.add(param_name, **param_attrs)
-            result = ""
-            for nr, irgendwas in enumerate(
-                reversed(params)
-            ):  # TODO Make Nicer
-                if nr == 0:
-                    parts = irgendwas.split("_")
-                    result = "_".join(parts[3:7])
-                elif result not in irgendwas:
-                    pass
-                    if "sigma" in irgendwas:
-                        tmp1 = irgendwas.split("_")
-                        tmp2 = "_".join(tmp1[0:3])
-                        tmp = f"{tmp2}_{result}_sigma"
-                        params[irgendwas].expr = tmp
-                    elif "gamma" in irgendwas:
-                        tmp1 = irgendwas.split("_")
-                        tmp2 = "_".join(tmp1[0:3])
-                        tmp = f"{tmp2}_{result}_gamma"
-                        params[irgendwas].expr = tmp
-                    elif "center" in irgendwas:
-                        tmp1 = irgendwas.split("_")
-                        tmp2 = "_".join(tmp1[0:3])
-                        tmp = f"{tmp2}_{result}_center"
-                        params[irgendwas].expr = tmp
-            self.result = lmfit.minimize(
-                peak_objective, params, args=(self.lineshapes[keys],)
-            )
-            for voigt in self.lineshapes[keys]:
-                voigt.sim_spectrum(self.result, "global")
+        if self.dataset.props.prefit:
+            self._start_prefit()
+
+    def _start_prefit(self):
+        super()._start_prefit()
+
+    def _get_axis(self):
+        return super()._get_axis()
+
+    def _setup_model(self):
+        return super()._setup_model()
+
+    def _setup_params(self):
+        return super()._setup_params()
+
+    def _perform_fit(self):
+        super()._perform_fit()
 
 
 # TODO add rest of module to docu

@@ -289,7 +289,7 @@ class TestDataset(unittest.TestCase):
             self.peak.line_broadening = "12"
         self.assertEqual(
             str(context.exception),
-            "'line_broadening' must be of type 'dict', but got <class 'str'>.",
+            "'line_broadening' must be a 'dict', but got <class 'str'>.",
         )
 
     def test_line_broadening_allowed_keys(self):
@@ -297,7 +297,7 @@ class TestDataset(unittest.TestCase):
             self.peak.line_broadening = {"test": {"min": 0, "max": 20}}
         self.assertEqual(
             str(context.exception),
-            "One or more keys in the dictionary are not in the allowed values: ['sigma', 'gamma']!",
+            "Invalid keys found in the dictionary: ['test']. Allowed keys are: ['sigma', 'gamma'].",
         )
 
     def test_line_broadening_dict_of_dicts(self):
@@ -313,7 +313,7 @@ class TestDataset(unittest.TestCase):
             self.peak.line_broadening = {"sigma": {"min": 20, "invalid": 30}}
         self.assertEqual(
             str(context.exception),
-            "One or more keys in the dictionary are not in the allowed values: ['min', 'max'].",
+            "Invalid inner keys for 'sigma': ['invalid']. Allowed inner keys are: ['min', 'max'].",
         )
 
     def test_line_broadening_with_new_params_gauss(self):
@@ -344,7 +344,7 @@ class TestDataset(unittest.TestCase):
             self.peak.line_broadening = {"gamma": {"min": 20, "max": "20"}}
         self.assertEqual(
             str(context.exception),
-            "Each value in dicts must be 'int' or 'float', but found <class 'str'>.",
+            "'max' value must be an 'int' or 'float', but got <class 'str'>.",
         )
 
     def test_line_broadening_with_new_params_voigt_private_variable(self):
@@ -358,14 +358,48 @@ class TestDataset(unittest.TestCase):
     def test_dataset_add_two_peaks_check_correct_signs(self):
         # Next Test
         self.ds.add_peak(12.3)
-        self.ds.add_peak(14.1, line_broadening="-")
+        self.ds.add_peak(
+            14.1,
+            line_broadening={
+                "gamma": {"min": 20, "max": 30},
+                "sigma": {"max": 20, "min": 0},
+            },
+        )
         peaks = []
-        for peak_sign in self.ds.peak_list:
-            peaks.append(peak_sign.peak_sign)
-        self.assertListEqual(peaks, ["+", "-"])
+        for line_broadening in self.ds.peak_list:
+            peaks.append(line_broadening.line_broadening)
+        self.assertListEqual(
+            peaks,
+            [
+                {
+                    "gamma": {"max": 20, "min": 0},
+                    "sigma": {"max": 20, "min": 0},
+                },
+                {
+                    "gamma": {"max": 30.0, "min": 20.0},
+                    "sigma": {"max": 20.0, "min": 0.0},
+                },
+            ],
+        )
+
+    def test_dataset_correct_peak_list_length(self):
+        # Next Test
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(
+            14.1,
+            line_broadening={
+                "gamma": {"min": 20, "max": 30},
+                "sigma": {"max": 20, "min": 0},
+            },
+        )
+        self.assertEqual(len(self.ds.peak_list), 2)
 
     def test_return_default_dict(self):
         self.assertDictEqual(
             self.peak._return_default_dict(),
             {"sigma": {"min": 0, "max": 20}, "gamma": {"min": 0, "max": 20}},
         )
+
+    def test_dataset_perform_global_spectrum_fit_set_correct_fitter(self):
+        self.ds._perform_global_spectrum_fit()
+        self.assertEqual(type(self.ds.fitter), CorziliusNMR.utils.Fitter)

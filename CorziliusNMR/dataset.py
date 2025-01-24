@@ -47,6 +47,7 @@ class Dataset:
         fitting_group=1,
         fitting_type="voigt",
         peak_sign="+",
+        line_broadening=dict(),
     ):
         self.peak_list.append(Peak())
         self.peak_list[-1].peak_center = center_of_peak
@@ -54,6 +55,7 @@ class Dataset:
         self.peak_list[-1].fitting_group = fitting_group
         self.peak_list[-1].fitting_type = fitting_type
         self.peak_list[-1].peak_sign = peak_sign
+        self.peak_list[-1].line_broadening = line_broadening
 
     def _read_in_data_from_topspin(self):  # TODO test
         self._setup_correct_topspin_importer()
@@ -74,11 +76,10 @@ class Dataset:
         # TODO
         pass
 
-    def _calculate_peak_intensities(self):
-        self._add_peaks_to_all_exp()
-        if "fit" in self.spectrum_fitting_type:
-            self._perform_spectrum_fit()
-        if "global" in self.spectrum_fitting_type:
+    def _calculate_peak_intensities(self):  # TODO write Test
+        if "fit" in self.props.spectrum_fit_type:
+            self._perform_spectrum_fit()  # TODO write function
+        if "global" in self.props.spectrum_fit_type:
             self._perform_global_spectrum_fit()
 
     def _buidup_fit_global(self):
@@ -96,19 +97,11 @@ class Dataset:
                 buildup_fitter = utils.ExpFitterWithOffset(self)
                 buildup_fitter.perform_fit()
 
-    def _add_peaks_to_all_exp(self):
-        for spectrum in self.spectra:
-            spectrum.add_peak(self.peak_dict)
-            for peak in spectrum.peaks:
-                peak.assign_values_from_dict()
-
     def _perform_spectrum_fit(self):
         pass
 
     def _perform_global_spectrum_fit(self):
         self.fitter = utils.GlobalSpectrumFitter(self)
-        self.fitter.start_prefit()
-        self.fitter.set_model()
         self.fitter.fit()
 
     def _get_intensities(self):
@@ -133,7 +126,7 @@ class Peak:
         self._fitting_group = None
         self._fitting_type = None
         self._peak_sign = None
-        self._line_broadening = None  # TODO
+        self._line_broadening = None
 
     @property
     def line_broadening(self) -> str:
@@ -143,41 +136,54 @@ class Peak:
     def line_broadening(self, value):
         allowed_values = ["sigma", "gamma"]
         inner_allowed_values = ["min", "max"]
+
         if not isinstance(value, dict):
             raise TypeError(
-                f"'line_broadening' must be of type 'dict', but got {type(value)}."
+                f"'line_broadening' must be a 'dict', but got {type(value)}."
             )
-        if not all(key in allowed_values for key in value.keys()):
+
+        invalid_keys = [
+            key for key in value.keys() if key not in allowed_values
+        ]
+        if invalid_keys:
             raise ValueError(
-                f"One or more keys in the dictionary are not in the allowed values: {allowed_values}!"
+                f"Invalid keys found in the dictionary: {invalid_keys}. Allowed keys are: {allowed_values}."
             )
-        if not all(isinstance(values, dict) for values in value.values()):
+
+        if not all(isinstance(v, dict) for v in value.values()):
             raise TypeError(
-                f"Each value in the 'line_broadening' dictionary must be of type 'dict'."
+                "Each value in the 'line_broadening' dictionary must be of type 'dict'."
             )
-        for keys in value.keys():
-            if not all(
-                key in inner_allowed_values for key in value[keys].keys()
-            ):
+
+        for key, inner_dict in value.items():
+            invalid_inner_keys = [
+                inner_key
+                for inner_key in inner_dict.keys()
+                if inner_key not in inner_allowed_values
+            ]
+            if invalid_inner_keys:
                 raise ValueError(
-                    f"One or more keys in the dictionary are not in the allowed values: {inner_allowed_values}."
+                    f"Invalid inner keys for '{key}': {invalid_inner_keys}. Allowed inner keys are: {inner_allowed_values}."
                 )
+
         params = self._return_default_dict()
+
         if self.fitting_type == "gauss":
             params = {"sigma": params["sigma"]}
-        if self.fitting_type == "lorentz":
+        elif self.fitting_type == "lorentz":
             params = {"gamma": params["gamma"]}
+
         for key in allowed_values:
             if key in value:
                 for inner_key in inner_allowed_values:
-                    if inner_key in value[key]:
-                        if not isinstance(
-                            value[key][inner_key], (int, float)
-                        ):
+                    inner_value = value[key].get(inner_key)
+                    if inner_value is not None:
+                        if not isinstance(inner_value, (int, float)):
                             raise TypeError(
-                                f"Each value in dicts must be 'int' or 'float', but found {type(value[key][inner_key])}."
+                                f"'{inner_key}' value must be an 'int' or 'float', but got {type(inner_value)}."
                             )
-                        params[key][inner_key] = float(value[key][inner_key])
+                        params[key][inner_key] = float(inner_value)
+
         self._line_broadening = params
 
     @property
