@@ -3,17 +3,9 @@ io module of the CorziliusNMR package.
 """
 
 import CorziliusNMR.dataset
-from CorziliusNMR import utils
 import numpy as np
-from bruker.data.nmr import *
 import bruker.api.topspin as top
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-from collections import defaultdict
 import os
-import re
-
-from tabulate import tabulate
 
 
 class TopspinImporter:
@@ -72,21 +64,12 @@ class TopspinImporter:
 
 class ScreamImporter(TopspinImporter):
 
-    def __init__(self, dataset):
-        super().__init__(dataset)
-
     def import_topspin_data(self):  # TODO Test
         files = self._generate_path_to_experiment()
         for file in files:
             self._add_spectrum()
             self._nmr_data = self._data_provider.getNMRData(file)
             self._set_values()
-
-    def _add_spectrum(self):
-        super()._add_spectrum()
-
-    def _set_values(self):
-        super()._set_values()
 
     def _set_number_of_scans(self):
         self._dataset.spectra[-1].number_of_scans = int(
@@ -116,15 +99,6 @@ class ScreamImporter(TopspinImporter):
             self._dataset.spectra[-1].number_of_scans,
         )
 
-    def _get_physical_range(self):
-        return super()._get_physical_range()
-
-    def _get_num_of_datapoints(self):
-        return super()._get_num_of_datapoints()
-
-    def _calc_x_axis(self, physical_range, number_of_datapoints):
-        return super()._calc_x_axis(physical_range, number_of_datapoints)
-
     def _generate_path_to_experiment(self):
         base_path = self._dataset.props.path_to_experiment
         procno = self._dataset.props.procno
@@ -136,12 +110,4 @@ class ScreamImporter(TopspinImporter):
 
 
 class Pseudo2DImporter(TopspinImporter):
-
-    def __init__(self, dataset):
-        super().__init__(dataset)
-
-    def import_topspin_data(self):
-        return
-
-    def read_in_topspin_data():
-        pass
+    pass

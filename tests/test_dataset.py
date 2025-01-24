@@ -402,4 +402,6 @@ class TestDataset(unittest.TestCase):
 
     def test_dataset_perform_global_spectrum_fit_set_correct_fitter(self):
         self.ds._perform_global_spectrum_fit()
-        self.assertEqual(type(self.ds.fitter), CorziliusNMR.utils.Fitter)
+        self.assertEqual(
+            type(self.ds.fitter), CorziliusNMR.utils.GlobalSpectrumFitter
+        )

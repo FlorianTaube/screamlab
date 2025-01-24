@@ -36,7 +36,6 @@ class Properties:
         buildup_types: list = ["exponential"],
         spectrum_fit_type: list = ["global"],
         spectrum_for_prefit: int = 0,
-        plot_prefit: bool = True,
         path_to_experiment: str = os.path.dirname(os.path.abspath(__file__)),
         procno: int = 103,
         expno: list = [1],

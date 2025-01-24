@@ -1,4 +1,5 @@
 import CorziliusNMR.settings
+import lmfit
 import matplotlib.pyplot as plt
 from CorziliusNMR import dataset, settings, utils
 import unittest
@@ -15,6 +16,7 @@ class TestDataset(unittest.TestCase):
     def add_n_spectra(self, number_of_spectra):
         for spec in range(0, number_of_spectra):
             self.ds.spectra.append(CorziliusNMR.dataset.Spectra())
+            self.ds.add_peak(150)
         self.add_x_axis()
         self.add_y_axix()
 
@@ -45,3 +47,18 @@ class TestDataset(unittest.TestCase):
         )
         x_axis, y_axis = self.fitter._get_axis()
         self.assertTrue(np.array_equal(y_axis, sim_axis))
+
+    def test_setup_params_return_val_is_lmfit_Parameter(self):
+        self.assertEqual(
+            type(self.fitter._setup_params("prefit")), lmfit.Parameters
+        )
+
+    def test_setup_params_add_peak_voigt_prefit(self):
+        self.add_n_spectra(1)
+        self.fitter.dataset.peak_list[0].buildup_type = "voigt"
+        params = self.fitter._setup_params(7)
+        print(params)
+        self.assertEqual(
+            params.keys,
+            "Parameters([('Peak_at_150_ppm_amp_7', <Parameter 'Peak_at_150_ppm_amp_7', value=200, bounds=[0:inf]>), ('Peak_at_150_ppm_cen_7', <Parameter 'Peak_at_150_ppm_cen_7', value=150.0, bounds=[149.0:151.0]>), ('Peak_at_150_ppm_sig_7', <Parameter 'Peak_at_150_ppm_sig_7', value=10.0, bounds=[0:20]>), ('Peak_at_150_ppm_gam_7', <Parameter 'Peak_at_150_ppm_gam_7', value=10.0, bounds=[0:20]>)])",
+        )

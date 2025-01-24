@@ -1,7 +1,4 @@
-import lmfit
 from CorziliusNMR import io, utils, settings
-import numpy as np
-import sys
 
 
 class Dataset:
@@ -25,19 +22,11 @@ class Dataset:
         self._print()
 
     def start_buildup_fit_from_spectra(self):
-        print(
-            "This function is work in progress and can't be used. Program will exit."
-        )
-        sys.exit()
         self._read_in_data_from_csv()
         self._calculate_peak_intensities()
         self._buidup_fit_global()
 
     def start_buildup_from_intensitys(self):
-        print(
-            "This function is work in progress and can't be used. Program will exit."
-        )
-        sys.exit()
         return
 
     def add_peak(
@@ -70,7 +59,6 @@ class Dataset:
     def _print(self):
         exporter = io.Exporter(self)
         exporter.print_all()
-        pass
 
     def _read_in_data_from_csv(self):
         # TODO
@@ -83,17 +71,17 @@ class Dataset:
             self._perform_global_spectrum_fit()
 
     def _buidup_fit_global(self):
-        for type in self.props.buildup_types:
-            if type == "biexponential":
+        for b_type in self.props.buildup_types:
+            if b_type == "biexponential":
                 buildup_fitter = utils.BiexpFitter(self)
                 buildup_fitter.perform_fit()
-            elif type == "biexponential_with_offset":
+            elif b_type == "biexponential_with_offset":
                 buildup_fitter = utils.BiexpFitterWithOffset(self)
                 buildup_fitter.perform_fit()
-            elif type == "exponential":
+            elif b_type == "exponential":
                 buildup_fitter = utils.ExpFitter(self)
                 buildup_fitter.perform_fit()
-            elif type == "exponential_with_offset":
+            elif b_type == "exponential_with_offset":
                 buildup_fitter = utils.ExpFitterWithOffset(self)
                 buildup_fitter.perform_fit()
 
@@ -197,7 +185,7 @@ class Peak:
             raise TypeError(
                 f"'peak_sign' must be of type 'str', but got {type(value)}."
             )
-        if not value in allowed_values:
+        if value not in allowed_values:
             raise ValueError(
                 f"All elements in 'peak_sign' must be one of {sorted(allowed_values)}."
             )
@@ -218,7 +206,7 @@ class Peak:
             raise TypeError(
                 f"'fitting_type' must be of type 'str', but got {type(value)}."
             )
-        if not value in allowed_values:
+        if value not in allowed_values:
             raise ValueError(
                 f"All elements in 'fitting_type' must be one of {sorted(allowed_values)}."
             )

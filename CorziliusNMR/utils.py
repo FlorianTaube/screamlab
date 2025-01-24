@@ -1,4 +1,6 @@
 from scipy.special import wofz
+import lmfit
+import numpy as np
 
 
 class Fitter:
@@ -10,53 +12,71 @@ class Fitter:
         pass
 
     def _start_prefit(self):
-        x_axis, y_axis = self._get_axis()
-        model = self._setup_model()
-        params = self._setup_params()
+        spec_for_prefit = self.dataset.props.spectrum_for_prefit
+        x_axis, y_axis = self._get_axis(spec_for_prefit)
+        params = self._setup_params(spec_for_prefit)
         self._perform_fit()
 
-    def _get_axis(self):
-        spec_for_prefit = self.dataset.props.spectrum_for_prefit
+    def _get_axis(self, spec_for_prefit):
         return (
             self.dataset.spectra[spec_for_prefit].x_axis,
             self.dataset.spectra[spec_for_prefit].y_axis,
         )
 
-    def _setup_model(self):
-        pass
+    def _setup_params(self, spec_for_prefit):
+        params = lmfit.Parameters()
+        for peak_nr, peak in enumerate(self.dataset.peak_list):
+            params.add(
+                f"{peak.peak_label}_amp_{str(spec_for_prefit)}",
+                value=200,
+                min=0,
+                max=(
+                    np.inf
+                    if peak.peak_sign == "+"
+                    else 0 if peak.peak_sign == "+" else -np.inf
+                ),
+            )
+            params.add(
+                f"{peak.peak_label}_cen_{str(spec_for_prefit)}",
+                value=peak.peak_center,
+                min=peak.peak_center - 1,
+                max=peak.peak_center + 1,
+            )
+            if peak.fitting_type == "voigt":
+                params.add(
+                    f"{peak.peak_label}_sig_{str(spec_for_prefit)}",
+                    value=(
+                        peak.line_broadening["sigma"]["min"]
+                        + peak.line_broadening["sigma"]["max"]
+                    )
+                    / 2,
+                    min=peak.line_broadening["sigma"]["min"],
+                    max=peak.line_broadening["sigma"]["max"],
+                )
+                params.add(
+                    f"{peak.peak_label}_gam_{str(spec_for_prefit)}",
+                    value=(
+                        peak.line_broadening["gamma"]["min"]
+                        + peak.line_broadening["gamma"]["max"]
+                    )
+                    / 2,
+                    min=peak.line_broadening["gamma"]["min"],
+                    max=peak.line_broadening["gamma"]["max"],
+                )
 
-    def _setup_params(self):
-        pass
+        return params
 
     def _perform_fit(self):
         pass
 
 
 class GlobalSpectrumFitter(Fitter):
-    def __init__(self, dataset):
-        super().__init__(dataset)
 
     def fit(self):
         if self.dataset.props.prefit:
             self._start_prefit()
 
-    def _start_prefit(self):
-        super()._start_prefit()
 
-    def _get_axis(self):
-        return super()._get_axis()
-
-    def _setup_model(self):
-        return super()._setup_model()
-
-    def _setup_params(self):
-        return super()._setup_params()
-
-    def _perform_fit(self):
-        super()._perform_fit()
-
-
-# TODO add rest of module to docu
 """
 utils.py
 =================
@@ -73,9 +93,6 @@ ExpFitter
 ExpFitterWithOffset
 
 """
-
-import numpy as np
-import lmfit
 
 
 class BuildupFitter:
@@ -364,191 +381,6 @@ class ExpFitterWithOffset(BuildupFitter):
             "x1": dict(value=5, min=0, max=self.x_val[-1] * 2),
             "x0": dict(value=0, min=-1.5, max=1),
         }
-
-
-class Lineshape:
-    def __init__(self, spectrum, peak):
-        self.x_axis = spectrum.x_axis
-        self.y_axis = spectrum.y_axis
-        self.peak = peak
-        self.params = None
-        pass
-
-    def set_init_params(self):
-        pass
-
-    def peak_calculator(self, params, x_data):
-        pass
-
-    def sim_spectrum(self, result, fitting_type):
-        pass
-
-    def get_correct_param_set(self, params, peak_label):
-        pass
-
-
-class Voigt(Lineshape):
-    def __init__(self, spectrum, peak):
-        super().__init__(spectrum, peak)
-
-    def set_init_params(self):
-        self.params = {
-            f"{self.peak.peak_label}_amplitude": (
-                dict(value=200, min=0, max=1e8)
-                if self.peak.sign == "+"
-                else dict(value=-200, min=-1e8, max=0)
-            ),
-            f"{self.peak.peak_label}_center": dict(
-                value=self.peak.hight["x_val"],
-                min=self.peak.hight["x_val"] - 1,
-                max=self.peak.hight["x_val"] + 1,
-            ),
-            f"{self.peak.peak_label}_sigma": dict(value=1, min=1e-12, max=3),
-            f"{self.peak.peak_label}_gamma": dict(value=1, min=1e-12, max=3),
-        }
-
-    def peak_calculator(self, params, x_data):
-        amp, cen, gam, sig = self.get_correct_param_set(
-            params, self.peak.peak_label
-        )
-        return voigt_profile(x_data, cen, sig, gam, amp)
-
-    def sim_spectrum(self, result, fitting_type):
-        amp, cen, gam, sig = self.get_correct_param_set(
-            result.params, self.peak.peak_label.replace(".", "_")
-        )
-        simulated_spectrum = voigt_profile(self.x_axis, cen, sig, gam, amp)
-        parameter = {"amp": amp, "cen": cen, "sig": sig, "gam": gam}
-        self.peak.fitting_parameter.update({fitting_type: parameter})
-        self.peak.simulated_peak.update({fitting_type: simulated_spectrum})
-        self.peak.area_under_peak.update(
-            {fitting_type: np.trapz(simulated_spectrum)}
-        )
-        self.peak.fitting_report.update(
-            {fitting_type: lmfit.fit_report(result)}
-        )
-
-    def get_correct_param_set(self, params, peak_label):
-        label_key = peak_label.replace(".", "_")
-        amp = cen = gam = sig = None
-        for key, value in params.items():
-            if label_key in key:
-                if "amplitude" in key:
-                    amp = value
-                elif "center" in key:
-                    cen = value
-                elif "sigma" in key:
-                    sig = value
-                elif "gamma" in key:
-                    gam = value
-        return amp, cen, gam, sig
-
-
-class Gauss(Lineshape):
-    def __init__(self, spectrum, peak):
-        super().__init__(spectrum, peak)
-
-    def set_init_params(self):
-        self.params = {
-            f"{self.peak.peak_label}_amplitude": (
-                dict(value=200, min=0)
-                if self.peak.sign == "+"
-                else dict(value=-200, max=0)
-            ),
-            f"{self.peak.peak_label}_center": dict(
-                value=self.peak.hight["x_val"],
-                min=self.peak.hight["x_val"] - 0.1,
-                max=self.peak.hight["x_val"] + 0.1,
-            ),
-            f"{self.peak.peak_label}_sigma": dict(value=1.5, min=1, max=2),
-        }
-
-        pass
-
-    def peak_calculator(self, params, x_data):
-        amp, cen, sig = self.get_correct_param_set(
-            params, self.peak.peak_label
-        )
-        return gauss_profile(x_data, cen, sig, amp)
-
-    def sim_spectrum(self, result, fitting_type):
-        amp, cen, sig = self.get_correct_param_set(
-            result.params, self.peak.peak_label.replace(".", "_")
-        )
-        sim_spectrum = gauss_profile(self.x_axis, cen, sig, amp)
-        param = {"amp": amp, "cen": cen, "sig": sig}
-        self.peak.fitting_parameter |= {fitting_type: param}
-        self.peak.simulated_peak |= {fitting_type: sim_spectrum}
-        self.peak.area_under_peak |= {fitting_type: np.trapz(sim_spectrum)}
-
-    def get_correct_param_set(self, params, peak_label):
-        amp = cen = sig = None
-        for key, value in params.items():
-            if peak_label.replace(".", "_") in key:
-                if "amplitude" in key:
-                    amp = value
-                if "center" in key:
-                    cen = value
-                if "sigma" in key:
-                    sig = value
-        return amp, cen, sig
-
-
-class Lorentz(Lineshape):
-    def __init__(self, spectrum, peak):
-        super().__init__(spectrum, peak)
-
-    def set_init_params(self):
-        self.params = {
-            f"{self.peak.peak_label}_amplitude": (
-                dict(value=200, min=0)
-                if self.peak.sign == "+"
-                else dict(value=-200, max=0)
-            ),
-            f"{self.peak.peak_label}_center": dict(
-                value=self.peak.hight["x_val"],
-                min=self.peak.hight["x_val"] - 0.5,
-                max=self.peak.hight["x_val"] + 0.5,
-            ),
-            f"{self.peak.peak_label}_sigma": dict(value=1.5, min=1, max=2),
-            f"{self.peak.peak_label}_gamma": dict(value=0.3, min=0, max=1),
-        }
-
-        pass
-
-    def peak_calculator(self, params, x_data):
-        amp, cen, gam, sig = self.get_correct_param_set(
-            params, self.peak.peak_label
-        )
-        return lorentz_profile(x_data, cen, gam, amp)
-
-    def sim_spectrum(self, result, fitting_type):
-        amp, cen, gam = self.get_correct_param_set(
-            result.params, self.peak.peak_label.replace(".", "_")
-        )
-        simulated_spectrum = lorentz_profile(self.x_axis, cen, gam, amp)
-        parameter = {"amp": amp, "cen": cen, "gam": gam}
-        self.peak.fitting_parameter = self.peak.fitting_parameter | {
-            fitting_type: parameter
-        }
-        self.peak.simulated_peak = self.peak.simulated_peak | {
-            fitting_type: simulated_spectrum
-        }
-        self.peak.area_under_peak = self.peak.area_under_peak | {
-            fitting_type: np.trapz(simulated_spectrum)
-        }
-
-    def get_correct_param_set(self, params, peak_label):
-        amp = cen = gam = None
-        for key, value in params.items():
-            if peak_label.replace(".", "_") in key:
-                if "amplitude" in key:
-                    amp = value
-                if "center" in key:
-                    cen = value
-                if "gamma" in key:
-                    gam = value
-        return amp, cen, gam
 
 
 def prefit_objective(params, lineshapes):
