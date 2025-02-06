@@ -103,7 +103,6 @@ class Spectra:
         self.tdel = None
         self.x_axis = None
         self.y_axis = None
-        self.peaks = None
 
 
 class Peak:

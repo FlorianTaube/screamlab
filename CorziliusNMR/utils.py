@@ -9,120 +9,6 @@ class Fitter:
     def __init__(self, dataset):
         self.dataset = dataset
 
-    def fit(self):
-        pass
-
-    def _start_prefit(self):
-        spec_for_prefit = self.dataset.props.spectrum_for_prefit
-        x_axis, y_axis = self._get_axis(spec_for_prefit)
-        params = self._setup_params(spec_for_prefit)
-        self._perform_prefit(x_axis, y_axis, params)
-
-    def _get_axis(self, spec_for_prefit):
-        return (
-            self.dataset.spectra[spec_for_prefit].x_axis,
-            self.dataset.spectra[spec_for_prefit].y_axis,
-        )
-
-    def _setup_params(self, spec_for_prefit):
-        param_list = []
-        for peak_nr, peak in enumerate(self.dataset.peak_list):
-            params = lmfit.Parameters()
-            params.add(**self._set_amplitude(peak, spec_for_prefit))
-            params.add(**self._set_center(peak, spec_for_prefit))
-            if peak.fitting_type == "voigt":
-                params.add(**self._set_sigma(peak, spec_for_prefit))
-                params.add(**self._set_gamma(peak, spec_for_prefit))
-            if peak.fitting_type == "gauss":
-                params.add(**self._set_sigma(peak, spec_for_prefit))
-            if peak.fitting_type == "lorentz":
-                params.add(**self._set_gamma(peak, spec_for_prefit))
-            param_list.append(params)
-        return param_list
-
-    def _set_amplitude(self, peak, spec_for_prefit):
-        return {
-            "name": f"{peak.peak_label}_amp_{str(spec_for_prefit)}",
-            "value": 200,
-            "min": 0 if peak.peak_sign == "+" else -np.inf,
-            "max": np.inf if peak.peak_sign == "+" else 0,
-        }
-
-    def _set_center(self, peak, spec_for_prefit):
-        return {
-            "name": f"{peak.peak_label}_cen_{str(spec_for_prefit)}",
-            "value": peak.peak_center,
-            "min": peak.peak_center - 1,
-            "max": peak.peak_center + 1,
-        }
-
-    def _set_sigma(self, peak, spec_for_prefit):
-        return {
-            "name": f"{peak.peak_label}_sig_{str(spec_for_prefit)}",
-            "value": (
-                peak.line_broadening["sigma"]["min"]
-                + peak.line_broadening["sigma"]["max"]
-            )
-            / 2,
-            "min": peak.line_broadening["sigma"]["min"],
-            "max": peak.line_broadening["sigma"]["max"],
-        }
-
-    def _set_gamma(self, peak, spec_for_prefit):
-        return {
-            "name": f"{peak.peak_label}_gam_{str(spec_for_prefit)}",
-            "value": (
-                peak.line_broadening["gamma"]["min"]
-                + peak.line_broadening["gamma"]["max"]
-            )
-            / 2,
-            "min": peak.line_broadening["gamma"]["min"],
-            "max": peak.line_broadening["gamma"]["max"],
-        }
-
-    def _perform_prefit(self, x_axis, y_axis, params):
-        plt.plot(x_axis, y_axis)
-        result = lmfit.minimize(
-            self._prefit_objective, params, args=(x_axis, y_axis)
-        )
-
-    def _prefit_objective(self, params, x_axis, y_axis):
-        residual = y_axis
-        for parameter_set in params:
-            if len(parameter_set) == 4:
-                amp, cen, gam, sig = self._get_voigt_params(parameter_set)
-                sim_y_axis = voigt_profile(x_axis, cen, sig, gam, amp)
-            elif len(parameter_set) == 3:
-                amp, cen, lw = self._get_lorentz_gauss_params(parameter_set)
-                if any("sig" in key for key in parameter_set.keys()):
-                    sim_y_axis = gauss_profile(x_axis, cen, lw, amp)
-                else:
-                    sim_y_axis = lorentz_profile(x_axis, cen, lw, amp)
-            residual = residual - sim_y_axis
-        return residual
-
-    def _get_voigt_params(self, parameter_set):
-        keys = list(parameter_set.keys())
-        amp = parameter_set[keys[0]]
-        cen = parameter_set[keys[1]]
-        gam = parameter_set[keys[2]]
-        sig = parameter_set[keys[3]]
-        return amp, cen, gam, sig
-
-    def _get_lorentz_gauss_params(self, parameter_set):
-        keys = list(parameter_set.keys())
-        amp = parameter_set[keys[0]]
-        cen = parameter_set[keys[1]]
-        lw = parameter_set[keys[2]]
-        return amp, cen, lw
-
-
-class GlobalSpectrumFitter(Fitter):
-
-    def fit(self):
-        if self.dataset.props.prefit:
-            self._start_prefit()
-
 
 """
 utils.py
@@ -262,7 +148,7 @@ class BuildupFitter:
             "x_axis": self.x_val,
             "y_axis": self.y_val,
             "fit_report": best_result.fit_report(),
-            "params": result.params,
+            "grouped_params": result.params,
             "result": best_result,
         }
         print(best_result.rsquared)
