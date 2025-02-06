@@ -26,45 +26,56 @@ class Fitter:
     def _setup_params(self, spec_for_prefit):
         params = lmfit.Parameters()
         for peak_nr, peak in enumerate(self.dataset.peak_list):
-            params.add(
-                f"{peak.peak_label}_amp_{str(spec_for_prefit)}",
-                value=200,
-                min=0,
-                max=(
-                    np.inf
-                    if peak.peak_sign == "+"
-                    else 0 if peak.peak_sign == "+" else -np.inf
-                ),
-            )
-            params.add(
-                f"{peak.peak_label}_cen_{str(spec_for_prefit)}",
-                value=peak.peak_center,
-                min=peak.peak_center - 1,
-                max=peak.peak_center + 1,
-            )
+            params.add(**self._set_amplitude(peak, spec_for_prefit))
+            params.add(**self._set_center(peak, spec_for_prefit))
             if peak.fitting_type == "voigt":
-                params.add(
-                    f"{peak.peak_label}_sig_{str(spec_for_prefit)}",
-                    value=(
-                        peak.line_broadening["sigma"]["min"]
-                        + peak.line_broadening["sigma"]["max"]
-                    )
-                    / 2,
-                    min=peak.line_broadening["sigma"]["min"],
-                    max=peak.line_broadening["sigma"]["max"],
-                )
-                params.add(
-                    f"{peak.peak_label}_gam_{str(spec_for_prefit)}",
-                    value=(
-                        peak.line_broadening["gamma"]["min"]
-                        + peak.line_broadening["gamma"]["max"]
-                    )
-                    / 2,
-                    min=peak.line_broadening["gamma"]["min"],
-                    max=peak.line_broadening["gamma"]["max"],
-                )
-
+                params.add(**self._set_sigma(peak, spec_for_prefit))
+                params.add(**self._set_gamma(peak, spec_for_prefit))
+            if peak.fitting_type == "gauss":
+                params.add(**self._set_sigma(peak, spec_for_prefit))
+            if peak.fitting_type == "lorentz":
+                params.add(**self._set_gamma(peak, spec_for_prefit))
         return params
+
+    def _set_amplitude(self, peak, spec_for_prefit):
+        return {
+            "name": f"{peak.peak_label}_amp_{str(spec_for_prefit)}",
+            "value": 200,
+            "min": 0,
+            "max": np.inf if peak.peak_sign == "+" else -np.inf,
+        }
+
+    def _set_center(self, peak, spec_for_prefit):
+        return {
+            "name": f"{peak.peak_label}_cen_{str(spec_for_prefit)}",
+            "value": peak.peak_center,
+            "min": peak.peak_center - 1,
+            "max": peak.peak_center + 1,
+        }
+
+    def _set_sigma(self, peak, spec_for_prefit):
+        return {
+            "name": f"{peak.peak_label}_sig_{str(spec_for_prefit)}",
+            "value": (
+                peak.line_broadening["sigma"]["min"]
+                + peak.line_broadening["sigma"]["max"]
+            )
+            / 2,
+            "min": peak.line_broadening["sigma"]["min"],
+            "max": peak.line_broadening["sigma"]["max"],
+        }
+
+    def _set_gamma(self, peak, spec_for_prefit):
+        return {
+            "name": f"{peak.peak_label}_gam_{str(spec_for_prefit)}",
+            "value": (
+                peak.line_broadening["gamma"]["min"]
+                + peak.line_broadening["gamma"]["max"]
+            )
+            / 2,
+            "min": peak.line_broadening["gamma"]["min"],
+            "max": peak.line_broadening["gamma"]["max"],
+        }
 
     def _perform_fit(self):
         pass

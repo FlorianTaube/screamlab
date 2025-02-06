@@ -55,10 +55,20 @@ class TestDataset(unittest.TestCase):
 
     def test_setup_params_add_peak_voigt_prefit(self):
         self.add_n_spectra(1)
-        self.fitter.dataset.peak_list[0].buildup_type = "voigt"
+        self.fitter.dataset.peak_list[0].fitting_type = "voigt"
         params = self.fitter._setup_params(7)
-        print(params)
+        print(params.keys())
         self.assertEqual(
-            params.keys,
-            "Parameters([('Peak_at_150_ppm_amp_7', <Parameter 'Peak_at_150_ppm_amp_7', value=200, bounds=[0:inf]>), ('Peak_at_150_ppm_cen_7', <Parameter 'Peak_at_150_ppm_cen_7', value=150.0, bounds=[149.0:151.0]>), ('Peak_at_150_ppm_sig_7', <Parameter 'Peak_at_150_ppm_sig_7', value=10.0, bounds=[0:20]>), ('Peak_at_150_ppm_gam_7', <Parameter 'Peak_at_150_ppm_gam_7', value=10.0, bounds=[0:20]>)])",
+            str(params.keys()),
+            "dict_keys(['Peak_at_150_ppm_amp_7', 'Peak_at_150_ppm_cen_7', 'Peak_at_150_ppm_sig_7', 'Peak_at_150_ppm_gam_7'])",
+        )
+
+    def test_setup_params_add_peak_gauss_prefit(self):
+        self.add_n_spectra(1)
+        self.fitter.dataset.peak_list[0].fitting_type = "lorentz"
+        params = self.fitter._setup_params(7)
+        print(params.keys())
+        self.assertEqual(
+            str(params.keys()),
+            "dict_keys(['Peak_at_150_ppm_amp_7', 'Peak_at_150_ppm_cen_7', 'Peak_at_150_ppm_gam_7'])",
         )
