@@ -1,13 +1,155 @@
 from scipy.special import wofz
 import lmfit
+import re
 import numpy as np
 import matplotlib.pyplot as plt
+import copy
 
 
 class Fitter:
 
     def __init__(self, dataset):
         self.dataset = dataset
+
+    def fit(self):
+        x_axis, y_axis = self._generate_axis_list()
+        params = self._generate_params_list()
+        result = lmfit.minimize(
+            self._spectral_fitting, params, args=(x_axis, y_axis)
+        )
+        return result
+
+    def _generate_axis_list(self):
+        x_axis, y_axis = [], []
+        for spectrum in self.dataset.spectra:
+            x_axis.append(spectrum.x_axis)
+            y_axis.append(spectrum.y_axis)
+        return x_axis, y_axis
+
+    def _generate_params_list(self):
+        pass
+
+    def _get_amplitude_dict(self, peak, nr):
+        return {
+            "name": f"{peak.peak_label}_amp_{nr}",
+            "value": 200 if peak.peak_sign == "+" else -200,
+            "min": 0 if peak.peak_sign == "+" else -np.inf,
+            "max": np.inf if peak.peak_sign == "+" else 0,
+        }
+
+    def _get_center_dict(self, peak, nr):
+        return {
+            "name": f"{peak.peak_label}_cen_{nr}",
+            "value": peak.peak_center,
+            "min": peak.peak_center - 1,
+            "max": peak.peak_center + 1,
+        }
+
+    def _get_lw_dict(self, peak, nr, lw):
+        return {
+            "name": f"{peak.peak_label}_{lw}_{nr}",
+            "value": (
+                peak.line_broadening[lw]["min"]
+                + peak.line_broadening[lw]["max"]
+            )
+            / 2,
+            "min": peak.line_broadening[lw]["min"],
+            "max": peak.line_broadening[lw]["max"],
+        }
+
+    def _spectral_fitting(self, params, x_axis, y_axis):
+        residual = copy.deepcopy(y_axis)
+        params_dict_list = self._sort_params(params)
+        for key in params_dict_list.keys():
+            for list_nr, value_list in enumerate(params_dict_list[key]):
+                if len(value_list) == 5:
+                    y_sim = voigt_profile(
+                        x_axis[key],
+                        value_list[1],
+                        value_list[2],
+                        value_list[3],
+                        value_list[0],
+                    )
+                if len(value_list) == 3:
+                    y_sim = gauss_profile(
+                        x_axis[key],
+                        value_list[1],
+                        value_list[2],
+                        value_list[0],
+                    )
+                if len(value_list) == 4:
+                    y_sim = lorentz_profile(
+                        x_axis[key],
+                        value_list[1],
+                        value_list[2],
+                        value_list[0],
+                    )
+                residual[key] -= y_sim
+        return np.concatenate(residual)
+
+    def _sort_params(self, params):
+        param_dict = dict()
+        prefix, lastfix = None, None
+        dict_index = -1
+        param_value_list = []
+        for param in params:
+            parts = re.split(r"_(cen|amp|sigma|gamma)_", param)
+            if prefix != parts[0]:
+                if param_value_list != []:
+                    param_dict[dict_index].append(param_value_list)
+                prefix = parts[0]
+                param_value_list = []
+            if lastfix != parts[2]:
+                lastfix = parts[2]
+                dict_index += 1
+            if dict_index not in param_dict:
+                param_dict[dict_index] = []
+            param_value_list.append(float(params[param].value))
+            if parts[1] == "gamma":
+                param_value_list.append("gam")
+        param_dict[dict_index].append(param_value_list)
+        return param_dict
+
+
+class Prefitter(Fitter):
+
+    def _generate_axis_list(self):
+        spectrum_for_prefit = self.dataset.props.spectrum_for_prefit
+        x_axis, y_axis = [], []
+        x_axis.append(self.dataset.spectra[spectrum_for_prefit].x_axis)
+        y_axis.append(self.dataset.spectra[spectrum_for_prefit].y_axis)
+        return x_axis, y_axis
+
+    def _generate_params_list(self):
+        params = lmfit.Parameters()
+        spectrum_for_prefit = self.dataset.props.spectrum_for_prefit
+        for peak in self.dataset.peak_list:
+            params.add(**self._get_amplitude_dict(peak, spectrum_for_prefit))
+            params.add(**self._get_center_dict(peak, spectrum_for_prefit))
+            if peak.fitting_type == "voigt":
+                params.add(
+                    **self._get_lw_dict(peak, spectrum_for_prefit, "sigma")
+                )
+                params.add(
+                    **self._get_lw_dict(peak, spectrum_for_prefit, "gamma")
+                )
+            elif peak.fitting_type == "gauss":
+                params.add(
+                    **self._get_lw_dict(peak, spectrum_for_prefit, "sigma")
+                )
+            elif peak.fitting_type == "lorentz":
+                params.add(
+                    **self._get_lw_dict(peak, spectrum_for_prefit, "gamma")
+                )
+        return params
+
+
+class GlobalFitter(Fitter):
+    pass
+
+
+class SingleFitter(Fitter):
+    pass
 
 
 """
@@ -333,7 +475,7 @@ def peak_objective(params, lineshapes):
             residual.append(voigt.y_axis - calc)
         else:
             residual[-1] -= calc
-    return np.concatenate(residual)
+    return np.concatenate(residual).tolist()
 
 
 def voigt_profile(x, center, sigma, gamma, amplitude):
