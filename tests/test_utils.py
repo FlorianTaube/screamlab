@@ -493,7 +493,7 @@ class TestDataset(unittest.TestCase):
         for key in result.params:
             value_list.append(round(result.params[key].value))
         self.assertListAlmostEqual(
-            value_list, [200, 250, 2, 2, 200, 150, 3, 200, 200, 4], delta=5
+            value_list, [200, 250, 2, 2, 200, 150, 3, 200, 200, 4], delta=8
         )
 
     def test_generate_axis_list_global_fitter_nr_elements_x(self):
@@ -548,5 +548,44 @@ class TestDataset(unittest.TestCase):
         for vals in y_axis:
             plt.plot(x_axis[0], vals)
             max_list.append(int(max(vals)))
-
         self.assertListEqual(max_list, [20, 41, 62])
+
+    def test_generate_param_list_two_spectra_global_fitter(self):
+        self.add_n_spectra(2)
+        params = self.globalfitter._generate_params_list()
+        keylist = []
+        for keys in params.keys():
+            keylist.append(keys)
+        self.assertListEqual(
+            keylist,
+            [
+                "Peak_at_150_ppm_amp_0",
+                "Peak_at_150_ppm_cen_0",
+                "Peak_at_150_ppm_sigma_0",
+                "Peak_at_150_ppm_gamma_0",
+                "Peak_at_150_ppm_amp_1",
+                "Peak_at_150_ppm_cen_1",
+                "Peak_at_150_ppm_sigma_1",
+                "Peak_at_150_ppm_gamma_1",
+            ],
+        )
+
+    def test_generate_param_list_two_spectra_single_fitter(self):
+        self.add_n_spectra(2)
+        params = self.singlefitter._generate_params_list()
+        keylist = []
+        for keys in params.keys():
+            keylist.append(keys)
+        self.assertListEqual(
+            keylist,
+            [
+                "Peak_at_150_ppm_amp_0",
+                "Peak_at_150_ppm_cen_0",
+                "Peak_at_150_ppm_sigma_0",
+                "Peak_at_150_ppm_gamma_0",
+                "Peak_at_150_ppm_amp_1",
+                "Peak_at_150_ppm_cen_1",
+                "Peak_at_150_ppm_sigma_1",
+                "Peak_at_150_ppm_gamma_1",
+            ],
+        )

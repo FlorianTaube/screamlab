@@ -27,7 +27,36 @@ class Fitter:
         return x_axis, y_axis
 
     def _generate_params_list(self):
-        pass
+        params = lmfit.Parameters()
+        spectra = self._get_spectra_list()
+        for spectrum_nr, spectrum in enumerate(spectra):
+
+            for peak in self.dataset.peak_list:
+                params.add(**self._get_amplitude_dict(peak, spectrum_nr))
+                params.add(**self._get_center_dict(peak, spectrum_nr))
+                if peak.fitting_type == "voigt":
+                    params.add(
+                        **self._get_lw_dict(peak, spectrum_nr, "sigma")
+                    )
+                    params.add(
+                        **self._get_lw_dict(peak, spectrum_nr, "gamma")
+                    )
+                elif peak.fitting_type == "gauss":
+                    params.add(
+                        **self._get_lw_dict(peak, spectrum_nr, "sigma")
+                    )
+                elif peak.fitting_type == "lorentz":
+                    params.add(
+                        **self._get_lw_dict(peak, spectrum_nr, "gamma")
+                    )
+        return params
+
+    def _get_spectra_list(self):
+        return (
+            [self.dataset.spectra[self.dataset.props.spectrum_for_prefit]]
+            if type(self) == Prefitter
+            else self.dataset.spectra
+        )
 
     def _get_amplitude_dict(self, peak, nr):
         return {
@@ -119,29 +148,6 @@ class Prefitter(Fitter):
         x_axis.append(self.dataset.spectra[spectrum_for_prefit].x_axis)
         y_axis.append(self.dataset.spectra[spectrum_for_prefit].y_axis)
         return x_axis, y_axis
-
-    def _generate_params_list(self):
-        params = lmfit.Parameters()
-        spectrum_for_prefit = self.dataset.props.spectrum_for_prefit
-        for peak in self.dataset.peak_list:
-            params.add(**self._get_amplitude_dict(peak, spectrum_for_prefit))
-            params.add(**self._get_center_dict(peak, spectrum_for_prefit))
-            if peak.fitting_type == "voigt":
-                params.add(
-                    **self._get_lw_dict(peak, spectrum_for_prefit, "sigma")
-                )
-                params.add(
-                    **self._get_lw_dict(peak, spectrum_for_prefit, "gamma")
-                )
-            elif peak.fitting_type == "gauss":
-                params.add(
-                    **self._get_lw_dict(peak, spectrum_for_prefit, "sigma")
-                )
-            elif peak.fitting_type == "lorentz":
-                params.add(
-                    **self._get_lw_dict(peak, spectrum_for_prefit, "gamma")
-                )
-        return params
 
 
 class GlobalFitter(Fitter):
