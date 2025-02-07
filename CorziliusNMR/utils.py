@@ -30,7 +30,6 @@ class Fitter:
         params = lmfit.Parameters()
         spectra = self._get_spectra_list()
         for spectrum_nr, spectrum in enumerate(spectra):
-
             for peak in self.dataset.peak_list:
                 params.add(**self._get_amplitude_dict(peak, spectrum_nr))
                 params.add(**self._get_center_dict(peak, spectrum_nr))
@@ -90,28 +89,28 @@ class Fitter:
         residual = copy.deepcopy(y_axis)
         params_dict_list = self._sort_params(params)
         for key in params_dict_list.keys():
-            for list_nr, value_list in enumerate(params_dict_list[key]):
-                if len(value_list) == 5:
+            for list_nr, val in enumerate(params_dict_list[key]):
+                if len(val) == 5:
                     y_sim = voigt_profile(
                         x_axis[key],
-                        value_list[1],
-                        value_list[2],
-                        value_list[3],
-                        value_list[0],
+                        val[1],
+                        val[2],
+                        val[3],
+                        val[0],
                     )
-                if len(value_list) == 3:
+                if len(val) == 3:
                     y_sim = gauss_profile(
                         x_axis[key],
-                        value_list[1],
-                        value_list[2],
-                        value_list[0],
+                        val[1],
+                        val[2],
+                        val[0],
                     )
-                if len(value_list) == 4:
+                if len(val) == 4:
                     y_sim = lorentz_profile(
                         x_axis[key],
-                        value_list[1],
-                        value_list[2],
-                        value_list[0],
+                        val[1],
+                        val[2],
+                        val[0],
                     )
                 residual[key] -= y_sim
         return np.concatenate(residual)

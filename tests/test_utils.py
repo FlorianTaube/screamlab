@@ -589,3 +589,30 @@ class TestDataset(unittest.TestCase):
                 "Peak_at_150_ppm_gamma_1",
             ],
         )
+
+    def test_generate_param_list_two_spectra_two_peaks_single_fitter(self):
+        self.add_n_spectra(2)
+        self.ds.add_peak(120, fitting_type="gauss")
+        params = self.singlefitter._generate_params_list()
+        keylist = []
+        for keys in params.keys():
+            keylist.append(keys)
+        self.assertListEqual(
+            keylist,
+            [
+                "Peak_at_150_ppm_amp_0",
+                "Peak_at_150_ppm_cen_0",
+                "Peak_at_150_ppm_sigma_0",
+                "Peak_at_150_ppm_gamma_0",
+                "Peak_at_120_ppm_amp_0",
+                "Peak_at_120_ppm_cen_0",
+                "Peak_at_120_ppm_sigma_0",
+                "Peak_at_150_ppm_amp_1",
+                "Peak_at_150_ppm_cen_1",
+                "Peak_at_150_ppm_sigma_1",
+                "Peak_at_150_ppm_gamma_1",
+                "Peak_at_120_ppm_amp_1",
+                "Peak_at_120_ppm_cen_1",
+                "Peak_at_120_ppm_sigma_1",
+            ],
+        )
