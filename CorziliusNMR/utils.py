@@ -128,6 +128,9 @@ class Fitter:
                 prefix = parts[0]
                 param_value_list = []
             if lastfix != parts[2]:
+                if param_value_list != []:
+                    param_dict[dict_index].append(param_value_list)
+                    param_value_list = []
                 lastfix = parts[2]
                 dict_index += 1
             if dict_index not in param_dict:
