@@ -495,3 +495,58 @@ class TestDataset(unittest.TestCase):
         self.assertListAlmostEqual(
             value_list, [200, 250, 2, 2, 200, 150, 3, 200, 200, 4], delta=5
         )
+
+    def test_generate_axis_list_global_fitter_nr_elements_x(self):
+        self.add_n_spectra(3)
+        x_axis, y_axis = self.globalfitter._generate_axis_list()
+        self.assertEqual(len(x_axis), 3)
+
+    def test_generate_axis_list_global_fitter_nr_elements_y(self):
+        self.add_n_spectra(3)
+        x_axis, y_axis = self.globalfitter._generate_axis_list()
+        self.assertEqual(len(y_axis), 3)
+
+    def test_generate_axis_list_global_fitter_corect_x_val(self):
+        self.add_n_spectra(3)
+        x_axis, y_axis = self.globalfitter._generate_axis_list()
+        self.assertTrue(
+            np.array_equal(x_axis[1], np.linspace(100, 350, 1000))
+        )
+
+    def test_generate_axis_list_global_fitter_corect_y_val(self):
+        self.add_n_spectra(3)
+        x_axis, y_axis = self.globalfitter._generate_axis_list()
+
+        max_list = []
+        for vals in y_axis:
+            plt.plot(x_axis[0], vals)
+            max_list.append(int(max(vals)))
+
+        self.assertListEqual(max_list, [20, 41, 62])
+
+    def test_generate_axis_list_single_fitter_nr_elements_x(self):
+        self.add_n_spectra(3)
+        x_axis, y_axis = self.singlefitter._generate_axis_list()
+        self.assertEqual(len(x_axis), 3)
+
+    def test_generate_axis_list_single_fitter_nr_elements_y(self):
+        self.add_n_spectra(3)
+        x_axis, y_axis = self.singlefitter._generate_axis_list()
+        self.assertEqual(len(y_axis), 3)
+
+    def test_generate_axis_list_single_fitter_corect_x_val(self):
+        self.add_n_spectra(3)
+        x_axis, y_axis = self.singlefitter._generate_axis_list()
+        self.assertTrue(
+            np.array_equal(x_axis[1], np.linspace(100, 350, 1000))
+        )
+
+    def test_generate_axis_list_single_fitter_corect_y_val(self):
+        self.add_n_spectra(3)
+        x_axis, y_axis = self.globalfitter._generate_axis_list()
+        max_list = []
+        for vals in y_axis:
+            plt.plot(x_axis[0], vals)
+            max_list.append(int(max(vals)))
+
+        self.assertListEqual(max_list, [20, 41, 62])
