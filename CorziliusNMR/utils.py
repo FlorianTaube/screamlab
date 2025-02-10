@@ -2,7 +2,7 @@ from scipy.special import wofz
 import lmfit
 import re
 import numpy as np
-import matplotlib.pyplot as plt
+
 import copy
 
 
@@ -14,9 +14,15 @@ class Fitter:
     def fit(self):
         x_axis, y_axis = self._generate_axis_list()
         params = self._generate_params_list()
+        params = (
+            self._set_param_expr(params)
+            if isinstance(self, GlobalFitter)
+            else params
+        )
         result = lmfit.minimize(
             self._spectral_fitting, params, args=(x_axis, y_axis)
         )
+        print(lmfit.fit_report(result))
         return result
 
     def _generate_axis_list(self):
@@ -29,7 +35,7 @@ class Fitter:
     def _generate_params_list(self):
         params = lmfit.Parameters()
         spectra = self._get_spectra_list()
-        for spectrum_nr, spectrum in enumerate(spectra):
+        for spectrum_nr, _ in enumerate(spectra):
             for peak in self.dataset.peak_list:
                 params.add(**self._get_amplitude_dict(peak, spectrum_nr))
                 params.add(**self._get_center_dict(peak, spectrum_nr))
@@ -53,7 +59,7 @@ class Fitter:
     def _get_spectra_list(self):
         return (
             [self.dataset.spectra[self.dataset.props.spectrum_for_prefit]]
-            if type(self) == Prefitter
+            if isinstance(self, Prefitter)
             else self.dataset.spectra
         )
 
@@ -88,8 +94,8 @@ class Fitter:
     def _spectral_fitting(self, params, x_axis, y_axis):
         residual = copy.deepcopy(y_axis)
         params_dict_list = self._sort_params(params)
-        for key in params_dict_list.keys():
-            for list_nr, val in enumerate(params_dict_list[key]):
+        for key, val_list in params_dict_list.items():
+            for val in val_list:
                 if len(val) == 5:
                     y_sim = voigt_profile(
                         x_axis[key],
@@ -116,19 +122,19 @@ class Fitter:
         return np.concatenate(residual)
 
     def _sort_params(self, params):
-        param_dict = dict()
+        param_dict = {}
         prefix, lastfix = None, None
         dict_index = -1
         param_value_list = []
         for param in params:
             parts = re.split(r"_(cen|amp|sigma|gamma)_", param)
             if prefix != parts[0]:
-                if param_value_list != []:
+                if param_value_list:
                     param_dict[dict_index].append(param_value_list)
                 prefix = parts[0]
                 param_value_list = []
             if lastfix != parts[2]:
-                if param_value_list != []:
+                if param_value_list:
                     param_dict[dict_index].append(param_value_list)
                     param_value_list = []
                 lastfix = parts[2]
@@ -140,6 +146,9 @@ class Fitter:
                 param_value_list.append("gam")
         param_dict[dict_index].append(param_value_list)
         return param_dict
+
+    def _set_param_expr(self, params):
+        pass
 
 
 class Prefitter(Fitter):
@@ -153,7 +162,14 @@ class Prefitter(Fitter):
 
 
 class GlobalFitter(Fitter):
-    pass
+
+    def _set_param_expr(self, params):
+        for keys in params.keys():
+            splitted_keys = keys.split("_")
+            if splitted_keys[-1] != "0" and splitted_keys[-2] != "amp":
+                splitted_keys[-1] = "0"
+                params[keys].expr = "_".join(splitted_keys)
+        return params
 
 
 class SingleFitter(Fitter):

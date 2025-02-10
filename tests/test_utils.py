@@ -17,7 +17,6 @@ class TestDataset(unittest.TestCase):
         self.singlefitter = utils.SingleFitter(self.ds)
 
     def assertListAlmostEqual(self, list1, list2, delta=1e-6):
-        """Check if two lists are almost equal element-wise within a tolerance."""
         self.assertEqual(
             len(list1), len(list2), "Lists are of different lengths"
         )
@@ -619,9 +618,9 @@ class TestDataset(unittest.TestCase):
 
     def test_singlefitter_fit_one_voigt_three_spectra(self):
         self.add_n_spectra(3)
-        self.prefitter.dataset.peak_list[0].peak_center = 250
-        self.prefitter.dataset.peak_list[1].peak_center = 250
-        self.prefitter.dataset.peak_list[2].peak_center = 250
+        self.singlefitter.dataset.peak_list[0].peak_center = 250
+        self.singlefitter.dataset.peak_list[1].peak_center = 250
+        self.singlefitter.dataset.peak_list[2].peak_center = 250
         result = self.singlefitter.fit()
         value_list = []
         for key in result.params:
@@ -633,10 +632,68 @@ class TestDataset(unittest.TestCase):
     def test_singlefitter_fit_lorentz_voigt_three_spectra(self):
         self.add_n_spectra(3, type=["voigt", "lorentz"])
         self.ds.add_peak(200, fitting_type="lorentz")
-        self.prefitter.dataset.peak_list[0].peak_center = 250
-        self.prefitter.dataset.peak_list[1].peak_center = 250
-        self.prefitter.dataset.peak_list[2].peak_center = 250
+        self.singlefitter.dataset.peak_list[0].peak_center = 250
+        self.singlefitter.dataset.peak_list[1].peak_center = 250
+        self.singlefitter.dataset.peak_list[2].peak_center = 250
         result = self.singlefitter.fit()
+        value_list = []
+        for key in result.params:
+            value_list.append(round(result.params[key].value))
+        self.assertListEqual(
+            value_list,
+            [
+                200,
+                250,
+                2,
+                2,
+                200,
+                200,
+                4,
+                400,
+                250,
+                2,
+                2,
+                400,
+                200,
+                4,
+                600,
+                250,
+                2,
+                2,
+                600,
+                200,
+                4,
+            ],
+        )
+
+    def test_set_param_expr_global_fitter(self):
+        self.add_n_spectra(2)
+        params = self.globalfitter._generate_params_list()
+        params = self.globalfitter._set_param_expr(params)
+        keylist = []
+        for key in params.keys():
+            keylist.append(params[key].expr)
+        self.assertListEqual(
+            keylist,
+            [
+                None,
+                None,
+                None,
+                None,
+                None,
+                "Peak_at_150_ppm_cen_0",
+                "Peak_at_150_ppm_sigma_0",
+                "Peak_at_150_ppm_gamma_0",
+            ],
+        )
+
+    def test_globalfitter_fit_lorentz_voigt_three_spectra(self):
+        self.add_n_spectra(3, type=["voigt", "lorentz"])
+        self.ds.add_peak(200, fitting_type="lorentz")
+        self.globalfitter.dataset.peak_list[0].peak_center = 250
+        self.globalfitter.dataset.peak_list[1].peak_center = 250
+        self.globalfitter.dataset.peak_list[2].peak_center = 250
+        result = self.globalfitter.fit()
         value_list = []
         for key in result.params:
             value_list.append(round(result.params[key].value))
