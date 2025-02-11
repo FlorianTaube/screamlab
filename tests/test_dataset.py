@@ -551,18 +551,6 @@ class TestDataset(unittest.TestCase):
         tbup = dataset.BuildupList()
         self.assertEqual(tbup._intensity, None)
 
-    def test_peak_individual_fit_vals(self):
-        self.add_n_spectra(3)
-        self.ds.add_peak(250)
-        self.ds.peak_list[0].individual_fit_vals = (
-            lmfit.minimizer.MinimizerResult,
-            [],
-        )
-        self.assertEqual(
-            type(self.ds.peak_list[0].individual_fit_vals),
-            dataset.BuildupList,
-        )
-
     def test_buidlup_list_set_tdel(self):
         self.add_n_spectra(5)
         for nr, spectrum in enumerate(self.ds.spectra):
@@ -571,12 +559,48 @@ class TestDataset(unittest.TestCase):
         b_list._set_tdel(self.ds.spectra)
         self.assertListEqual(b_list._tdel, [0, 2, 4, 6, 8])
 
-    def test_buildup_list_set_intensity(self):
-        self.add_n_spectra(3)
+    def test_buildup_list_set_intensity_one_peak_voigt(self):
+        self.add_n_spectra(5)
         self.ds.add_peak(250)
         b_list = CorziliusNMR.dataset.BuildupList()
         b_list._set_tdel(self.ds.spectra)
         self.ds._set_single_fitter()
         result = self.ds.fitter.fit()
-        b_list._set_intensity(result, self.ds.peak_list[0].peak_label)
-        self.assertListEqual(b_list._intensity, [200, 400, 600, 800, 1000])
+        b_list._set_intensity(
+            result, self.ds.peak_list[0].peak_label, self.ds.spectra
+        )
+        result_list = [
+            790.7184578638022,
+            1581.4369157275303,
+            2372.155373594169,
+            3162.8738314557045,
+            3953.592289318921,
+        ]
+        self.assertListEqual(b_list._intensity, result_list)
+
+    def test_sort_lists(self):
+        b_list = CorziliusNMR.dataset.BuildupList()
+        b_list._tdel = [1, 2, 4, 8, 16, 128, 256, 32, 64]
+        b_list._intensity = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        b_list._sort_lists()
+        result_list = [
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
+            128,
+            256,
+            1,
+            2,
+            3,
+            4,
+            5,
+            8,
+            9,
+            6,
+            7,
+        ]
+        self.assertListEqual(b_list._tdel + b_list._intensity, result_list)

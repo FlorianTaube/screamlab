@@ -1,5 +1,6 @@
 import lmfit
 from CorziliusNMR import io, utils, settings
+import numpy as np
 
 
 class Dataset:
@@ -20,13 +21,13 @@ class Dataset:
         print("Start peak fitting.")
         self._calculate_peak_intensities()
         print("Start buildup fit.")
-        self._buidup_fit_global()
+        self._start_buildup_fit()
         self._print()
 
     def start_buildup_fit_from_spectra(self):
         self._read_in_data_from_csv()
         self._calculate_peak_intensities()
-        self._buidup_fit_global()
+        self._start_buildup_fit()
 
     def start_buildup_from_intensitys(self):
         return
@@ -66,7 +67,7 @@ class Dataset:
         # TODO
         pass
 
-    def _calculate_peak_intensities(self):  # TODO write Test
+    def _calculate_peak_intensities(self):
         if self.props.prefit:
             self._set_prefitter()
             result = self.fitter.fit()
@@ -85,7 +86,7 @@ class Dataset:
             self.lmfit_result_handler.global_fit = lmfit.fit_report(result)
             self._get_intensities(result)
 
-    def _buildup_fit_global(self):
+    def _start_buildup_fit(self):
         fitter_classes = {
             "biexponential": utils.BiexpFitter,
             "biexponential_with_offset": utils.BiexpFitterWithOffset,
@@ -97,7 +98,7 @@ class Dataset:
             fitter_class = fitter_classes.get(b_type)
             if fitter_class:
                 fitter = fitter_class(self)
-                fitter.perform_fit()
+                result = fitter.perform_fit()
 
     def _set_prefitter(self):
         self.fitter = utils.Prefitter(self)
@@ -347,14 +348,56 @@ class BuildupList:
         self._tdel = None
         self._intensity = None
 
-    def set_vals(sel, result, spectra, label):
+    def set_vals(self, result, spectra, label):
         self._set_tdel(spectra)
-        self._set_intensity(result, label)
+        self._set_intensity(result, label, spectra)
+        self._sort_lists()
 
     def _set_tdel(self, spectra):
         self._tdel = [s.tdel for s in spectra]
 
-    def _set_intensity(self, result):
-        print(result, label)
+    def _set_intensity(self, result, label, spectra):
+        last_digid = None
+        self._intensity = []
+        val_list = []
+        for param in result.params:
+            if label in param:
+                if last_digid != param.split("_")[-1]:
+                    if val_list != []:
+                        self._intensity.append(
+                            self._calc_integral(
+                                val_list, spectra[int(last_digid)]
+                            )
+                        )
+                    last_digid = param.split("_")[-1]
+                    val_list = []
+                val_list.append(float(result.params[param].value))
+                if param.split("_")[-2] == "gamma":
+                    val_list.append("gamma")
+        self._intensity.append(
+            self._calc_integral(val_list, spectra[int(last_digid)])
+        )
 
-        pass
+    def _calc_integral(self, val_list, spectrum):
+        if len(val_list) == 5:
+            sim_spectrum = utils.voigt_profile(
+                spectrum.x_axis,
+                val_list[1],
+                val_list[2],
+                val_list[3],
+                val_list[0],
+            )
+        if len(val_list) == 4:
+            sim_spectrum = utils.lorentz_profile(
+                spectrum.x_axis, val_list[1], val_list[2], val_list[0]
+            )
+        if len(val_list) == 3:
+            sim_spectrum = utils.gauss_profile(
+                spectrum.x_axis, val_list[1], val_list[2], val_list[0]
+            )
+        return np.trapz(sim_spectrum)
+
+    def _sort_lists(self):
+        self._tdel, self._intensity = map(
+            list, zip(*sorted(zip(self._tdel, self._intensity)))
+        )
