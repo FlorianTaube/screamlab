@@ -111,3 +111,10 @@ class ScreamImporter(TopspinImporter):
 
 class Pseudo2DImporter(TopspinImporter):
     pass
+
+
+class LmfitResultHandler:
+    def __init__(self):
+        self.prefit = None
+        self.single_fit = None
+        self.global_fit = None

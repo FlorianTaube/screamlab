@@ -11,6 +11,7 @@ class TestDataset(unittest.TestCase):
     def setUp(self):
         self.scream_importer = io.ScreamImporter(dataset.Dataset())
         self.pseudo_importer = io.Pseudo2DImporter(dataset.Dataset())
+        self.lmfit_result = io.LmfitResultHandler()
 
     def set_up_one_real_spectrum(self):
         self.scream_importer._dataset.spectra.append(
@@ -184,3 +185,12 @@ class TestDataset(unittest.TestCase):
         for spectrum in self.scream_importer._dataset.spectra:
             delay_times.append(len(spectrum.y_axis))
         self.assertListEqual(delay_times, [16384] * 5)
+
+    def test_init_lmfit_result_handler_prefit(self):
+        self.assertEqual(self.lmfit_result.prefit, None)
+
+    def test_init_lmfit_result_handler_single_fit(self):
+        self.assertEqual(self.lmfit_result.single_fit, None)
+
+    def test_init_lmfit_result_handler_sglobal_fit(self):
+        self.assertEqual(self.lmfit_result.global_fit, None)

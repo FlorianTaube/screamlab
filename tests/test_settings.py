@@ -267,8 +267,10 @@ class TestProperties(unittest.TestCase):
         self.assertListEqual(props.expno, ["1"])
 
     def test_expno_initial_value(self):
-        props = Properties(expno=[200, 50])
-        self.assertListEqual(props.expno, ["200", "50"])
+        props = Properties(expno=[23, 50])
+        self.assertListEqual(
+            props.expno, [str(item) for item in list(range(23, 51))]
+        )
 
     def test_expno_set_valid_value(self):
         props = Properties()

@@ -1,3 +1,4 @@
+import lmfit
 from CorziliusNMR import io, utils, settings
 
 
@@ -9,6 +10,7 @@ class Dataset:
         self.spectra = []
         self.fitter = None
         self.peak_list = []
+        self.lmfit_result_handler = io.LmfitResultHandler()
 
     def start_buildup_fit_from_topspin_export(self):  # TODO Test
         print(
@@ -65,35 +67,80 @@ class Dataset:
         pass
 
     def _calculate_peak_intensities(self):  # TODO write Test
-        if "fit" in self.props.spectrum_fit_type:
-            self._perform_spectrum_fit()  # TODO write function
+        if self.props.prefit:
+            self._set_prefitter()
+            result = self.fitter.fit()
+            self.lmfit_result_handler.prefit = lmfit.fit_report(result)
+            self._update_line_broadening(result)
+        if "individual" in self.props.spectrum_fit_type:
+            self._set_single_fitter()
+            result = self.fitter.fit()
+            self.lmfit_result_handler.single_fit = lmfit.fit_report(
+                result, self.spectra
+            )
+            self._get_intensities(result)
         if "global" in self.props.spectrum_fit_type:
-            self._perform_global_spectrum_fit()
+            self._set_global_fitter()
+            result = self.fitter.fit()
+            self.lmfit_result_handler.global_fit = lmfit.fit_report(result)
+            self._get_intensities(result)
 
-    def _buidup_fit_global(self):
+    def _buildup_fit_global(self):
+        fitter_classes = {
+            "biexponential": utils.BiexpFitter,
+            "biexponential_with_offset": utils.BiexpFitterWithOffset,
+            "exponential": utils.ExpFitter,
+            "exponential_with_offset": utils.ExpFitterWithOffset,
+        }
+
         for b_type in self.props.buildup_types:
-            if b_type == "biexponential":
-                buildup_fitter = utils.BiexpFitter(self)
-                buildup_fitter.perform_fit()
-            elif b_type == "biexponential_with_offset":
-                buildup_fitter = utils.BiexpFitterWithOffset(self)
-                buildup_fitter.perform_fit()
-            elif b_type == "exponential":
-                buildup_fitter = utils.ExpFitter(self)
-                buildup_fitter.perform_fit()
-            elif b_type == "exponential_with_offset":
-                buildup_fitter = utils.ExpFitterWithOffset(self)
-                buildup_fitter.perform_fit()
+            fitter_class = fitter_classes.get(b_type)
+            if fitter_class:
+                fitter = fitter_class(self)
+                fitter.perform_fit()
 
-    def _perform_spectrum_fit(self):
-        pass
+    def _set_prefitter(self):
+        self.fitter = utils.Prefitter(self)
 
-    def _perform_global_spectrum_fit(self):
-        self.fitter = utils.GlobalSpectrumFitter(self)
-        self.fitter.fit()
+    def _set_single_fitter(self):
+        self.fitter = utils.SingleFitter(self)
 
-    def _get_intensities(self):
-        pass
+    def _set_global_fitter(self):
+        self.fitter = utils.GlobalFitter(self)
+
+    def _get_intensities(self, result):
+        if isinstance(self.fitter, utils.SingleFitter):
+            for peak in self.peak_list:
+                peak.individual_fit_vals = (result, self.spectra)
+        if isinstance(self.fitter, utils.GlobalFitter):
+            for peak in self.peak_list:
+                peak.global_fit_vals = (result, self.spectra)
+
+    def _update_line_broadening(self, result):
+        for peak in self.peak_list:
+            value = dict()
+            for lw in ["sigma", "gamma"]:
+                key = (
+                    f"{peak.peak_label}_{lw}_{self.props.spectrum_for_prefit}"
+                )
+                if key in result.params.keys():
+                    value.update(
+                        {
+                            f"{lw}": {
+                                "min": round(
+                                    result.params[key].value
+                                    - 0.1 * result.params[key].value,
+                                    2,
+                                ),
+                                "max": round(
+                                    result.params[key].value
+                                    + 0.1 * result.params[key].value,
+                                    2,
+                                ),
+                            }
+                        }
+                    )
+            peak.line_broadening = value
 
 
 class Spectra:
@@ -114,6 +161,28 @@ class Peak:
         self._fitting_type = None
         self._peak_sign = None
         self._line_broadening = None
+        self._individual_fit_vals = None
+        self._global_fit_vals = None
+
+    @property
+    def individual_fit_vals(self) -> list:
+        return self._individual_fit_vals
+
+    @individual_fit_vals.setter
+    def individual_fit_vals(self, args):
+        result, spectra = args
+        self._individual_fit_vals = BuildupList()
+        self._individual_fit_vals.set_vals(result, spectra, self.peak_label)
+
+    @property
+    def global_fit_vals(self) -> list:
+        return self._global_fit_vals
+
+    @global_fit_vals.setter
+    def global_fit_vals(self, args):
+        result, spectra = args
+        self._global_fit_vals = BuildupList()
+        self._global_fit_vals.set_vals(result, spectra, self.peak_label)
 
     @property
     def line_broadening(self) -> str:
@@ -123,54 +192,14 @@ class Peak:
     def line_broadening(self, value):
         allowed_values = ["sigma", "gamma"]
         inner_allowed_values = ["min", "max"]
-
-        if not isinstance(value, dict):
-            raise TypeError(
-                f"'line_broadening' must be a 'dict', but got {type(value)}."
-            )
-
-        invalid_keys = [
-            key for key in value.keys() if key not in allowed_values
-        ]
-        if invalid_keys:
-            raise ValueError(
-                f"Invalid keys found in the dictionary: {invalid_keys}. Allowed keys are: {allowed_values}."
-            )
-
-        if not all(isinstance(v, dict) for v in value.values()):
-            raise TypeError(
-                "Each value in the 'line_broadening' dictionary must be of type 'dict'."
-            )
-
-        for key, inner_dict in value.items():
-            invalid_inner_keys = [
-                inner_key
-                for inner_key in inner_dict.keys()
-                if inner_key not in inner_allowed_values
-            ]
-            if invalid_inner_keys:
-                raise ValueError(
-                    f"Invalid inner keys for '{key}': {invalid_inner_keys}. Allowed inner keys are: {inner_allowed_values}."
-                )
-
-        params = self._return_default_dict()
-
-        if self.fitting_type == "gauss":
-            params = {"sigma": params["sigma"]}
-        elif self.fitting_type == "lorentz":
-            params = {"gamma": params["gamma"]}
-
-        for key in allowed_values:
-            if key in value:
-                for inner_key in inner_allowed_values:
-                    inner_value = value[key].get(inner_key)
-                    if inner_value is not None:
-                        if not isinstance(inner_value, (int, float)):
-                            raise TypeError(
-                                f"'{inner_key}' value must be an 'int' or 'float', but got {type(inner_value)}."
-                            )
-                        params[key][inner_key] = float(inner_value)
-
+        self._check_if_value_is_dict(value)
+        self._check_for_invalid_keys(value, allowed_values)
+        self._check_for_invalid_dict(value)
+        self._check_for_invalid_inner_keys(value, inner_allowed_values)
+        params = self._set_init_params()
+        self._overwrite_init_params(
+            value, allowed_values, inner_allowed_values, params
+        )
         self._line_broadening = params
 
     @property
@@ -254,3 +283,78 @@ class Peak:
             "sigma": {"min": 0, "max": 20},
             "gamma": {"min": 0, "max": 20},
         }
+
+    def _check_if_value_is_dict(self, value):
+        if not isinstance(value, dict):
+            raise TypeError(
+                f"'line_broadening' must be a 'dict', but got {type(value)}."
+            )
+
+    def _check_for_invalid_keys(self, value, allowed_values):
+        invalid_keys = [
+            key for key in value.keys() if key not in allowed_values
+        ]
+        if invalid_keys:
+            raise ValueError(
+                f"Invalid keys found in the dictionary: {invalid_keys}. Allowed keys are: {allowed_values}."
+            )
+
+    def _check_for_invalid_dict(self, value):
+        if not all(isinstance(v, dict) for v in value.values()):
+            raise TypeError(
+                "Each value in the 'line_broadening' dictionary must be of type 'dict'."
+            )
+
+    def _check_for_invalid_inner_keys(self, value, inner_allowed_values):
+        for key, inner_dict in value.items():
+            invalid_inner_keys = [
+                inner_key
+                for inner_key in inner_dict.keys()
+                if inner_key not in inner_allowed_values
+            ]
+            if invalid_inner_keys:
+                raise ValueError(
+                    f"Invalid inner keys for '{key}': {invalid_inner_keys}. Allowed inner keys are: {inner_allowed_values}."
+                )
+
+    def _set_init_params(self):
+        params = self._return_default_dict()
+        if self.fitting_type == "gauss":
+            params = {"sigma": params["sigma"]}
+        elif self.fitting_type == "lorentz":
+            params = {"gamma": params["gamma"]}
+        return params
+
+    def _overwrite_init_params(
+        self, value, allowed_values, inner_allowed_values, params
+    ):
+        for key in allowed_values:
+            if key in value:
+                for inner_key in inner_allowed_values:
+                    inner_value = value[key].get(inner_key)
+                    if inner_value is not None:
+                        if not isinstance(inner_value, (int, float)):
+                            raise TypeError(
+                                f"'{inner_key}' value must be an 'int' or 'float', but got {type(inner_value)}."
+                            )
+                        params[key][inner_key] = float(inner_value)
+        return params
+
+
+class BuildupList:
+
+    def __init__(self):
+        self._tdel = None
+        self._intensity = None
+
+    def set_vals(sel, result, spectra, label):
+        self._set_tdel(spectra)
+        self._set_intensity(result, label)
+
+    def _set_tdel(self, spectra):
+        self._tdel = [s.tdel for s in spectra]
+
+    def _set_intensity(self, result):
+        print(result, label)
+
+        pass

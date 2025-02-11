@@ -1,6 +1,9 @@
 import CorziliusNMR.settings
+import lmfit
 from CorziliusNMR import dataset, settings
 import unittest
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class TestDataset(unittest.TestCase):
@@ -8,6 +11,34 @@ class TestDataset(unittest.TestCase):
     def setUp(self):
         self.ds = dataset.Dataset()
         self.peak = dataset.Peak()
+
+    def add_n_spectra(self, number_of_spectra, type=["voigt"]):
+        for spec in range(0, number_of_spectra):
+            self.ds.spectra.append(CorziliusNMR.dataset.Spectra())
+        self.add_x_axis()
+        self.add_y_axix(type)
+
+    def add_x_axis(self):
+        for spec in self.ds.spectra:
+            spec.x_axis = np.linspace(100, 350, 1000)
+
+    def add_y_axix(self, type_list):
+        for spec_nr, spec in enumerate(self.ds.spectra):
+            y_axis = np.zeros(len(spec.x_axis))
+            for type in type_list:
+                if type == "voigt":
+                    y_axis = y_axis + CorziliusNMR.utils.voigt_profile(
+                        spec.x_axis, 250, 2, 2, (spec_nr + 1) * 200
+                    )
+                if type == "gauss":
+                    y_axis = y_axis + CorziliusNMR.utils.gauss_profile(
+                        spec.x_axis, 150, 3, (spec_nr + 1) * 200
+                    )
+                if type == "lorentz":
+                    y_axis = y_axis + CorziliusNMR.utils.lorentz_profile(
+                        spec.x_axis, 200, 4, (spec_nr + 1) * 200
+                    )
+            spec.y_axis = y_axis
 
     def test_dataset_init_has_none_type_importer(self):
         self.assertIsNone(self.ds.importer)
@@ -63,10 +94,6 @@ class TestDataset(unittest.TestCase):
     def test_spectra_init_y_axis_is_None(self):
         spectrum = CorziliusNMR.dataset.Spectra()
         self.assertIsNone(spectrum.y_axis)
-
-    def test_spectra_init_peaks_is_None(self):
-        spectrum = CorziliusNMR.dataset.Spectra()
-        self.assertIsNone(spectrum.peaks)
 
     def test_ds_init_peak_list_is_empty_list(self):
         self.assertListEqual(self.ds.peak_list, [])
@@ -401,7 +428,155 @@ class TestDataset(unittest.TestCase):
         )
 
     def test_dataset_perform_global_spectrum_fit_set_correct_fitter(self):
-        self.ds._perform_global_spectrum_fit()
+        self.ds._set_global_fitter()
         self.assertEqual(
-            type(self.ds.fitter), CorziliusNMR.utils.GlobalSpectrumFitter
+            type(self.ds.fitter), CorziliusNMR.utils.GlobalFitter
         )
+
+    def test_dataset_perform_single_spectrum_fit_set_correct_fitter(self):
+        self.ds._set_single_fitter()
+        self.assertEqual(
+            type(self.ds.fitter), CorziliusNMR.utils.SingleFitter
+        )
+
+    def test_dataset_perform_single_spectrum_fit_set_correct_fitter(self):
+        self.ds._set_prefitter()
+        self.assertEqual(type(self.ds.fitter), CorziliusNMR.utils.Prefitter)
+
+    def test_init_dataset_lmfit_result_handler(self):
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler),
+            CorziliusNMR.io.LmfitResultHandler,
+        )
+
+    def test_calculate_peak_intensities_prefit_result_setter(self):
+        self.ds.props.prefit = True
+        self.add_n_spectra(1)
+        self.ds.add_peak(250)
+        self.ds._calculate_peak_intensities()
+        self.assertTrue(
+            "[[Fit Statistics]]" in self.ds.lmfit_result_handler.prefit
+        )
+
+    def test_update_line_broadening(self):
+        self.ds.props.prefit = True
+        self.add_n_spectra(1)
+        self.ds.add_peak(250)
+        self.ds._set_prefitter()
+        result = self.ds.fitter.fit()
+        self.ds._update_line_broadening(result)
+        self.assertDictEqual(
+            self.ds.peak_list[-1].line_broadening,
+            {
+                "sigma": {"min": 1.8, "max": 2.2},
+                "gamma": {"min": 1.8, "max": 2.2},
+            },
+        )
+
+    def test_update_line_broadening_gauss(self):
+        self.ds.props.prefit = True
+        self.add_n_spectra(1, type=["gauss"])
+        self.ds.add_peak(150)
+        self.ds.peak_list[0].fitting_type = "gauss"
+        self.ds._set_prefitter()
+        result = self.ds.fitter.fit()
+        self.ds._update_line_broadening(result)
+        self.assertDictEqual(
+            self.ds.peak_list[-1].line_broadening,
+            {"sigma": {"min": 2.7, "max": 3.3}},
+        )
+
+    def test_update_line_broadening_lorentz(self):
+        self.ds.props.prefit = True
+        self.add_n_spectra(1, type=["lorentz"])
+        self.ds.add_peak(200)
+        self.ds.peak_list[0].fitting_type = "lorentz"
+        self.ds._set_prefitter()
+        result = self.ds.fitter.fit()
+        self.ds._update_line_broadening(result)
+        self.assertDictEqual(
+            self.ds.peak_list[-1].line_broadening,
+            {"gamma": {"min": 3.6, "max": 4.4}},
+        )
+
+    def test_calculate_peak_intensities_single_fit_result_setter_without_prefit(
+        self,
+    ):
+        self.ds.props.spectrum_fit_type = ["individual"]
+        self.add_n_spectra(3)
+        self.ds.add_peak(250)
+        self.ds._calculate_peak_intensities()
+        self.assertTrue(
+            "[[Fit Statistics]]" in self.ds.lmfit_result_handler.single_fit
+        )
+
+    def test_calculate_peak_intensities_single_fit_result_setter_with_prefit(
+        self,
+    ):
+        self.ds.props.prefit = True
+        self.ds.props.spectrum_fit_type = ["individual"]
+        self.add_n_spectra(3)
+        self.ds.add_peak(250)
+        self.ds._calculate_peak_intensities()
+        self.assertTrue(
+            "[[Fit Statistics]]" in self.ds.lmfit_result_handler.single_fit
+        )
+
+    def test_calculate_peak_intensities_global_fit_result_setter_without_prefit(
+        self,
+    ):
+        self.add_n_spectra(3)
+        self.ds.add_peak(250)
+        self.ds._calculate_peak_intensities()
+        self.assertTrue(
+            "[[Fit Statistics]]" in self.ds.lmfit_result_handler.global_fit
+        )
+
+    def test_calculate_peak_intensities_global_fit_result_setter_with_prefit(
+        self,
+    ):
+        self.ds.props.prefit = True
+        self.add_n_spectra(3)
+        self.ds.add_peak(250)
+        self.ds._calculate_peak_intensities()
+        self.assertTrue(
+            "[[Fit Statistics]]" in self.ds.lmfit_result_handler.global_fit
+        )
+
+    def test_buildup_list_init_tdel(self):
+        tbup = dataset.BuildupList()
+        self.assertEqual(tbup._tdel, None)
+
+    def test_buildup_list_init_intensity(self):
+        tbup = dataset.BuildupList()
+        self.assertEqual(tbup._intensity, None)
+
+    def test_peak_individual_fit_vals(self):
+        self.add_n_spectra(3)
+        self.ds.add_peak(250)
+        self.ds.peak_list[0].individual_fit_vals = (
+            lmfit.minimizer.MinimizerResult,
+            [],
+        )
+        self.assertEqual(
+            type(self.ds.peak_list[0].individual_fit_vals),
+            dataset.BuildupList,
+        )
+
+    def test_buidlup_list_set_tdel(self):
+        self.add_n_spectra(5)
+        for nr, spectrum in enumerate(self.ds.spectra):
+            spectrum.tdel = nr * 2
+        b_list = CorziliusNMR.dataset.BuildupList()
+        b_list._set_tdel(self.ds.spectra)
+        self.assertListEqual(b_list._tdel, [0, 2, 4, 6, 8])
+
+    def test_buildup_list_set_intensity(self):
+        self.add_n_spectra(3)
+        self.ds.add_peak(250)
+        b_list = CorziliusNMR.dataset.BuildupList()
+        b_list._set_tdel(self.ds.spectra)
+        self.ds._set_single_fitter()
+        result = self.ds.fitter.fit()
+        b_list._set_intensity(result, self.ds.peak_list[0].peak_label)
+        self.assertListEqual(b_list._intensity, [200, 400, 600, 800, 1000])

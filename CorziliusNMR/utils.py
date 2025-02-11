@@ -2,7 +2,6 @@ from scipy.special import wofz
 import lmfit
 import re
 import numpy as np
-
 import copy
 
 
@@ -22,7 +21,6 @@ class Fitter:
         result = lmfit.minimize(
             self._spectral_fitting, params, args=(x_axis, y_axis)
         )
-        print(lmfit.fit_report(result))
         return result
 
     def _generate_axis_list(self):

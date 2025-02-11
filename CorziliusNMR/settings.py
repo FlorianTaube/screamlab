@@ -94,9 +94,7 @@ class Properties:
                 "All elements in the 'expno' list must be of type 'int'."
             )
         if len(value) == 2:
-            value = list(
-                range(value[0], value[-1] + 1)
-            )  # TODO Test schreiben
+            value = list(range(value[0], value[-1] + 1))
         self._expno = [str(item) for item in value]
 
     @property
