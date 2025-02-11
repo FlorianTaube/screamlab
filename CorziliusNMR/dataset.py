@@ -39,7 +39,7 @@ class Dataset:
         fitting_group=1,
         fitting_type="voigt",
         peak_sign="+",
-        line_broadening=dict(),
+        line_broadening={},
     ):
         self.peak_list.append(Peak())
         self.peak_list[-1].peak_center = center_of_peak
@@ -119,7 +119,7 @@ class Dataset:
 
     def _update_line_broadening(self, result):
         for peak in self.peak_list:
-            value = dict()
+            value = {}
             for lw in ["sigma", "gamma"]:
                 key = (
                     f"{peak.peak_label}_{lw}_{self.props.spectrum_for_prefit}"
@@ -363,7 +363,7 @@ class BuildupList:
         for param in result.params:
             if label in param:
                 if last_digid != param.split("_")[-1]:
-                    if val_list != []:
+                    if val_list:
                         self._intensity.append(
                             self._calc_integral(
                                 val_list, spectra[int(last_digid)]
@@ -379,6 +379,7 @@ class BuildupList:
         )
 
     def _calc_integral(self, val_list, spectrum):
+        sim_spectrum = None
         if len(val_list) == 5:
             sim_spectrum = utils.voigt_profile(
                 spectrum.x_axis,

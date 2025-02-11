@@ -1,3 +1,18 @@
+"""
+Properties Module
+=================
+
+This module provides the `Properties` class, which manages and validates properties related to spectral fitting and buildup types.
+
+Classes
+-------
+.. autoclass:: Properties
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+"""
+
 from typing import Any
 import os
 
@@ -10,24 +25,22 @@ class Properties:
     ----------
     prefit : bool, optional
         Indicates whether prefit mode is enabled. Default is False.
-
     buildup_types : list of str, optional
         A list specifying the types of buildup to be used. Default is ["exponential"].
-
     spectrum_fit_type : list of str, optional
         A list specifying the spectrum fit type. Default is ["global"].
-
     spectrum_for_prefit : int, optional
         Specifies the spectrum index to be used for prefit. Default is 0.
-    plot_prefit : bool, optional
-        Indicates whether to plot the prefit. Default is True.
-    path_to_experiment : str or None, optional
-        Path to the experiment data. Default is None.
-    expno : Any, optional
-        Experiment number. Default is None.
-    procno : Any, optional
-        Process number. Default is None.
-
+    path_to_experiment : str, optional
+        Path to the experiment data. Default is the current script's directory.
+    procno : int, optional
+        Process number. Default is 103.
+    expno : list of int, optional
+        Experiment numbers. Default is [1].
+    loop20 : str, optional
+        Loop parameter. Default is "L 20".
+    delay20 : str, optional
+        Delay parameter. Default is "D 20".
     """
 
     def __init__(
@@ -42,6 +55,30 @@ class Properties:
         loop20: str = "L 20",
         delay20: str = "D 20",
     ):
+        """
+        Initialize the Properties class with default or specified values.
+
+        Parameters
+        ----------
+        prefit : bool, optional
+            Indicates whether prefit mode is enabled. Default is False.
+        buildup_types : list of str, optional
+            Types of buildup to be used. Default is ["exponential"].
+        spectrum_fit_type : list of str, optional
+            Spectrum fit type. Default is ["global"].
+        spectrum_for_prefit : int, optional
+            Spectrum index used for prefit. Default is 0.
+        path_to_experiment : str, optional
+            Path to the experiment data. Default is the current script's directory.
+        procno : int, optional
+            Process number. Default is 103.
+        expno : list of int, optional
+            Experiment numbers. Default is [1].
+        loop20 : str, optional
+            Loop parameter. Default is "L 20".
+        delay20 : str, optional
+            Delay parameter. Default is "D 20".
+        """
         self._path_to_experiment = None
         self.path_to_experiment = path_to_experiment
         self._procno = None
@@ -56,10 +93,10 @@ class Properties:
         self.spectrum_for_prefit = spectrum_for_prefit
         self._spectrum_fit_type = None
         self.spectrum_fit_type = spectrum_fit_type
-        self._loop20 = None  # TODO Test
-        self.loop20 = loop20  # TODO Test
-        self._delay20 = None  # TODO TEst
-        self.delay20 = delay20  # TODO TEst
+        self._loop20 = None
+        self.loop20 = loop20
+        self._delay20 = None
+        self.delay20 = delay20
 
     @property
     def delay20(self) -> str:

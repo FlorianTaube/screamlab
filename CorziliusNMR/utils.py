@@ -91,6 +91,7 @@ class Fitter:
 
     def _spectral_fitting(self, params, x_axis, y_axis):
         residual = copy.deepcopy(y_axis)
+        y_sim = None
         params_dict_list = self._sort_params(params)
         for key, val_list in params_dict_list.items():
             for val in val_list:
@@ -172,24 +173,6 @@ class GlobalFitter(Fitter):
 
 class SingleFitter(Fitter):
     pass
-
-
-"""
-utils.py
-=================
-
-This module provides tools for fitting buildup curves from spectral data using
-various models including exponential, biexponential, and their variants with offsets.
-
-Classes
--------
-BuildupFitter
-BiexpFitter
-BiexpFitterWithOffset
-ExpFitter
-ExpFitterWithOffset
-
-"""
 
 
 class BuildupFitter:
