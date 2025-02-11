@@ -32,6 +32,9 @@ class TestDataset(unittest.TestCase):
         self.add_x_axis()
         self.add_y_axix(type)
 
+    def add_one_peak(self):
+        self.ds.peak_list[0]._individual_fit_vals
+
     def add_x_axis(self):
         for spec in self.ds.spectra:
             spec.x_axis = np.linspace(100, 350, 1000)
@@ -723,3 +726,6 @@ class TestDataset(unittest.TestCase):
                 4,
             ],
         )
+
+    def test_buildup_fitter_init(self):
+        self.add_one_peak()
