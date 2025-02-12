@@ -112,7 +112,7 @@ class Dataset:
     def _get_intensities(self, result):
         if isinstance(self.fitter, utils.SingleFitter):
             for peak in self.peak_list:
-                peak.individual_fit_vals = (result, self.spectra)
+                peak.buildup_vals = (result, self.spectra)
         if isinstance(self.fitter, utils.GlobalFitter):
             for peak in self.peak_list:
                 peak.global_fit_vals = (result, self.spectra)
@@ -162,18 +162,18 @@ class Peak:
         self._fitting_type = None
         self._peak_sign = None
         self._line_broadening = None
-        self._individual_fit_vals = None
+        self._buildup_vals = None
         self._global_fit_vals = None
 
     @property
-    def individual_fit_vals(self) -> list:
-        return self._individual_fit_vals
+    def buildup_vals(self) -> list:
+        return self._buildup_vals
 
-    @individual_fit_vals.setter
-    def individual_fit_vals(self, args):
+    @buildup_vals.setter
+    def buildup_vals(self, args):
         result, spectra = args
-        self._individual_fit_vals = BuildupList()
-        self._individual_fit_vals.set_vals(result, spectra, self.peak_label)
+        self._buildup_vals = BuildupList()
+        self._buildup_vals.set_vals(result, spectra, self.peak_label)
 
     @property
     def global_fit_vals(self) -> list:

@@ -34,22 +34,12 @@ class TestDataset(unittest.TestCase):
 
     def add_one_peak(self):
         self.ds.peak_list.append(dataset.Peak())
-        self.ds.peak_list[0]._individual_fit_vals = dataset.BuildupList()
-        self.ds.peak_list[0]._individual_fit_vals.tdel = [
-            1,
-            2,
-            4,
-            8,
-            16,
-            32,
-            64,
+        self.ds.peak_list[0]._buildup_vals = dataset.BuildupList()
+        self.ds.peak_list[0]._buildup_vals.tdel = [2**i for i in range(7)]
+        self.ds.peak_list[0]._buildup_vals.intensity = [
+            12000 * (1 + np.exp(-3 / (2**i))) for i in range(7)
         ]
-        self.ds.peak_list[0]._individual_fit_vals.intensity = [
-            2**i
-            for i in range(
-                len(self.ds.peak_list[0]._individual_fit_vals.tdel)
-            )
-        ]
+        self.ds.peak_list[0].peak_sign = "+"
 
     def add_x_axis(self):
         for spec in self.ds.spectra:
@@ -77,6 +67,17 @@ class TestDataset(unittest.TestCase):
         y_axis = np.array(y_axis)
         noise = np.random.normal(0, 1, size=y_axis.shape)
         return y_axis + noise
+
+    def check_dict(self, param_dict, a_dict):
+        t_dict = {"value": 5, "min": 0, "max": 192}
+        x_dict = {"value": 0, "min": -5, "max": 5}
+        for key in param_dict:
+            if "A" in key:
+                self.assertDictEqual(param_dict[key], a_dict)
+            if "t" in key:
+                self.assertDictEqual(param_dict[key], t_dict)
+            if "x" in key:
+                self.assertDictEqual(param_dict[key], x_dict)
 
     def test_fitter_init_dataset(self):
         self.assertEqual(
@@ -778,10 +779,104 @@ class TestDataset(unittest.TestCase):
         fitter = utils.ExpFitterWithOffset(self.ds)
         self.assertEqual(type(fitter), CorziliusNMR.utils.ExpFitterWithOffset)
 
-    def test_buildup_fitter_init_ds_exp(self):
+    def test_biexp_fitter_get_default_param_dict(self):
         self.add_one_peak()
         fitter = utils.BiexpFitter(self.ds)
-        self.ds.peak_list[0].peak_sign = "+"
         param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
-        print(self.ds.peak_list[0].individual_fit_vals.intensity)
-        print(param_dict)
+        a_dict = {"value": 10, "min": 0, "max": 70351.43997489079}
+        self.check_dict(param_dict, a_dict)
+
+    def test_biexp_fitter_get_default_param_dict_correct_number_of_keys(self):
+        self.add_one_peak()
+        fitter = utils.BiexpFitter(self.ds)
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        self.assertEqual(len(param_dict.keys()), 4)
+
+    def test_biexp_fitter_get_default_param_dict_negative(self):
+        self.add_one_peak()
+        fitter = utils.BiexpFitter(self.ds)
+        self.ds.peak_list[0].peak_sign = "-"
+        self.ds.peak_list[0].buildup_vals.intensity = [
+            -x for x in self.ds.peak_list[0].buildup_vals.intensity
+        ]
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        a_dict = {"value": 10, "min": -70351.43997489079, "max": 0}
+        self.check_dict(param_dict, a_dict)
+
+    def test_exp_fitter_get_default_param_dict(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitter(self.ds)
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        a_dict = {"value": 10, "min": 0, "max": 70351.43997489079}
+        self.check_dict(param_dict, a_dict)
+
+    def test_exp_fitter_get_default_param_dict_correct_number_of_keys(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitter(self.ds)
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        self.assertEqual(len(param_dict.keys()), 2)
+
+    def test_exp_fitter_get_default_param_dict_negative(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitter(self.ds)
+        self.ds.peak_list[0].peak_sign = "-"
+        self.ds.peak_list[0].buildup_vals.intensity = [
+            -x for x in self.ds.peak_list[0].buildup_vals.intensity
+        ]
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        a_dict = {"value": 10, "min": -70351.43997489079, "max": 0}
+        self.check_dict(param_dict, a_dict)
+
+    def test_biexp_offset_fitter_get_default_param_dict(self):
+        self.add_one_peak()
+        fitter = utils.BiexpFitterWithOffset(self.ds)
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        a_dict = {"value": 10, "min": 0, "max": 70351.43997489079}
+        self.check_dict(param_dict, a_dict)
+
+    def test_biexp_fitter_get_default_param_dict_correct_number_of_keys(self):
+        self.add_one_peak()
+        fitter = utils.BiexpFitterWithOffset(self.ds)
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        self.assertEqual(len(param_dict.keys()), 5)
+
+    def test_biexp_fitter_get_default_param_dict_negative(self):
+        self.add_one_peak()
+        fitter = utils.BiexpFitterWithOffset(self.ds)
+        self.ds.peak_list[0].peak_sign = "-"
+        self.ds.peak_list[0].buildup_vals.intensity = [
+            -x for x in self.ds.peak_list[0].buildup_vals.intensity
+        ]
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        a_dict = {"value": 10, "min": -70351.43997489079, "max": 0}
+        self.check_dict(param_dict, a_dict)
+
+    def test_exp_offset_fitter_get_default_param_dict(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitterWithOffset(self.ds)
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        a_dict = {"value": 10, "min": 0, "max": 70351.43997489079}
+        self.check_dict(param_dict, a_dict)
+
+    def test_exp_fitter_get_default_param_dict_correct_number_of_keys(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitterWithOffset(self.ds)
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        self.assertEqual(len(param_dict.keys()), 3)
+
+    def test_exp_fitter_get_default_param_dict_negative(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitterWithOffset(self.ds)
+        self.ds.peak_list[0].peak_sign = "-"
+        self.ds.peak_list[0].buildup_vals.intensity = [
+            -x for x in self.ds.peak_list[0].buildup_vals.intensity
+        ]
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        a_dict = {"value": 10, "min": -70351.43997489079, "max": 0}
+        self.check_dict(param_dict, a_dict)
+
+    def test_buildup_fitter_get_lhs_vals(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitterWithOffset(self.ds)
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        self.assertEqual(len(param_dict.keys()), 3)

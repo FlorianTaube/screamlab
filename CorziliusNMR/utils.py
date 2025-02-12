@@ -184,13 +184,14 @@ class BuildupFitter:
         result_list = []
         for peak in self.dataset.peak_list:
             default_param_dict = self._get_default_param_dict(peak)
+
             result_list.append(
                 lmfit.minimize(
                     self._fitting_function,
                     params,
                     args=(
-                        peak._individual_fit_vals.tdel,
-                        peak._individual_fit_vals.intensity,
+                        peak._buildup_vals.tdel,
+                        peak._buildup_vals.intensity,
                     ),
                 )
             )
@@ -208,6 +209,18 @@ class BuildupFitter:
         param_list = []
         return param_list
 
+    def _get_intensity_dict(self, peak):
+        return (
+            dict(value=10, min=0, max=max(peak.buildup_vals.intensity) * 3)
+            if peak.peak_sign == "+"
+            else dict(
+                value=10, max=0, min=min(peak.buildup_vals.intensity) * 3
+            )
+        )
+
+    def _get_time_dict(self, peak):
+        return dict(value=5, min=0, max=max(peak.buildup_vals.tdel) * 3)
+
 
 class BiexpFitter(BuildupFitter):
     """
@@ -215,20 +228,11 @@ class BiexpFitter(BuildupFitter):
     """
 
     def _get_default_param_dict(self, peak):
-
         return {
-            "name": "A1",
-            "value": 20 if peak.peak_sign == "+" else -20,
-            "min": (
-                0
-                if peak.peak_sign == "+"
-                else max(peak.individual_fit_vals.intensity) * 3
-            ),
-            "max": (
-                max(peak.individual_fit_vals.intensity) * 3
-                if peak.peak_sign == "+"
-                else 0
-            ),
+            "A1": self._get_intensity_dict(peak),
+            "A2": self._get_intensity_dict(peak),
+            "t1": self._get_time_dict(peak),
+            "t2": self._get_time_dict(peak),
         }
 
     def _calc_intensity(self, tdel, param_list):
@@ -240,7 +244,14 @@ class BiexpFitterWithOffset(BuildupFitter):
     Class for fitting biexponential models with offsets to buildup data.
     """
 
-    pass
+    def _get_default_param_dict(self, peak):
+        return {
+            "A1": self._get_intensity_dict(peak),
+            "A2": self._get_intensity_dict(peak),
+            "t1": self._get_time_dict(peak),
+            "t2": self._get_time_dict(peak),
+            "x1": dict(value=0, min=-5, max=5),
+        }
 
 
 class ExpFitter(BuildupFitter):
@@ -248,7 +259,11 @@ class ExpFitter(BuildupFitter):
     Class for fitting exponential models to buildup data.
     """
 
-    pass
+    def _get_default_param_dict(self, peak):
+        return {
+            "A1": self._get_intensity_dict(peak),
+            "t1": self._get_time_dict(peak),
+        }
 
 
 class ExpFitterWithOffset(BuildupFitter):
@@ -256,7 +271,12 @@ class ExpFitterWithOffset(BuildupFitter):
     Class for fitting exponential models with offsets to buildup data.
     """
 
-    pass
+    def _get_default_param_dict(self, peak):
+        return {
+            "A1": self._get_intensity_dict(peak),
+            "t1": self._get_time_dict(peak),
+            "x1": dict(value=0, min=-5, max=5),
+        }
 
 
 def voigt_profile(x, center, sigma, gamma, amplitude):
