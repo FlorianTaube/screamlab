@@ -33,7 +33,23 @@ class TestDataset(unittest.TestCase):
         self.add_y_axix(type)
 
     def add_one_peak(self):
-        self.ds.peak_list[0]._individual_fit_vals
+        self.ds.peak_list.append(dataset.Peak())
+        self.ds.peak_list[0]._individual_fit_vals = dataset.BuildupList()
+        self.ds.peak_list[0]._individual_fit_vals._tdel = [
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
+        ]
+        self.ds.peak_list[0]._individual_fit_vals._intensity = [
+            2**i
+            for i in range(
+                len(self.ds.peak_list[0]._individual_fit_vals._tdel)
+            )
+        ]
 
     def add_x_axis(self):
         for spec in self.ds.spectra:
@@ -698,34 +714,72 @@ class TestDataset(unittest.TestCase):
         self.globalfitter.dataset.peak_list[2].peak_center = 250
         result = self.globalfitter.fit()
         value_list = []
+        result_list = [
+            200,
+            250,
+            2,
+            2,
+            200,
+            200,
+            4,
+            400,
+            250,
+            2,
+            2,
+            400,
+            200,
+            4,
+            600,
+            250,
+            2,
+            2,
+            600,
+            200,
+            4,
+        ]
         for key in result.params:
             value_list.append(round(result.params[key].value))
-        self.assertListEqual(
-            value_list,
-            [
-                200,
-                250,
-                2,
-                2,
-                200,
-                200,
-                4,
-                400,
-                250,
-                2,
-                2,
-                400,
-                200,
-                4,
-                600,
-                250,
-                2,
-                2,
-                600,
-                200,
-                4,
-            ],
+        self.assertListEqual(value_list, result_list)
+
+    def test_buildup_fitter_init_type_exp(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitter(self.ds)
+        self.assertEqual(type(fitter), CorziliusNMR.utils.ExpFitter)
+
+    def test_buildup_fitter_init_ds_exp(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitter(self.ds)
+        self.assertEqual(type(fitter.dataset), CorziliusNMR.dataset.Dataset)
+
+    def test_buildup_fitter_init_type_biexp(self):
+        self.add_one_peak()
+        fitter = utils.BiexpFitter(self.ds)
+        self.assertEqual(type(fitter), CorziliusNMR.utils.BiexpFitter)
+
+    def test_buildup_fitter_init_ds_biexp(self):
+        self.add_one_peak()
+        fitter = utils.BiexpFitter(self.ds)
+        self.assertEqual(type(fitter.dataset), CorziliusNMR.dataset.Dataset)
+
+    def test_buildup_fitter_init_type_biexpoff(self):
+        self.add_one_peak()
+        fitter = utils.BiexpFitterWithOffset(self.ds)
+        self.assertEqual(
+            type(fitter), CorziliusNMR.utils.BiexpFitterWithOffset
         )
 
-    def test_buildup_fitter_init(self):
+    def test_buildup_fitter_init_ds_bieexpoff(self):
         self.add_one_peak()
+        fitter = utils.BiexpFitterWithOffset(self.ds)
+        self.assertEqual(type(fitter.dataset), CorziliusNMR.dataset.Dataset)
+
+    def test_buildup_fitter_init_type_expoff(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitterWithOffset(self.ds)
+        self.assertEqual(type(fitter), CorziliusNMR.utils.ExpFitterWithOffset)
+
+    def test_buildup_fitter_init_ds_exp(self):
+        self.add_one_peak()
+        fitter = utils.ExpFitterWithOffset(self.ds)
+        self.assertEqual(type(fitter.dataset), CorziliusNMR.dataset.Dataset)
+        fitter.perform_fit()

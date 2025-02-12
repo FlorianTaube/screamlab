@@ -181,7 +181,22 @@ class BuildupFitter:
         self.dataset = dataset
 
     def perform_fit(self):
-        pass
+        result_list = []
+        for peak in self.dataset.peak_list:
+            result = lmfit.minimize(
+                self._fitting_function,
+                params,
+                args=(
+                    peak._individual_fit_vals.tdel,
+                    peak._individual_fit_vals.intensity,
+                ),
+            )
+
+    def _fitting_function(self, params, tdel, intensity):
+        residual = copy.deepcopy(intensity)
+        parm_list = self._generate_param_list(params)
+        intensity_sim = self._calc_intensity(tdel, param_list)
+        return residual - intensity_sim
 
 
 class BiexpFitter(BuildupFitter):
@@ -189,7 +204,12 @@ class BiexpFitter(BuildupFitter):
     Class for fitting biexponential models to buildup data.
     """
 
-    pass
+    def _generate_param_list(self, params):
+        param_list = []
+        return param_list
+
+    def _calc_intensity(self, tdel, param_list):
+        return []  # TODO
 
 
 class BiexpFitterWithOffset(BuildupFitter):
