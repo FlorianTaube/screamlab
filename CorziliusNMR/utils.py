@@ -3,6 +3,7 @@ import lmfit
 import re
 import numpy as np
 import copy
+from pyDOE2 import lhs
 
 
 class Fitter:
@@ -18,10 +19,9 @@ class Fitter:
             if isinstance(self, GlobalFitter)
             else params
         )
-        result = lmfit.minimize(
+        return lmfit.minimize(
             self._spectral_fitting, params, args=(x_axis, y_axis)
         )
-        return result
 
     def _generate_axis_list(self):
         x_axis, y_axis = [], []
@@ -33,24 +33,19 @@ class Fitter:
     def _generate_params_list(self):
         params = lmfit.Parameters()
         spectra = self._get_spectra_list()
+        lw_types = {
+            "voigt": ["sigma", "gamma"],
+            "gauss": ["sigma"],
+            "lorentz": ["gamma"],
+        }
         for spectrum_nr, _ in enumerate(spectra):
             for peak in self.dataset.peak_list:
                 params.add(**self._get_amplitude_dict(peak, spectrum_nr))
                 params.add(**self._get_center_dict(peak, spectrum_nr))
-                if peak.fitting_type == "voigt":
+
+                for lw_type in lw_types.get(peak.fitting_type, []):
                     params.add(
-                        **self._get_lw_dict(peak, spectrum_nr, "sigma")
-                    )
-                    params.add(
-                        **self._get_lw_dict(peak, spectrum_nr, "gamma")
-                    )
-                elif peak.fitting_type == "gauss":
-                    params.add(
-                        **self._get_lw_dict(peak, spectrum_nr, "sigma")
-                    )
-                elif peak.fitting_type == "lorentz":
-                    params.add(
-                        **self._get_lw_dict(peak, spectrum_nr, "gamma")
+                        **self._get_lw_dict(peak, spectrum_nr, lw_type)
                     )
         return params
 
@@ -146,9 +141,6 @@ class Fitter:
         param_dict[dict_index].append(param_value_list)
         return param_dict
 
-    def _set_param_expr(self, params):
-        pass
-
 
 class Prefitter(Fitter):
 
@@ -184,20 +176,63 @@ class BuildupFitter:
         result_list = []
         for peak in self.dataset.peak_list:
             default_param_dict = self._get_default_param_dict(peak)
-
-            result_list.append(
-                lmfit.minimize(
-                    self._fitting_function,
-                    params,
-                    args=(
-                        peak._buildup_vals.tdel,
-                        peak._buildup_vals.intensity,
-                    ),
+            lhs_init_params = self._get_lhs_init_params(default_param_dict)
+            best_result = None
+            best_chisqr = np.inf
+            for init_params in lhs_init_params:
+                params = self._set_params(default_param_dict, init_params)
+                result = self._start_minimize(params, peak._buildup_vals)
+                best_result, best_chisqr = self._check_result_quality(
+                    best_result, best_chisqr, result
                 )
-            )
+            result_list.append(best_result)
 
-    def _get_default_param_dict(self, peak):
-        pass
+    def _get_lhs_init_params(self, default_param_dict, n_samples=1):
+        param_bounds = []
+        param_bounds = [
+            self._get_param_bounds(default_param_dict[key])
+            for key in default_param_dict
+        ]
+        if n_samples == 1:
+            n_samples = len(default_param_dict.keys()) * 100
+        lhs_samples = lhs(len(default_param_dict.keys()), samples=n_samples)
+        return self._set_sample_params(lhs_samples, param_bounds)
+
+    def _start_minimize(self, params, args):
+        try:
+            result = lmfit.minimize(
+                self._fitting_function,
+                params,
+                args=(args.tdel, args.intensity),
+            )
+        except:
+            pass
+        return result
+
+    def _check_result_quality(self, best_result, best_chisqr, result):
+        if result.chisqr < best_chisqr:
+            return result, result.chisqr
+        else:
+            return best_result, result
+
+    def _get_param_bounds(self, params):
+        return (params["min"], params["max"])
+
+    def _set_sample_params(self, lhs_samples, param_bounds):
+        sampled_params = []
+        for sample in lhs_samples:
+            scaled_sample = []
+            for i, (low, high) in enumerate(param_bounds):
+                scaled_sample.append(low + sample[i] * (high - low))
+            sampled_params.append(scaled_sample)
+        return sampled_params
+
+    def _set_params(self, default_param_dict, init_params):
+        params = lmfit.Parameters()
+        for key_nr, key in enumerate(default_param_dict.keys()):
+            default_param_dict[key]["value"] = init_params[key_nr]
+            params.add(key, **default_param_dict[key])
+        return params
 
     def _fitting_function(self, params, tdel, intensity):
         residual = copy.deepcopy(intensity)
@@ -207,6 +242,8 @@ class BuildupFitter:
 
     def _generate_param_list(self, params):
         param_list = []
+        for key in params:
+            param_list.append((params[key].value))
         return param_list
 
     def _get_intensity_dict(self, peak):
@@ -235,8 +272,11 @@ class BiexpFitter(BuildupFitter):
             "t2": self._get_time_dict(peak),
         }
 
-    def _calc_intensity(self, tdel, param_list):
-        return []  # TODO
+    def _calc_intensity(self, tdel, param):
+        return list(
+            param[0] * (1 - np.exp(-np.asarray(tdel) / param[2]))
+            + param[1] * (1 - np.exp(-np.asarray(tdel) / param[3]))
+        )
 
 
 class BiexpFitterWithOffset(BuildupFitter):
@@ -253,6 +293,13 @@ class BiexpFitterWithOffset(BuildupFitter):
             "x1": dict(value=0, min=-5, max=5),
         }
 
+    def _calc_intensity(self, tdel, param):
+        return list(
+            param[0] * (1 - np.exp(-(np.asarray(tdel) - param[4]) / param[2]))
+            + param[1]
+            * (1 - np.exp(-(np.asarray(tdel) - param[4]) / param[3]))
+        )
+
 
 class ExpFitter(BuildupFitter):
     """
@@ -264,6 +311,9 @@ class ExpFitter(BuildupFitter):
             "A1": self._get_intensity_dict(peak),
             "t1": self._get_time_dict(peak),
         }
+
+    def _calc_intensity(self, tdel, param):
+        return list(param[0] * (1 - np.exp(-np.asarray(tdel) / param[1])))
 
 
 class ExpFitterWithOffset(BuildupFitter):
@@ -277,6 +327,11 @@ class ExpFitterWithOffset(BuildupFitter):
             "t1": self._get_time_dict(peak),
             "x1": dict(value=0, min=-5, max=5),
         }
+
+    def _calc_intensity(self, tdel, param):
+        return list(
+            param[0] * (1 - np.exp(-(np.asarray(tdel) - param[2]) / param[1]))
+        )
 
 
 def voigt_profile(x, center, sigma, gamma, amplitude):
