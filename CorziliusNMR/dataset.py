@@ -345,8 +345,8 @@ class Peak:
 class BuildupList:
 
     def __init__(self):
-        self._tdel = None
-        self._intensity = None
+        self.tdel = None
+        self.intensity = None
 
     def set_vals(self, result, spectra, label):
         self._set_tdel(spectra)
@@ -354,17 +354,17 @@ class BuildupList:
         self._sort_lists()
 
     def _set_tdel(self, spectra):
-        self._tdel = [s.tdel for s in spectra]
+        self.tdel = [s.tdel for s in spectra]
 
     def _set_intensity(self, result, label, spectra):
         last_digid = None
-        self._intensity = []
+        self.intensity = []
         val_list = []
         for param in result.params:
             if label in param:
                 if last_digid != param.split("_")[-1]:
                     if val_list:
-                        self._intensity.append(
+                        self.intensity.append(
                             self._calc_integral(
                                 val_list, spectra[int(last_digid)]
                             )
@@ -374,7 +374,7 @@ class BuildupList:
                 val_list.append(float(result.params[param].value))
                 if param.split("_")[-2] == "gamma":
                     val_list.append("gamma")
-        self._intensity.append(
+        self.intensity.append(
             self._calc_integral(val_list, spectra[int(last_digid)])
         )
 
@@ -399,6 +399,6 @@ class BuildupList:
         return np.trapz(sim_spectrum)
 
     def _sort_lists(self):
-        self._tdel, self._intensity = map(
-            list, zip(*sorted(zip(self._tdel, self._intensity)))
+        self.tdel, self.intensity = map(
+            list, zip(*sorted(zip(self.tdel, self.intensity)))
         )

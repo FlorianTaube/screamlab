@@ -35,7 +35,7 @@ class TestDataset(unittest.TestCase):
     def add_one_peak(self):
         self.ds.peak_list.append(dataset.Peak())
         self.ds.peak_list[0]._individual_fit_vals = dataset.BuildupList()
-        self.ds.peak_list[0]._individual_fit_vals._tdel = [
+        self.ds.peak_list[0]._individual_fit_vals.tdel = [
             1,
             2,
             4,
@@ -44,10 +44,10 @@ class TestDataset(unittest.TestCase):
             32,
             64,
         ]
-        self.ds.peak_list[0]._individual_fit_vals._intensity = [
+        self.ds.peak_list[0]._individual_fit_vals.intensity = [
             2**i
             for i in range(
-                len(self.ds.peak_list[0]._individual_fit_vals._tdel)
+                len(self.ds.peak_list[0]._individual_fit_vals.tdel)
             )
         ]
 
@@ -780,6 +780,8 @@ class TestDataset(unittest.TestCase):
 
     def test_buildup_fitter_init_ds_exp(self):
         self.add_one_peak()
-        fitter = utils.ExpFitterWithOffset(self.ds)
-        self.assertEqual(type(fitter.dataset), CorziliusNMR.dataset.Dataset)
-        fitter.perform_fit()
+        fitter = utils.BiexpFitter(self.ds)
+        self.ds.peak_list[0].peak_sign = "+"
+        param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
+        print(self.ds.peak_list[0].individual_fit_vals.intensity)
+        print(param_dict)

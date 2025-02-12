@@ -545,11 +545,11 @@ class TestDataset(unittest.TestCase):
 
     def test_buildup_list_init_tdel(self):
         tbup = dataset.BuildupList()
-        self.assertEqual(tbup._tdel, None)
+        self.assertEqual(tbup.tdel, None)
 
     def test_buildup_list_init_intensity(self):
         tbup = dataset.BuildupList()
-        self.assertEqual(tbup._intensity, None)
+        self.assertEqual(tbup.intensity, None)
 
     def test_buidlup_list_set_tdel(self):
         self.add_n_spectra(5)
@@ -557,7 +557,7 @@ class TestDataset(unittest.TestCase):
             spectrum.tdel = nr * 2
         b_list = CorziliusNMR.dataset.BuildupList()
         b_list._set_tdel(self.ds.spectra)
-        self.assertListEqual(b_list._tdel, [0, 2, 4, 6, 8])
+        self.assertListEqual(b_list.tdel, [0, 2, 4, 6, 8])
 
     def test_buildup_list_set_intensity_one_peak_voigt(self):
         self.add_n_spectra(5)
@@ -576,12 +576,12 @@ class TestDataset(unittest.TestCase):
             3162.8738314557045,
             3953.592289318921,
         ]
-        self.assertListEqual(b_list._intensity, result_list)
+        self.assertListEqual(b_list.intensity, result_list)
 
     def test_sort_lists(self):
         b_list = CorziliusNMR.dataset.BuildupList()
-        b_list._tdel = [1, 2, 4, 8, 16, 128, 256, 32, 64]
-        b_list._intensity = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        b_list.tdel = [1, 2, 4, 8, 16, 128, 256, 32, 64]
+        b_list.intensity = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         b_list._sort_lists()
         result_list = [
             1,
@@ -603,4 +603,4 @@ class TestDataset(unittest.TestCase):
             6,
             7,
         ]
-        self.assertListEqual(b_list._tdel + b_list._intensity, result_list)
+        self.assertListEqual(b_list.tdel + b_list.intensity, result_list)

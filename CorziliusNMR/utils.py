@@ -183,14 +183,20 @@ class BuildupFitter:
     def perform_fit(self):
         result_list = []
         for peak in self.dataset.peak_list:
-            result = lmfit.minimize(
-                self._fitting_function,
-                params,
-                args=(
-                    peak._individual_fit_vals.tdel,
-                    peak._individual_fit_vals.intensity,
-                ),
+            default_param_dict = self._get_default_param_dict(peak)
+            result_list.append(
+                lmfit.minimize(
+                    self._fitting_function,
+                    params,
+                    args=(
+                        peak._individual_fit_vals.tdel,
+                        peak._individual_fit_vals.intensity,
+                    ),
+                )
             )
+
+    def _get_default_param_dict(self, peak):
+        pass
 
     def _fitting_function(self, params, tdel, intensity):
         residual = copy.deepcopy(intensity)
@@ -198,15 +204,32 @@ class BuildupFitter:
         intensity_sim = self._calc_intensity(tdel, param_list)
         return residual - intensity_sim
 
+    def _generate_param_list(self, params):
+        param_list = []
+        return param_list
+
 
 class BiexpFitter(BuildupFitter):
     """
     Class for fitting biexponential models to buildup data.
     """
 
-    def _generate_param_list(self, params):
-        param_list = []
-        return param_list
+    def _get_default_param_dict(self, peak):
+
+        return {
+            "name": "A1",
+            "value": 20 if peak.peak_sign == "+" else -20,
+            "min": (
+                0
+                if peak.peak_sign == "+"
+                else max(peak.individual_fit_vals.intensity) * 3
+            ),
+            "max": (
+                max(peak.individual_fit_vals.intensity) * 3
+                if peak.peak_sign == "+"
+                else 0
+            ),
+        }
 
     def _calc_intensity(self, tdel, param_list):
         return []  # TODO
