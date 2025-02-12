@@ -71,19 +71,17 @@ class Dataset:
         if self.props.prefit:
             self._set_prefitter()
             result = self.fitter.fit()
-            self.lmfit_result_handler.prefit = lmfit.fit_report(result)
+            self.lmfit_result_handler.prefit = result
             self._update_line_broadening(result)
         if "individual" in self.props.spectrum_fit_type:
             self._set_single_fitter()
             result = self.fitter.fit()
-            self.lmfit_result_handler.single_fit = lmfit.fit_report(
-                result, self.spectra
-            )
+            self.lmfit_result_handler.single_fit = result
             self._get_intensities(result)
         if "global" in self.props.spectrum_fit_type:
             self._set_global_fitter()
             result = self.fitter.fit()
-            self.lmfit_result_handler.global_fit = lmfit.fit_report(result)
+            self.lmfit_result_handler.global_fit = result
             self._get_intensities(result)
 
     def _start_buildup_fit(self):
@@ -98,7 +96,9 @@ class Dataset:
             fitter_class = fitter_classes.get(b_type)
             if fitter_class:
                 fitter = fitter_class(self)
-                result = fitter.perform_fit()
+                self.lmfit_result_handler.buidlup_fit[b_type] = (
+                    fitter.perform_fit()
+                )
 
     def _set_prefitter(self):
         self.fitter = utils.Prefitter(self)
@@ -119,29 +119,29 @@ class Dataset:
 
     def _update_line_broadening(self, result):
         for peak in self.peak_list:
-            value = {}
-            for lw in ["sigma", "gamma"]:
-                key = (
-                    f"{peak.peak_label}_{lw}_{self.props.spectrum_for_prefit}"
-                )
-                if key in result.params.keys():
-                    value.update(
-                        {
-                            f"{lw}": {
-                                "min": round(
-                                    result.params[key].value
-                                    - 0.1 * result.params[key].value,
-                                    2,
-                                ),
-                                "max": round(
-                                    result.params[key].value
-                                    + 0.1 * result.params[key].value,
-                                    2,
-                                ),
-                            }
-                        }
-                    )
-            peak.line_broadening = value
+            peak.line_broadening = {
+                lw: {
+                    "min": round(
+                        result.params.get(
+                            f"{peak.peak_label}_{lw}_{self.props.spectrum_for_prefit}",
+                            0,
+                        ).value
+                        * 0.9,
+                        2,
+                    ),
+                    "max": round(
+                        result.params.get(
+                            f"{peak.peak_label}_{lw}_{self.props.spectrum_for_prefit}",
+                            0,
+                        ).value
+                        * 1.1,
+                        2,
+                    ),
+                }
+                for lw in ["sigma", "gamma"]
+                if f"{peak.peak_label}_{lw}_{self.props.spectrum_for_prefit}"
+                in result.params
+            }
 
 
 class Spectra:

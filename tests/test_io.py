@@ -194,3 +194,6 @@ class TestDataset(unittest.TestCase):
 
     def test_init_lmfit_result_handler_sglobal_fit(self):
         self.assertEqual(self.lmfit_result.global_fit, None)
+
+    def test_init_lmfit_result_handler_buidlup_fit(self):
+        self.assertEqual(self.lmfit_result.buidlup_fit, {})

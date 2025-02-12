@@ -118,3 +118,4 @@ class LmfitResultHandler:
         self.prefit = None
         self.single_fit = None
         self.global_fit = None
+        self.buidlup_fit = {}

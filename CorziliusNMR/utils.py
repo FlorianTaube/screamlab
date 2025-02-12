@@ -3,6 +3,7 @@ import lmfit
 import re
 import numpy as np
 import copy
+import matplotlib.pyplot as plt
 from pyDOE2 import lhs
 
 
@@ -14,14 +15,13 @@ class Fitter:
     def fit(self):
         x_axis, y_axis = self._generate_axis_list()
         params = self._generate_params_list()
-        params = (
-            self._set_param_expr(params)
-            if isinstance(self, GlobalFitter)
-            else params
-        )
+        params = self._set_param_expr(params)
         return lmfit.minimize(
             self._spectral_fitting, params, args=(x_axis, y_axis)
         )
+
+    def _set_param_expr(self, params):
+        return params
 
     def _generate_axis_list(self):
         x_axis, y_axis = [], []
@@ -199,21 +199,17 @@ class BuildupFitter:
         return self._set_sample_params(lhs_samples, param_bounds)
 
     def _start_minimize(self, params, args):
-        try:
-            result = lmfit.minimize(
-                self._fitting_function,
-                params,
-                args=(args.tdel, args.intensity),
-            )
-        except:
-            pass
-        return result
+        return lmfit.minimize(
+            self._fitting_function,
+            params,
+            args=(args.tdel, args.intensity),
+        )
 
     def _check_result_quality(self, best_result, best_chisqr, result):
         if result.chisqr < best_chisqr:
             return result, result.chisqr
         else:
-            return best_result, result
+            return best_result, best_chisqr
 
     def _get_param_bounds(self, params):
         return (params["min"], params["max"])
@@ -236,7 +232,7 @@ class BuildupFitter:
 
     def _fitting_function(self, params, tdel, intensity):
         residual = copy.deepcopy(intensity)
-        parm_list = self._generate_param_list(params)
+        param_list = self._generate_param_list(params)
         intensity_sim = self._calc_intensity(tdel, param_list)
         return residual - intensity_sim
 

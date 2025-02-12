@@ -454,8 +454,9 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(1)
         self.ds.add_peak(250)
         self.ds._calculate_peak_intensities()
-        self.assertTrue(
-            "[[Fit Statistics]]" in self.ds.lmfit_result_handler.prefit
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.prefit),
+            lmfit.minimizer.MinimizerResult,
         )
 
     def test_update_line_broadening(self):
@@ -506,8 +507,9 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(3)
         self.ds.add_peak(250)
         self.ds._calculate_peak_intensities()
-        self.assertTrue(
-            "[[Fit Statistics]]" in self.ds.lmfit_result_handler.single_fit
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.single_fit),
+            lmfit.minimizer.MinimizerResult,
         )
 
     def test_calculate_peak_intensities_single_fit_result_setter_with_prefit(
@@ -518,8 +520,9 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(3)
         self.ds.add_peak(250)
         self.ds._calculate_peak_intensities()
-        self.assertTrue(
-            "[[Fit Statistics]]" in self.ds.lmfit_result_handler.single_fit
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.single_fit),
+            lmfit.minimizer.MinimizerResult,
         )
 
     def test_calculate_peak_intensities_global_fit_result_setter_without_prefit(
@@ -528,8 +531,9 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(3)
         self.ds.add_peak(250)
         self.ds._calculate_peak_intensities()
-        self.assertTrue(
-            "[[Fit Statistics]]" in self.ds.lmfit_result_handler.global_fit
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.global_fit),
+            lmfit.minimizer.MinimizerResult,
         )
 
     def test_calculate_peak_intensities_global_fit_result_setter_with_prefit(
@@ -539,8 +543,9 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(3)
         self.ds.add_peak(250)
         self.ds._calculate_peak_intensities()
-        self.assertTrue(
-            "[[Fit Statistics]]" in self.ds.lmfit_result_handler.global_fit
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.global_fit),
+            lmfit.minimizer.MinimizerResult,
         )
 
     def test_buildup_list_init_tdel(self):
@@ -583,24 +588,23 @@ class TestDataset(unittest.TestCase):
         b_list.tdel = [1, 2, 4, 8, 16, 128, 256, 32, 64]
         b_list.intensity = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         b_list._sort_lists()
-        result_list = [
-            1,
-            2,
-            4,
-            8,
-            16,
-            32,
-            64,
-            128,
-            256,
-            1,
-            2,
-            3,
-            4,
-            5,
-            8,
-            9,
-            6,
-            7,
-        ]
+        result_list = [2**i for i in range(9)] + [1, 2, 3, 4, 5, 8, 9, 6, 7]
         self.assertListEqual(b_list.tdel + b_list.intensity, result_list)
+
+    def test_monoexp_fitting(self):
+        self.ds.props.buildup_types = ["exponential"]
+        self.ds.peak_list.append(dataset.Peak())
+        buidlup_list = dataset.BuildupList()
+        buidlup_list.tdel = [1, 2, 4, 8, 16, 32, 64, 128, 256]
+        buidlup_list.intensity = list(
+            400 * (1 - np.exp(-np.asarray(buidlup_list.tdel) / 30))
+        )
+        buidlup_list.intensity = buidlup_list.intensity + np.random.normal(
+            0, 10, size=len(buidlup_list.intensity)
+        )
+        self.ds.peak_list[0]._buildup_vals = buidlup_list
+        self.ds._start_buildup_fit()
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.buidlup_fit["exponential"]),
+            lmfit.minimizer.MinimizerResult,
+        )
