@@ -5,24 +5,24 @@ import numpy as np
 
 class Dataset:
 
-    def __init__(self):
+    def __init__(self, props=settings.Properties()):
         self.importer = None
-        self.props = settings.Properties()
+        self.props = props
         self.spectra = []
         self.fitter = None
         self.peak_list = []
         self.lmfit_result_handler = io.LmfitResultHandler()
 
-    def start_buildup_fit_from_topspin_export(self):  # TODO Test
+    def start_buildup_fit_from_topspin(self):  # TODO Test
         print(
-            f"Start loading data from topspin: {self.path_to_topspin_experiment}"
+            f"Start loading data from topspin: {self.props.path_to_experiment}"
         )
         self._read_in_data_from_topspin()
         print("Start peak fitting.")
         self._calculate_peak_intensities()
         print("Start buildup fit.")
         self._start_buildup_fit()
-        self._print()
+        self._print_all()
 
     def start_buildup_fit_from_spectra(self):
         self._read_in_data_from_csv()
@@ -59,9 +59,9 @@ class Dataset:
         else:
             self.importer = io.ScreamImporter(self)
 
-    def _print(self):
+    def _print_all(self):
         exporter = io.Exporter(self)
-        exporter.print_all()
+        exporter.print()
 
     def _read_in_data_from_csv(self):
         # TODO
@@ -110,12 +110,9 @@ class Dataset:
         self.fitter = utils.GlobalFitter(self)
 
     def _get_intensities(self, result):
-        if isinstance(self.fitter, utils.SingleFitter):
+        if isinstance(self.fitter, (utils.SingleFitter, utils.GlobalFitter)):
             for peak in self.peak_list:
                 peak.buildup_vals = (result, self.spectra)
-        if isinstance(self.fitter, utils.GlobalFitter):
-            for peak in self.peak_list:
-                peak.global_fit_vals = (result, self.spectra)
 
     def _update_line_broadening(self, result):
         for peak in self.peak_list:
@@ -163,7 +160,6 @@ class Peak:
         self._peak_sign = None
         self._line_broadening = None
         self._buildup_vals = None
-        self._global_fit_vals = None
 
     @property
     def buildup_vals(self) -> list:
@@ -174,16 +170,6 @@ class Peak:
         result, spectra = args
         self._buildup_vals = BuildupList()
         self._buildup_vals.set_vals(result, spectra, self.peak_label)
-
-    @property
-    def global_fit_vals(self) -> list:
-        return self._global_fit_vals
-
-    @global_fit_vals.setter
-    def global_fit_vals(self, args):
-        result, spectra = args
-        self._global_fit_vals = BuildupList()
-        self._global_fit_vals.set_vals(result, spectra, self.peak_label)
 
     @property
     def line_broadening(self) -> str:
@@ -276,7 +262,8 @@ class Peak:
                 f"'peak_label' must be of type 'str', but got {type(value)}."
             )
         if value == "":
-            value = f"Peak_at_{int(self.peak_center)}_ppm"
+            name = str(int(self.peak_center)).replace("-", "m")
+            value = f"Peak_at_{name}_ppm"
         self._peak_label = value
 
     def _return_default_dict(self):

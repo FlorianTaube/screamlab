@@ -40,6 +40,21 @@ class TestDataset(unittest.TestCase):
                     )
             spec.y_axis = y_axis
 
+    def start_buildup_fitting(self, fitting_type):
+        self.ds.props.buildup_types = [fitting_type]
+        self.ds.peak_list.append(dataset.Peak())
+        self.ds.peak_list[0].peak_sign = "+"
+        buidlup_list = dataset.BuildupList()
+        buidlup_list.tdel = [1, 2, 4, 8, 16, 32, 64, 128, 256]
+        buidlup_list.intensity = list(
+            400 * (1 - np.exp(-np.asarray(buidlup_list.tdel) / 30))
+        )
+        buidlup_list.intensity = buidlup_list.intensity + np.random.normal(
+            0, 10, size=len(buidlup_list.intensity)
+        )
+        self.ds.peak_list[0]._buildup_vals = buidlup_list
+        self.ds._start_buildup_fit()
+
     def test_dataset_init_has_none_type_importer(self):
         self.assertIsNone(self.ds.importer)
 
@@ -592,19 +607,33 @@ class TestDataset(unittest.TestCase):
         self.assertListEqual(b_list.tdel + b_list.intensity, result_list)
 
     def test_monoexp_fitting(self):
-        self.ds.props.buildup_types = ["exponential"]
-        self.ds.peak_list.append(dataset.Peak())
-        buidlup_list = dataset.BuildupList()
-        buidlup_list.tdel = [1, 2, 4, 8, 16, 32, 64, 128, 256]
-        buidlup_list.intensity = list(
-            400 * (1 - np.exp(-np.asarray(buidlup_list.tdel) / 30))
-        )
-        buidlup_list.intensity = buidlup_list.intensity + np.random.normal(
-            0, 10, size=len(buidlup_list.intensity)
-        )
-        self.ds.peak_list[0]._buildup_vals = buidlup_list
-        self.ds._start_buildup_fit()
+        fitting_type = "exponential"
+        self.start_buildup_fitting(fitting_type)
         self.assertEqual(
-            type(self.ds.lmfit_result_handler.buidlup_fit["exponential"]),
+            type(self.ds.lmfit_result_handler.buidlup_fit[fitting_type]),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_biexp_fitting(self):
+        fitting_type = "biexponential"
+        self.start_buildup_fitting(fitting_type)
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.buidlup_fit[fitting_type]),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_biexp_offset_fitting(self):
+        fitting_type = "biexponential_with_offset"
+        self.start_buildup_fitting(fitting_type)
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.buidlup_fit[fitting_type]),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_exp_offset_fitting(self):
+        fitting_type = "exponential_with_offset"
+        self.start_buildup_fitting(fitting_type)
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.buidlup_fit[fitting_type]),
             lmfit.minimizer.MinimizerResult,
         )

@@ -173,19 +173,21 @@ class BuildupFitter:
         self.dataset = dataset
 
     def perform_fit(self):
-        result_list = []
         for peak in self.dataset.peak_list:
             default_param_dict = self._get_default_param_dict(peak)
             lhs_init_params = self._get_lhs_init_params(default_param_dict)
             best_result = None
             best_chisqr = np.inf
-            for init_params in lhs_init_params:
+            for init_nr, init_params in enumerate(lhs_init_params):
                 params = self._set_params(default_param_dict, init_params)
-                result = self._start_minimize(params, peak._buildup_vals)
-                best_result, best_chisqr = self._check_result_quality(
-                    best_result, best_chisqr, result
-                )
-            result_list.append(best_result)
+                try:
+                    result = self._start_minimize(params, peak._buildup_vals)
+                    best_result, best_chisqr = self._check_result_quality(
+                        best_result, best_chisqr, result
+                    )
+                except:
+                    pass
+        return best_result
 
     def _get_lhs_init_params(self, default_param_dict, n_samples=1):
         param_bounds = []
@@ -234,7 +236,7 @@ class BuildupFitter:
         residual = copy.deepcopy(intensity)
         param_list = self._generate_param_list(params)
         intensity_sim = self._calc_intensity(tdel, param_list)
-        return residual - intensity_sim
+        return [a - b for a, b in zip(residual, intensity_sim)]
 
     def _generate_param_list(self, params):
         param_list = []
@@ -252,7 +254,7 @@ class BuildupFitter:
         )
 
     def _get_time_dict(self, peak):
-        return dict(value=5, min=0, max=max(peak.buildup_vals.tdel) * 3)
+        return dict(value=5, min=0, max=max(peak.buildup_vals.tdel) * 2)
 
 
 class BiexpFitter(BuildupFitter):
