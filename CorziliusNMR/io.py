@@ -3,12 +3,13 @@ io module of the CorziliusNMR package.
 """
 
 import CorziliusNMR.dataset
-from CorziliusNMR import utils
+from CorziliusNMR import utils, functions
 import numpy as np
 import bruker.api.topspin as top
 import os
 import matplotlib.pyplot as plt
 import lmfit
+import matplotlib.cm as cm
 
 
 class TopspinImporter:
@@ -71,7 +72,7 @@ class TopspinImporter:
 
 class ScreamImporter(TopspinImporter):
 
-    def import_topspin_data(self):  # TODO Test
+    def import_topspin_data(self):
         files = self._generate_path_to_experiment()
         for file in files:
             self._add_spectrum()
@@ -126,12 +127,26 @@ class Exporter:
         self.dataset = dataset
 
     def print(self):
+        self._plot_topspin_data()
         if self.dataset.props.prefit:
             self._plot_prefit()
             self._print_lmfit_prefit_report()
         if "global" in self.dataset.props.spectrum_fit_type:
             self._plot_global()
             self._plot_global_all_in_one()
+        for buildup_type in self.dataset.props.buildup_types:
+            self._plot_buildup(buildup_type)
+
+    def _plot_topspin_data(self):
+        for spectrum in self.dataset.spectra:
+            plt.plot(
+                spectrum.x_axis,
+                spectrum.y_axis,
+                label=f"t_del = {spectrum.tdel} s",
+            )
+        plt.legend()
+        # plt.show()
+        plt.close()
 
     def _plot_prefit(self):
         x_axis = self.dataset.spectra[
@@ -141,22 +156,18 @@ class Exporter:
             self.dataset.props.spectrum_for_prefit
         ].y_axis
         # TODO do for gauss and lorentz
-
-        vallist = [
-            self.dataset.lmfit_result_handler.prefit.params[key].value
-            for key in self.dataset.lmfit_result_handler.prefit.params
-        ]
-        simspec = utils.voigt_profile(
-            x_axis, vallist[1], vallist[2], vallist[3], vallist[0]
+        valdict = functions.generate_spectra_param_dict(
+            self.dataset.lmfit_result_handler.prefit.params
         )
-        residual = y_axis - simspec
+
+        sys.exit()
 
         fig, axs = plt.subplots(
             2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}
         )
         axs[0].plot(x_axis, y_axis, color="black", label="Experiment")
 
-        axs[0].plot(x_axis, simspec, "r--", label="Simulation")
+        axs[0].plot(x_axis, simspecsum, "r--", label="Simulation")
         axs[0].legend()
         axs[0].set_ylabel("$I$ / a.u.")
 
@@ -167,12 +178,47 @@ class Exporter:
 
         plt.tight_layout()
         plt.show()
+        plt.close()
 
     def _print_lmfit_prefit_report(self):
         pass
 
     def _plot_global(self):
         pass
+
+    def _plot_buildup(self, buildup_type):
+        colors = plt.colormaps.get_cmap("viridis")  # Hol dir die Colormap
+        norm = plt.Normalize(vmin=0, vmax=len(self.dataset.peak_list))
+        for peak_nr, peak in enumerate(self.dataset.peak_list):
+            peak_result = self.dataset.lmfit_result_handler.buildup_fit[
+                buildup_type
+            ][peak_nr]
+            color = colors(norm(peak_nr))
+            plt.plot(
+                peak.buildup_vals.tdel,
+                peak.buildup_vals.intensity,
+                "o",
+                color=color,
+                label=f"{peak.peak_label}",
+            )
+            sim_tdel = np.linspace(0, peak.buildup_vals.tdel[-1], 1024)
+            val_list = [param.value for param in peak_result.params.values()]
+
+            func_map = {
+                "exponential": functions.calc_exponential,
+                "biexponential": functions.calc_biexponential,
+                "exponential_with_offset": functions.calc_exponential_with_offset,
+                "biexponential_with_offset": functions.calc_biexponential_with_offset,
+            }
+            plt.plot(
+                sim_tdel,
+                func_map[buildup_type](sim_tdel, val_list),
+                "-",
+                color=color,
+            )
+        plt.legend()
+        # plt.show()
+        plt.close()
 
     def _plot_global_all_in_one(self):
         pass
@@ -183,4 +229,4 @@ class LmfitResultHandler:
         self.prefit = None
         self.single_fit = None
         self.global_fit = None
-        self.buidlup_fit = {}
+        self.buildup_fit = {}

@@ -1,0 +1,18 @@
+##TITLE= Audit trail, TopSpin 3.5 pl 6
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmr
+$$ C:/Users/nmr/TopSpin_Data_Corzilius/Florian/20250121_S48F_100K/30/audita.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2025-01-22 04:56:29.759 +0100>,<nmr>,<Solid-NMR>,<go4>,<TopSpin 3.5.6>,
+      <created by zg
+	started at 2025-01-22 02:39:41.771 +0100,
+	POWCHK enabled, PULCHK disabled,
+       configuration hash MD5:
+       BC FF AC 2A F0 72 9D 51 78 3C FB 21 BD 42 42 73
+       data hash MD5: 2K * 2
+       F1 53 1F 4C 9B 6F 40 04 1C 0E CE FF 6C 78 8F BE>)
+##END=
+
+$$ hash MD5
+$$ A7 95 04 BB 72 51 9F BA 79 59 B2 53 D3 20 D1 A7

@@ -1,6 +1,5 @@
 import unittest
 
-import bruker.api.topspin
 import bruker.api.topspin as top
 import CorziliusNMR.dataset
 from CorziliusNMR import io, dataset
@@ -18,13 +17,13 @@ class TestDataset(unittest.TestCase):
             CorziliusNMR.dataset.Spectra()
         )
         self.scream_importer._nmr_data = self.scream_importer._data_provider.getNMRData(
-            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\27\pdata\103"
+            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Alanin\8\pdata\103"
         )
 
     def set_up_real_dataset(self):
         self.scream_importer._dataset.props.procno = 103
-        self.scream_importer._dataset.props.expno = [24, 28]
-        self.scream_importer._dataset.props.path_to_experiment = r"C:/Users/Florian Taube/Documents/Programmierung/CorziliusNMR/tests\SCREAM_Test_Files/"
+        self.scream_importer._dataset.props.expno = [1, 8]
+        self.scream_importer._dataset.props.path_to_experiment = r"C:/Users/Florian Taube/Documents/Programmierung/CorziliusNMR/tests\SCREAM_Test_Files/Alanin"
 
     def test_scream_init_set_dataset(self):
         self.assertEqual(
@@ -73,13 +72,13 @@ class TestDataset(unittest.TestCase):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_number_of_scans()
         self.assertEqual(
-            self.scream_importer._dataset.spectra[-1].number_of_scans, 32
+            self.scream_importer._dataset.spectra[-1].number_of_scans, 16
         )
 
     def test_set_buildup_time(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_buildup_time()
-        self.assertEqual(self.scream_importer._dataset.spectra[-1].tdel, 16)
+        self.assertEqual(self.scream_importer._dataset.spectra[-1].tdel, 32)
 
     def test_buildup_time_is_float(self):
         self.set_up_one_real_spectrum()
@@ -141,18 +140,18 @@ class TestDataset(unittest.TestCase):
         maximum = max(self.scream_importer._dataset.spectra[0].y_axis)
         self.scream_importer._normalize_y_values_to_number_of_scans()
         norm_maximum = max(self.scream_importer._dataset.spectra[0].y_axis)
-        self.assertEqual(maximum / 32, norm_maximum)
+        self.assertEqual(maximum / 16, norm_maximum)
 
     def test_set_values(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_values()
         norm_maximum = max(self.scream_importer._dataset.spectra[0].y_axis)
-        self.assertEqual(norm_maximum, 4221.3125)
+        self.assertEqual(norm_maximum, 5693.3125)
 
     def test_scream_import_topspin_correct_number_of_data(self):
         self.set_up_real_dataset()
         self.scream_importer.import_topspin_data()
-        self.assertEqual(len(self.scream_importer._dataset.spectra), 5)
+        self.assertEqual(len(self.scream_importer._dataset.spectra), 8)
 
     def test_scream_import_topspin_correct_delay_times(self):
         self.set_up_real_dataset()
@@ -160,7 +159,9 @@ class TestDataset(unittest.TestCase):
         delay_times = []
         for spectrum in self.scream_importer._dataset.spectra:
             delay_times.append(spectrum.tdel)
-        self.assertListEqual(delay_times, [2.0, 4.0, 8.0, 16.0, 32.0])
+        self.assertListEqual(
+            delay_times, [0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0]
+        )
 
     def test_scream_import_topspin_correct_number_of_scans(self):
         self.set_up_real_dataset()
@@ -168,7 +169,7 @@ class TestDataset(unittest.TestCase):
         delay_times = []
         for spectrum in self.scream_importer._dataset.spectra:
             delay_times.append(spectrum.number_of_scans)
-        self.assertListEqual(delay_times, [64, 64, 32, 32, 16])
+        self.assertListEqual(delay_times, [128, 128, 128, 64, 64, 32, 32, 16])
 
     def test_scream_import_topspin_correct_size_of_x_axis(self):
         self.set_up_real_dataset()
@@ -176,7 +177,7 @@ class TestDataset(unittest.TestCase):
         delay_times = []
         for spectrum in self.scream_importer._dataset.spectra:
             delay_times.append(len(spectrum.x_axis))
-        self.assertListEqual(delay_times, [16384] * 5)
+        self.assertListEqual(delay_times, [16384] * 8)
 
     def test_scream_import_topspin_correct_size_of_y_axis(self):
         self.set_up_real_dataset()
@@ -184,7 +185,7 @@ class TestDataset(unittest.TestCase):
         delay_times = []
         for spectrum in self.scream_importer._dataset.spectra:
             delay_times.append(len(spectrum.y_axis))
-        self.assertListEqual(delay_times, [16384] * 5)
+        self.assertListEqual(delay_times, [16384] * 8)
 
     def test_init_lmfit_result_handler_prefit(self):
         self.assertEqual(self.lmfit_result.prefit, None)
@@ -196,4 +197,4 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(self.lmfit_result.global_fit, None)
 
     def test_init_lmfit_result_handler_buidlup_fit(self):
-        self.assertEqual(self.lmfit_result.buidlup_fit, {})
+        self.assertEqual(self.lmfit_result.buildup_fit, {})

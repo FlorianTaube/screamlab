@@ -98,6 +98,12 @@ class Properties:
         self._delay20 = None
         self.delay20 = delay20
 
+    def __str__(self):
+        attributes = vars(self)  # Holt alle Attribute als Dictionary
+        return "\n".join(
+            f"{key}: {value}" for key, value in attributes.items()
+        )
+
     @property
     def delay20(self) -> str:
         return self._delay20

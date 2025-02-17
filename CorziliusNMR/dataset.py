@@ -69,6 +69,7 @@ class Dataset:
 
     def _calculate_peak_intensities(self):
         if self.props.prefit:
+            print("Start prefit.")
             self._set_prefitter()
             result = self.fitter.fit()
             self.lmfit_result_handler.prefit = result
@@ -79,6 +80,7 @@ class Dataset:
             self.lmfit_result_handler.single_fit = result
             self._get_intensities(result)
         if "global" in self.props.spectrum_fit_type:
+            print("Start global fit.")
             self._set_global_fitter()
             result = self.fitter.fit()
             self.lmfit_result_handler.global_fit = result
@@ -96,7 +98,7 @@ class Dataset:
             fitter_class = fitter_classes.get(b_type)
             if fitter_class:
                 fitter = fitter_class(self)
-                self.lmfit_result_handler.buidlup_fit[b_type] = (
+                self.lmfit_result_handler.buildup_fit[b_type] = (
                     fitter.perform_fit()
                 )
 

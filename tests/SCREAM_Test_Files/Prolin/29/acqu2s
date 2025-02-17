@@ -1,0 +1,23 @@
+##TITLE= Parameter file, TopSpin 4.1.4
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 20	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmr
+$$ 2025-01-22 12:49:17.077 +0100  Florian Taube@Siavash
+$$ F:/ssNMR/20250121_S48F_100K/29/acqu2s
+$$ process C:\Bruker\TopSpin4.1.4\prog\mod\dataserver.exe
+##$ACQT0= 0
+##$BF1= 400.5
+##$FnMODE= 0
+##$NUC1= <1H>
+##$NusJSP= 0
+##$NusT2= 1
+##$NusTD= 2
+##$O1= 1882.35
+##$ProjAngle= 0
+##$SFO1= 400.50188235
+##$SW= 10.0034742231474
+##$SW_h= 4006.41
+##$TD= 2
+##END=

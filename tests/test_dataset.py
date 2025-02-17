@@ -610,7 +610,7 @@ class TestDataset(unittest.TestCase):
         fitting_type = "exponential"
         self.start_buildup_fitting(fitting_type)
         self.assertEqual(
-            type(self.ds.lmfit_result_handler.buidlup_fit[fitting_type]),
+            type(self.ds.lmfit_result_handler.buildup_fit[fitting_type][0]),
             lmfit.minimizer.MinimizerResult,
         )
 
@@ -618,7 +618,7 @@ class TestDataset(unittest.TestCase):
         fitting_type = "biexponential"
         self.start_buildup_fitting(fitting_type)
         self.assertEqual(
-            type(self.ds.lmfit_result_handler.buidlup_fit[fitting_type]),
+            type(self.ds.lmfit_result_handler.buildup_fit[fitting_type][0]),
             lmfit.minimizer.MinimizerResult,
         )
 
@@ -626,7 +626,7 @@ class TestDataset(unittest.TestCase):
         fitting_type = "biexponential_with_offset"
         self.start_buildup_fitting(fitting_type)
         self.assertEqual(
-            type(self.ds.lmfit_result_handler.buidlup_fit[fitting_type]),
+            type(self.ds.lmfit_result_handler.buildup_fit[fitting_type][0]),
             lmfit.minimizer.MinimizerResult,
         )
 
@@ -634,6 +634,6 @@ class TestDataset(unittest.TestCase):
         fitting_type = "exponential_with_offset"
         self.start_buildup_fitting(fitting_type)
         self.assertEqual(
-            type(self.ds.lmfit_result_handler.buidlup_fit[fitting_type]),
+            type(self.ds.lmfit_result_handler.buildup_fit[fitting_type][0]),
             lmfit.minimizer.MinimizerResult,
         )

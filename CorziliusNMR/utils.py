@@ -5,6 +5,7 @@ import numpy as np
 import copy
 import matplotlib.pyplot as plt
 from pyDOE2 import lhs
+from CorziliusNMR import functions
 
 
 class Fitter:
@@ -173,6 +174,7 @@ class BuildupFitter:
         self.dataset = dataset
 
     def perform_fit(self):
+        result_list = []
         for peak in self.dataset.peak_list:
             default_param_dict = self._get_default_param_dict(peak)
             lhs_init_params = self._get_lhs_init_params(default_param_dict)
@@ -187,7 +189,8 @@ class BuildupFitter:
                     )
                 except:
                     pass
-        return best_result
+            result_list.append(best_result)
+        return result_list
 
     def _get_lhs_init_params(self, default_param_dict, n_samples=1):
         param_bounds = []
@@ -254,7 +257,7 @@ class BuildupFitter:
         )
 
     def _get_time_dict(self, peak):
-        return dict(value=5, min=0, max=max(peak.buildup_vals.tdel) * 2)
+        return dict(value=5, min=0, max=max(peak.buildup_vals.tdel) * 3)
 
 
 class BiexpFitter(BuildupFitter):
@@ -271,10 +274,7 @@ class BiexpFitter(BuildupFitter):
         }
 
     def _calc_intensity(self, tdel, param):
-        return list(
-            param[0] * (1 - np.exp(-np.asarray(tdel) / param[2]))
-            + param[1] * (1 - np.exp(-np.asarray(tdel) / param[3]))
-        )
+        return functions.calc_biexponential(tdel, param)
 
 
 class BiexpFitterWithOffset(BuildupFitter):
@@ -292,11 +292,7 @@ class BiexpFitterWithOffset(BuildupFitter):
         }
 
     def _calc_intensity(self, tdel, param):
-        return list(
-            param[0] * (1 - np.exp(-(np.asarray(tdel) - param[4]) / param[2]))
-            + param[1]
-            * (1 - np.exp(-(np.asarray(tdel) - param[4]) / param[3]))
-        )
+        return functions.calc_biexponential_with_offset(tdel, param)
 
 
 class ExpFitter(BuildupFitter):
@@ -311,7 +307,7 @@ class ExpFitter(BuildupFitter):
         }
 
     def _calc_intensity(self, tdel, param):
-        return list(param[0] * (1 - np.exp(-np.asarray(tdel) / param[1])))
+        return functions.calc_exponential(tdel, param)
 
 
 class ExpFitterWithOffset(BuildupFitter):
@@ -327,9 +323,7 @@ class ExpFitterWithOffset(BuildupFitter):
         }
 
     def _calc_intensity(self, tdel, param):
-        return list(
-            param[0] * (1 - np.exp(-(np.asarray(tdel) - param[2]) / param[1]))
-        )
+        return functions.calc_exponential_with_offset(tdel, param)
 
 
 def voigt_profile(x, center, sigma, gamma, amplitude):
