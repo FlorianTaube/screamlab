@@ -33,8 +33,16 @@ class TestDataset(unittest.TestCase):
         ds.add_peak(
             160, line_broadening={"sigma": {"max": 3}, "gamma": {"max": 3}}
         )
-        ds.add_peak(43)
-        ds.add_peak(30)
-        ds.add_peak(13)
-        ds.add_peak(8)
+        ds.add_peak(
+            43, line_broadening={"sigma": {"max": 3}, "gamma": {"max": 3}}
+        )
+        ds.add_peak(
+            30, line_broadening={"sigma": {"max": 3}, "gamma": {"max": 3}}
+        )
+        ds.add_peak(
+            13, line_broadening={"sigma": {"max": 3}, "gamma": {"max": 3}}
+        )
+        ds.add_peak(
+            8, line_broadening={"sigma": {"max": 3}, "gamma": {"max": 3}}
+        )
         ds.start_buildup_fit_from_topspin()

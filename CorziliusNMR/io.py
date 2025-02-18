@@ -155,15 +155,14 @@ class Exporter:
         y_axis = self.dataset.spectra[
             self.dataset.props.spectrum_for_prefit
         ].y_axis
-        # TODO do for gauss and lorentz
+
         valdict = functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.prefit.params
         )
-
         simspec = [0 for _ in range(len(y_axis))]
         for keys in valdict:
             for val in valdict[keys]:
-                simspec = functions.calc_peak(x_axis, simspec, val)
+                simspec += functions.calc_peak(x_axis, simspec, val)
 
         fig, axs = plt.subplots(
             2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}

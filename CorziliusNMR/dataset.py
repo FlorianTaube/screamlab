@@ -20,11 +20,7 @@ class Dataset:
         )
         self._read_in_data_from_topspin()
         print("Start peak fitting.")
-        aktuelles_datum = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print("Aktuelles Datum und Uhrzeit:", aktuelles_datum)
         self._calculate_peak_intensities()
-        aktuelles_datum = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print("Aktuelles Datum und Uhrzeit:", aktuelles_datum)
         print("Start buildup fit.")
         self._start_buildup_fit()
         self._print_all()
@@ -85,9 +81,6 @@ class Dataset:
             self.lmfit_result_handler.single_fit = result
             self._get_intensities(result)
         if "global" in self.props.spectrum_fit_type:
-            aktuelles_datum = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            print("Aktuelles Datum und Uhrzeit:", aktuelles_datum)
-            print("Start buildup fit.")
             print("Start global fit.")
             self._set_global_fitter()
             result = self.fitter.fit()

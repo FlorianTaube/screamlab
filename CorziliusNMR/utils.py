@@ -1,4 +1,16 @@
-from scipy.special import wofz
+"""
+Fitting module for spectral analysis.
+
+This module provides classes for fitting spectral data using the `lmfit` package.
+It includes different types of fitters, such as `Fitter`, `Prefitter`, `GlobalFitter`, and `SingleFitter`.
+
+Classes:
+    Fitter: Base class for fitting spectral data.
+    Prefitter: A specialized fitter that only fits a preselected spectrum.
+    GlobalFitter: A fitter that enforces parameter constraints across multiple spectra.
+    SingleFitter: A simple extension of `Fitter` with no additional functionality.
+"""
+
 import lmfit
 import re
 import numpy as np
@@ -9,11 +21,31 @@ from CorziliusNMR import functions
 
 
 class Fitter:
+    """
+    Base class for spectral fitting using `lmfit`.
+
+    This class handles parameter initialization and spectral fitting for a dataset.
+
+    Attributes:
+        dataset: The dataset containing spectra and peak information.
+    """
 
     def __init__(self, dataset):
+        """
+        Initializes the Fitter with a dataset.
+
+        Args:
+            dataset: An object containing spectral data and peak list.
+        """
         self.dataset = dataset
 
     def fit(self):
+        """
+        Performs spectral fitting using the `lmfit.minimize` function.
+
+        Returns:
+            lmfit.MinimizerResult: The result of the fitting process.
+        """
         x_axis, y_axis = self._generate_axis_list()
         params = self._generate_params_list()
         params = self._set_param_expr(params)
@@ -22,9 +54,24 @@ class Fitter:
         )
 
     def _set_param_expr(self, params):
+        """
+        Modifies parameter expressions if needed. Default implementation returns parameters unchanged.
+
+        Args:
+            params (lmfit.Parameters): The parameters to be modified.
+
+        Returns:
+            lmfit.Parameters: The modified parameters.
+        """
         return params
 
     def _generate_axis_list(self):
+        """
+        Generates lists of x-axis and y-axis values for all spectra in the dataset.
+
+        Returns:
+            tuple: Two lists containing x-axis and y-axis values for each spectrum.
+        """
         x_axis, y_axis = [], []
         for spectrum in self.dataset.spectra:
             x_axis.append(spectrum.x_axis)
@@ -32,6 +79,12 @@ class Fitter:
         return x_axis, y_axis
 
     def _generate_params_list(self):
+        """
+        Generates initial fitting parameters based on peak information in the dataset.
+
+        Returns:
+            lmfit.Parameters: The initialized parameters for fitting.
+        """
         params = lmfit.Parameters()
         spectra = self._get_spectra_list()
         lw_types = {
@@ -51,6 +104,12 @@ class Fitter:
         return params
 
     def _get_spectra_list(self):
+        """
+        Retrieves the appropriate spectra for fitting.
+
+        Returns:
+            list: A list of spectra to be fitted.
+        """
         return (
             [self.dataset.spectra[self.dataset.props.spectrum_for_prefit]]
             if isinstance(self, Prefitter)
@@ -58,6 +117,16 @@ class Fitter:
         )
 
     def _get_amplitude_dict(self, peak, nr):
+        """
+        Generates an amplitude parameter dictionary for a given peak.
+
+        Args:
+            peak: A peak object containing fitting information.
+            nr (int): The spectrum index.
+
+        Returns:
+            dict: A dictionary defining the amplitude parameter.
+        """
         return {
             "name": f"{peak.peak_label}_amp_{nr}",
             "value": 200 if peak.peak_sign == "+" else -200,
@@ -66,6 +135,16 @@ class Fitter:
         }
 
     def _get_center_dict(self, peak, nr):
+        """
+        Generates a center parameter dictionary for a given peak.
+
+        Args:
+            peak: A peak object containing fitting information.
+            nr (int): The spectrum index.
+
+        Returns:
+            dict: A dictionary defining the center parameter.
+        """
         return {
             "name": f"{peak.peak_label}_cen_{nr}",
             "value": peak.peak_center,
@@ -74,6 +153,17 @@ class Fitter:
         }
 
     def _get_lw_dict(self, peak, nr, lw):
+        """
+        Generates a linewidth parameter dictionary for a given peak.
+
+        Args:
+            peak: A peak object containing fitting information.
+            nr (int): The spectrum index.
+            lw (str): The linewidth type (e.g., 'sigma', 'gamma').
+
+        Returns:
+            dict: A dictionary defining the linewidth parameter.
+        """
         return {
             "name": f"{peak.peak_label}_{lw}_{nr}",
             "value": (
@@ -86,6 +176,17 @@ class Fitter:
         }
 
     def _spectral_fitting(self, params, x_axis, y_axis):
+        """
+        Computes the residual between the fitted and experimental spectra.
+
+        Args:
+            params (lmfit.Parameters): The fitting parameters.
+            x_axis (list): List of x-axis values.
+            y_axis (list): List of y-axis values.
+
+        Returns:
+            np.ndarray: The residual between the fitted and experimental spectra.
+        """
         residual = copy.deepcopy(y_axis)
         params_dict_list = functions.generate_spectra_param_dict(params)
         for key, val_list in params_dict_list.items():
@@ -97,6 +198,7 @@ class Fitter:
 
 
 class Prefitter(Fitter):
+    """Fitter for a single preselected spectrum."""
 
     def _generate_axis_list(self):
         spectrum_for_prefit = self.dataset.props.spectrum_for_prefit
@@ -107,6 +209,7 @@ class Prefitter(Fitter):
 
 
 class GlobalFitter(Fitter):
+    """Fitter with global parameter constraints across spectra."""
 
     def _set_param_expr(self, params):
         for keys in params.keys():
@@ -118,6 +221,8 @@ class GlobalFitter(Fitter):
 
 
 class SingleFitter(Fitter):
+    """A basic extension of Fitter with no modifications."""
+
     pass
 
 
