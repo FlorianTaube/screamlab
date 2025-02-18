@@ -25,10 +25,16 @@ class TestDataset(unittest.TestCase):
         props.spectrum_for_prefit = -2
         props.buildup_types = ["biexponential"]
         props.expno = [24, 32]
+
         props.procno = 103
         props.path_to_experiment = r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Prolin"
         ds = dataset.Dataset()
         ds.props = props
-        ds.add_peak(160)
+        ds.add_peak(
+            160, line_broadening={"sigma": {"max": 3}, "gamma": {"max": 3}}
+        )
         ds.add_peak(43)
+        ds.add_peak(30)
+        ds.add_peak(13)
+        ds.add_peak(8)
         ds.start_buildup_fit_from_topspin()

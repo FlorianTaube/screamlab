@@ -1,6 +1,7 @@
 import lmfit
-from CorziliusNMR import io, utils, settings
+from CorziliusNMR import io, utils, settings, functions
 import numpy as np
+from datetime import datetime
 
 
 class Dataset:
@@ -19,7 +20,11 @@ class Dataset:
         )
         self._read_in_data_from_topspin()
         print("Start peak fitting.")
+        aktuelles_datum = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print("Aktuelles Datum und Uhrzeit:", aktuelles_datum)
         self._calculate_peak_intensities()
+        aktuelles_datum = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print("Aktuelles Datum und Uhrzeit:", aktuelles_datum)
         print("Start buildup fit.")
         self._start_buildup_fit()
         self._print_all()
@@ -80,6 +85,9 @@ class Dataset:
             self.lmfit_result_handler.single_fit = result
             self._get_intensities(result)
         if "global" in self.props.spectrum_fit_type:
+            aktuelles_datum = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print("Aktuelles Datum und Uhrzeit:", aktuelles_datum)
+            print("Start buildup fit.")
             print("Start global fit.")
             self._set_global_fitter()
             result = self.fitter.fit()
@@ -368,24 +376,9 @@ class BuildupList:
         )
 
     def _calc_integral(self, val_list, spectrum):
-        sim_spectrum = None
-        if len(val_list) == 5:
-            sim_spectrum = utils.voigt_profile(
-                spectrum.x_axis,
-                val_list[1],
-                val_list[2],
-                val_list[3],
-                val_list[0],
-            )
-        if len(val_list) == 4:
-            sim_spectrum = utils.lorentz_profile(
-                spectrum.x_axis, val_list[1], val_list[2], val_list[0]
-            )
-        if len(val_list) == 3:
-            sim_spectrum = utils.gauss_profile(
-                spectrum.x_axis, val_list[1], val_list[2], val_list[0]
-            )
-        return np.trapz(sim_spectrum)
+        simspec = [0 for _ in range(len(spectrum.x_axis))]
+        simspec = functions.calc_peak(spectrum.x_axis, simspec, val_list)
+        return np.trapz(simspec)
 
     def _sort_lists(self):
         self.tdel, self.intensity = map(

@@ -160,17 +160,20 @@ class Exporter:
             self.dataset.lmfit_result_handler.prefit.params
         )
 
-        sys.exit()
+        simspec = [0 for _ in range(len(y_axis))]
+        for keys in valdict:
+            for val in valdict[keys]:
+                simspec = functions.calc_peak(x_axis, simspec, val)
 
         fig, axs = plt.subplots(
             2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}
         )
         axs[0].plot(x_axis, y_axis, color="black", label="Experiment")
 
-        axs[0].plot(x_axis, simspecsum, "r--", label="Simulation")
+        axs[0].plot(x_axis, simspec, "r--", label="Simulation")
         axs[0].legend()
         axs[0].set_ylabel("$I$ / a.u.")
-
+        residual = y_axis - simspec
         axs[1].plot(x_axis, residual, color="grey", label="Residual")
         axs[1].set_xlabel("$\delta$ / ppm")
         axs[1].set_ylabel("Residual")

@@ -2,7 +2,7 @@ import unittest
 import lmfit
 import numpy as np
 
-from CorziliusNMR import dataset, settings, utils
+from CorziliusNMR import dataset, settings, utils, functions
 
 
 class TestDataset(unittest.TestCase):
@@ -49,15 +49,15 @@ class TestDataset(unittest.TestCase):
             y_axis = np.zeros(len(spec.x_axis))
             for type in type_list:
                 if type == "voigt":
-                    y_axis = y_axis + utils.voigt_profile(
+                    y_axis = y_axis + functions.voigt_profile(
                         spec.x_axis, 250, 2, 2, (spec_nr + 1) * 200
                     )
                 if type == "gauss":
-                    y_axis = y_axis + utils.gauss_profile(
+                    y_axis = y_axis + functions.gauss_profile(
                         spec.x_axis, 150, 3, (spec_nr + 1) * 200
                     )
                 if type == "lorentz":
-                    y_axis = y_axis + utils.lorentz_profile(
+                    y_axis = y_axis + functions.lorentz_profile(
                         spec.x_axis, 200, 4, (spec_nr + 1) * 200
                     )
             spec.y_axis = y_axis
@@ -127,7 +127,9 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(
             max(y_axis[0]),
             max(
-                utils.voigt_profile(self.ds.spectra[0].x_axis, 250, 2, 2, 200)
+                functions.voigt_profile(
+                    self.ds.spectra[0].x_axis, 250, 2, 2, 200
+                )
             ),
         )
 
@@ -140,7 +142,7 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(
             max(y_axis[0]),
             max(
-                utils.voigt_profile(
+                functions.voigt_profile(
                     self.ds.spectra[0].x_axis, 250, 2, 2, 7 * 200
                 )
             ),
@@ -165,7 +167,7 @@ class TestDataset(unittest.TestCase):
             maxima.append(max(axis))
             sim_maxima.append(
                 max(
-                    utils.voigt_profile(
+                    functions.voigt_profile(
                         self.ds.spectra[0].x_axis, 250, 2, 2, (nr + 1) * 200
                     )
                 )
@@ -191,7 +193,7 @@ class TestDataset(unittest.TestCase):
             maxima.append(max(axis))
             sim_maxima.append(
                 max(
-                    utils.voigt_profile(
+                    functions.voigt_profile(
                         self.ds.spectra[0].x_axis, 250, 2, 2, (nr + 1) * 200
                     )
                 )
@@ -359,7 +361,7 @@ class TestDataset(unittest.TestCase):
     def test_sort_params_one_voigt_one_spectrum(self):
         self.add_n_spectra(1)
         params = self.prefitter._generate_params_list()
-        param_dict_list = self.prefitter._sort_params(params)
+        param_dict_list = functions.generate_spectra_param_dict(params)
         self.assertDictEqual(
             param_dict_list, {0: [[200.0, 150.0, 10.0, 10.0, "gam"]]}
         )
@@ -368,7 +370,7 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(1)
         self.ds.add_peak(120, line_broadening={"sigma": {"max": 2}})
         params = self.prefitter._generate_params_list()
-        param_dict_list = self.prefitter._sort_params(params)
+        param_dict_list = functions.generate_spectra_param_dict(params)
         self.assertDictEqual(
             param_dict_list,
             {
@@ -384,7 +386,7 @@ class TestDataset(unittest.TestCase):
         self.ds.add_peak(120, fitting_type="gauss")
         self.ds.add_peak(100, fitting_type="lorentz")
         params = self.prefitter._generate_params_list()
-        param_dict_list = self.prefitter._sort_params(params)
+        param_dict_list = functions.generate_spectra_param_dict(params)
         self.assertDictEqual(
             param_dict_list,
             {
