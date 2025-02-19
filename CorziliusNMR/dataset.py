@@ -14,6 +14,12 @@ class Dataset:
         self.peak_list = []
         self.lmfit_result_handler = io.LmfitResultHandler()
 
+    def __str__(self):
+        return (
+            f"[[Dataset]]\n"
+            f"Fitted {len(self.peak_list)} peaks per spectrum in {len(self.spectra)} spectra."
+        )
+
     def start_buildup_fit_from_topspin(self):  # TODO Test
         print(
             f"Start loading data from topspin: {self.props.path_to_experiment}"
@@ -163,6 +169,21 @@ class Peak:
         self._peak_sign = None
         self._line_broadening = None
         self._buildup_vals = None
+
+    def __str__(self):
+        return (
+            f"Peak center: {self.peak_center}\n"
+            f"Peak label: {self.peak_label}\n"
+            f"Peak shape: {self.fitting_type}\n"
+            f"Peak sign: {self.peak_sign}\n"
+            f"Initial line broadening parameter: {self.line_broadening}\n"
+            f"{self.buildup_vals}"
+        )
+
+        attributes = vars(self)  # Holt alle Attribute als Dictionary
+        return "\n".join(
+            f"{key}: {value}" for key, value in attributes.items()
+        )
 
     @property
     def buildup_vals(self) -> list:
@@ -337,6 +358,14 @@ class BuildupList:
     def __init__(self):
         self.tdel = None
         self.intensity = None
+
+    def __str__(self):
+        return (
+            "Parameters for buildup fitting:\nDelay times:\t"
+            + "\t\t\t".join(str(x) for x in self.tdel)
+            + "\nIntensities:\t"
+            + "\t".join(str(x) for x in self.intensity)
+        )
 
     def set_vals(self, result, spectra, label):
         self._set_tdel(spectra)

@@ -99,9 +99,16 @@ class Properties:
         self.delay20 = delay20
 
     def __str__(self):
-        attributes = vars(self)  # Holt alle Attribute als Dictionary
-        return "\n".join(
-            f"{key}: {value}" for key, value in attributes.items()
+        return (
+            f"[[Settings]]\n"
+            f"Experiment folder: {self.path_to_experiment}\n"
+            f"Expno: {self.expno}\n"
+            f"Procno: {self.procno}\n"
+            f"Prefit: {self.prefit}\n"
+            f"Spectrum for prefit: {self.spectrum_for_prefit}\n"
+            f"Spectrum fitting type: {self.spectrum_fit_type}\n"
+            f"Buildup evaluation: {self.buildup_types}\n"
+            f"Calculated buildup time from {self.loop20} and {self.delay20} if SCREAM data given."
         )
 
     @property
