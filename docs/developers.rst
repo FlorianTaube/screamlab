@@ -2,7 +2,7 @@
 Developer documentation
 =======================
 
-Welcome to the developer documentation of the CorziliusNMR package. Unlike the :doc:`API documentation <api/index>`, this part gives some general background information for developers who want to actively contribute to the project.
+Welcome to the developer documentation of the CorziliusNMR package. Unlike the :doc:`API documentation <index>`, this part gives some general background information for developers who want to actively contribute to the project.
 
 
 Virtual environment
@@ -49,7 +49,7 @@ Directory layout
 
 The CorziliusNMR package follows good practice of the Python community regarding directory layout. As there will be several subpackages available, these reside each in a separate directory containing its own ``__init__.py`` file. All packages/modules reside below the ``CorziliusNMR`` directory of the project root. The ``tests`` directory follows the same structure and contains all the module tests. Generally, the CorziliusNMR package should be developed test-driven (test-first) as much as possible.
 
-(This) documentation resides inside the ``docs`` directory of the project root. The auto-generated :doc:`API documentation <api/index>` is in its own directory.
+(This) documentation resides inside the ``docs`` directory of the project root. The auto-generated :doc:`API documentation <index>` is in its own directory.
 
 A general overview of the overall package structure:
 
@@ -57,8 +57,7 @@ A general overview of the overall package structure:
 
     bin/
     CorziliusNMR/
-    docs/
-        api/
+    api/
     tests/
 
 

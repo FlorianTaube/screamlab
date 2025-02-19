@@ -303,3 +303,21 @@ class TestProperties(unittest.TestCase):
     def test_expno_private_variable(self):
         props = Properties(expno=[2])
         self.assertListEqual(props._expno, ["2"])
+
+    def test_output_folder_init_default(self):
+        props = Properties()
+        self.assertEqual(props.output_folder, "")
+
+    def test_output_folder_init(self):
+        props = Properties(output_folder="Hallo")
+        self.assertEqual(props.output_folder, "Hallo")
+
+    def test_output_folder_init_wrong_input_type(self):
+        props = Properties()
+        self.assertEqual(props.output_folder, "Hallo")
+        with self.assertRaises(TypeError) as context:
+            props.output_folder = [1, "12"]
+        self.assertEqual(
+            str(context.exception),
+            "Expected 'output_folder' to be of type 'str', got str.",
+        )

@@ -54,6 +54,7 @@ class Properties:
         expno: list = [1],
         loop20: str = "L 20",
         delay20: str = "D 20",
+        output_folder: str = "",
     ):
         """
         Initialize the Properties class with default or specified values.
@@ -97,6 +98,8 @@ class Properties:
         self.loop20 = loop20
         self._delay20 = None
         self.delay20 = delay20
+        self._output_folder = None
+        self.output_folder = output_folder
 
     def __str__(self):
         return (
@@ -109,7 +112,20 @@ class Properties:
             f"Spectrum fitting type: {self.spectrum_fit_type}\n"
             f"Buildup evaluation: {self.buildup_types}\n"
             f"Calculated buildup time from {self.loop20} and {self.delay20} if SCREAM data given."
+            f"Wrote output files to: {self.output_folder}"
         )
+
+    @property
+    def output_folder(self) -> str:
+        return self._output_folder
+
+    @output_folder.setter
+    def output_folder(self, value: Any):
+        if not isinstance(value, str):
+            raise TypeError(
+                f"Expected 'output_folder' to be of type 'str', got {type(value).__name__}."
+            )
+        self._output_folder = value
 
     @property
     def delay20(self) -> str:
