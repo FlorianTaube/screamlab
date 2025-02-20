@@ -1,6 +1,5 @@
 import numpy as np
 import re
-from CorziliusNMR import utils
 from scipy.special import wofz
 
 

@@ -12,10 +12,8 @@ Classes:
 """
 
 import lmfit
-import re
 import numpy as np
 import copy
-import matplotlib.pyplot as plt
 from pyDOE2 import lhs
 from CorziliusNMR import functions
 
@@ -201,6 +199,14 @@ class Prefitter(Fitter):
     """Fitter for a single preselected spectrum."""
 
     def _generate_axis_list(self):
+        """
+        Generate the x and y axes for prefit spectrum.
+
+        This function retrieves the x and y axes from the spectrum
+        specified in the dataset properties for prefit.
+
+        :return: Tuple containing lists of x and y axes.
+        """
         spectrum_for_prefit = self.dataset.props.spectrum_for_prefit
         x_axis, y_axis = [], []
         x_axis.append(self.dataset.spectra[spectrum_for_prefit].x_axis)
@@ -208,10 +214,24 @@ class Prefitter(Fitter):
         return x_axis, y_axis
 
 
+class SingleFitter(Fitter):
+    pass
+
+
 class GlobalFitter(Fitter):
     """Fitter with global parameter constraints across spectra."""
 
     def _set_param_expr(self, params):
+        """
+        Set parameter expressions to enforce global constraints.
+
+        This function modifies parameters such that all parameters
+        except for amplitudes ("amp") share the same global parameter
+        value across multiple spectra by setting their expressions.
+
+        :param params: lmfit Parameters object containing the parameters to be modified.
+        :return: Modified lmfit Parameters object with parameter expressions set.
+        """
         for keys in params.keys():
             splitted_keys = keys.split("_")
             if splitted_keys[-1] != "0" and splitted_keys[-2] != "amp":
@@ -220,38 +240,51 @@ class GlobalFitter(Fitter):
         return params
 
 
-class SingleFitter(Fitter):
-    """A basic extension of Fitter with no modifications."""
-
-    pass
-
-
 class BuildupFitter:
+    """
+    Base class for fitting buildup data using optimization techniques.
+    """
 
     def __init__(self, dataset):
+        """
+        Initialize the BuildupFitter with a dataset.
+
+        :param dataset: The dataset containing peak list information.
+        """
         self.dataset = dataset
 
     def perform_fit(self):
+        """
+        Perform the fitting procedure on the dataset's peak list.
+
+        :return: List of best fit results for each peak.
+        """
         result_list = []
         for peak in self.dataset.peak_list:
             default_param_dict = self._get_default_param_dict(peak)
             lhs_init_params = self._get_lhs_init_params(default_param_dict)
             best_result = None
             best_chisqr = np.inf
-            for init_nr, init_params in enumerate(lhs_init_params):
+            for init_params in lhs_init_params:
                 params = self._set_params(default_param_dict, init_params)
                 try:
-                    result = self._start_minimize(params, peak._buildup_vals)
+                    result = self._start_minimize(params, peak.buildup_vals)
                     best_result, best_chisqr = self._check_result_quality(
                         best_result, best_chisqr, result
                     )
-                except:
+                except Exception as e:
                     pass
             result_list.append(best_result)
         return result_list
 
     def _get_lhs_init_params(self, default_param_dict, n_samples=1):
-        param_bounds = []
+        """
+        Generate Latin Hypercube Sampling (LHS) initial parameters.
+
+        :param default_param_dict: Dictionary of default parameter values and bounds.
+        :param n_samples: Number of LHS samples to generate.
+        :return: List of sampled parameters.
+        """
         param_bounds = [
             self._get_param_bounds(default_param_dict[key])
             for key in default_param_dict
@@ -262,6 +295,13 @@ class BuildupFitter:
         return self._set_sample_params(lhs_samples, param_bounds)
 
     def _start_minimize(self, params, args):
+        """
+        Start the minimization process using lmfit.
+
+        :param params: Parameters for fitting.
+        :param args: Arguments containing time delays and intensities.
+        :return: Minimization result.
+        """
         return lmfit.minimize(
             self._fitting_function,
             params,
@@ -269,24 +309,52 @@ class BuildupFitter:
         )
 
     def _check_result_quality(self, best_result, best_chisqr, result):
+        """
+        Check if the new result is better than the current best result.
+
+        :param best_result: The current best fitting result.
+        :param best_chisqr: The chi-squared value of the best result.
+        :param result: The new fitting result.
+        :return: The best result and its chi-squared value.
+        """
         if result.chisqr < best_chisqr:
             return result, result.chisqr
-        else:
-            return best_result, best_chisqr
+        return best_result, best_chisqr
 
     def _get_param_bounds(self, params):
+        """
+        Retrieve parameter bounds.
+
+        :param params: Dictionary containing parameter min and max values.
+        :return: Tuple containing (min, max) bounds.
+        """
         return (params["min"], params["max"])
 
     def _set_sample_params(self, lhs_samples, param_bounds):
+        """
+        Scale LHS samples according to parameter bounds.
+
+        :param lhs_samples: LHS-generated samples.
+        :param param_bounds: List of parameter bounds.
+        :return: List of sampled parameters.
+        """
         sampled_params = []
         for sample in lhs_samples:
-            scaled_sample = []
-            for i, (low, high) in enumerate(param_bounds):
-                scaled_sample.append(low + sample[i] * (high - low))
+            scaled_sample = [
+                low + sample[i] * (high - low)
+                for i, (low, high) in enumerate(param_bounds)
+            ]
             sampled_params.append(scaled_sample)
         return sampled_params
 
     def _set_params(self, default_param_dict, init_params):
+        """
+        Set up lmfit Parameters object using initial parameters.
+
+        :param default_param_dict: Default parameter dictionary.
+        :param init_params: Initial parameter values.
+        :return: lmfit Parameters object.
+        """
         params = lmfit.Parameters()
         for key_nr, key in enumerate(default_param_dict.keys()):
             default_param_dict[key]["value"] = init_params[key_nr]
@@ -294,28 +362,57 @@ class BuildupFitter:
         return params
 
     def _fitting_function(self, params, tdel, intensity):
+        """
+        Define the residual function for fitting.
+
+        :param params: Parameters for fitting.
+        :param tdel: Time delays.
+        :param intensity: Measured intensities.
+        :return: Residuals between observed and simulated intensities.
+        """
         residual = copy.deepcopy(intensity)
         param_list = self._generate_param_list(params)
         intensity_sim = self._calc_intensity(tdel, param_list)
         return [a - b for a, b in zip(residual, intensity_sim)]
 
     def _generate_param_list(self, params):
-        param_list = []
-        for key in params:
-            param_list.append((params[key].value))
-        return param_list
+        """
+        Generate a list of parameter values from lmfit Parameters.
+
+        :param params: lmfit Parameters object.
+        :return: List of parameter values.
+        """
+        return [params[key].value for key in params]
 
     def _get_intensity_dict(self, peak):
+        """
+        Generate intensity parameter dictionary.
+
+        :param peak: Peak object containing buildup values.
+        :return: Dictionary with default intensity parameter values.
+        """
         return (
-            dict(value=10, min=0, max=max(peak.buildup_vals.intensity) * 3)
+            {
+                "value": 10,
+                "min": 0,
+                "max": max(peak.buildup_vals.intensity) * 3,
+            }
             if peak.peak_sign == "+"
-            else dict(
-                value=10, max=0, min=min(peak.buildup_vals.intensity) * 3
-            )
+            else {
+                "value": 10,
+                "max": 0,
+                "min": min(peak.buildup_vals.intensity) * 3,
+            }
         )
 
     def _get_time_dict(self, peak):
-        return dict(value=5, min=0, max=max(peak.buildup_vals.tdel) * 3)
+        """
+        Generate time delay parameter dictionary.
+
+        :param peak: Peak object containing buildup values.
+        :return: Dictionary with default time parameter values.
+        """
+        return {"value": 5, "min": 0, "max": max(peak.buildup_vals.tdel) * 3}
 
 
 class BiexpFitter(BuildupFitter):
@@ -324,6 +421,12 @@ class BiexpFitter(BuildupFitter):
     """
 
     def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for biexponential fitting.
+
+        :param peak: Peak object.
+        :return: Dictionary of parameter defaults.
+        """
         return {
             "A1": self._get_intensity_dict(peak),
             "A2": self._get_intensity_dict(peak),
@@ -332,6 +435,13 @@ class BiexpFitter(BuildupFitter):
         }
 
     def _calc_intensity(self, tdel, param):
+        """
+        Calculate biexponential intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
         return functions.calc_biexponential(tdel, param)
 
 
@@ -341,15 +451,28 @@ class BiexpFitterWithOffset(BuildupFitter):
     """
 
     def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for biexponential fitting.
+
+        :param peak: Peak object.
+        :return: Dictionary of parameter defaults.
+        """
         return {
             "A1": self._get_intensity_dict(peak),
             "A2": self._get_intensity_dict(peak),
             "t1": self._get_time_dict(peak),
             "t2": self._get_time_dict(peak),
-            "x1": dict(value=0, min=-5, max=5),
+            "x1": {"value": 0, "min": -5, "max": 5},
         }
 
     def _calc_intensity(self, tdel, param):
+        """
+        Calculate biexponential intensity with x axis offset.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
         return functions.calc_biexponential_with_offset(tdel, param)
 
 
@@ -359,12 +482,25 @@ class ExpFitter(BuildupFitter):
     """
 
     def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for biexponential fitting.
+
+        :param peak: Peak object.
+        :return: Dictionary of parameter defaults.
+        """
         return {
             "A1": self._get_intensity_dict(peak),
             "t1": self._get_time_dict(peak),
         }
 
     def _calc_intensity(self, tdel, param):
+        """
+        Calculate exponential intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
         return functions.calc_exponential(tdel, param)
 
 
@@ -374,11 +510,24 @@ class ExpFitterWithOffset(BuildupFitter):
     """
 
     def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for biexponential fitting.
+
+        :param peak: Peak object.
+        :return: Dictionary of parameter defaults.
+        """
         return {
             "A1": self._get_intensity_dict(peak),
             "t1": self._get_time_dict(peak),
-            "x1": dict(value=0, min=-5, max=5),
+            "x1": {"value": 0, "min": -5, "max": 5},
         }
 
     def _calc_intensity(self, tdel, param):
+        """
+        Calculate exponential intensity with x axis offset.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
         return functions.calc_exponential_with_offset(tdel, param)

@@ -46,12 +46,12 @@ class Properties:
     def __init__(
         self,
         prefit: bool = False,
-        buildup_types: list = ["exponential"],
-        spectrum_fit_type: list = ["global"],
+        buildup_types: list = None,
+        spectrum_fit_type: list = None,
         spectrum_for_prefit: int = 0,
         path_to_experiment: str = os.path.dirname(os.path.abspath(__file__)),
         procno: int = 103,
-        expno: list = [1],
+        expno: list = None,
         loop20: str = "L 20",
         delay20: str = "D 20",
         output_folder: str = "",
@@ -80,6 +80,12 @@ class Properties:
         delay20 : str, optional
             Delay parameter. Default is "D 20".
         """
+        if buildup_types is None:
+            buildup_types = ["exponential"]
+        if spectrum_fit_type is None:
+            spectrum_fit_type = ["global"]
+        if expno is None:
+            expno = [1]
         self._path_to_experiment = None
         self.path_to_experiment = path_to_experiment
         self._procno = None

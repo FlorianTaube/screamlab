@@ -2,14 +2,11 @@
 io module of the CorziliusNMR package.
 """
 
-import CorziliusNMR.dataset
-from CorziliusNMR import utils, functions
+from CorziliusNMR import dataset, functions
 import numpy as np
 import bruker.api.topspin as top
 import os
 import matplotlib.pyplot as plt
-import lmfit
-import matplotlib.cm as cm
 import copy
 
 
@@ -34,12 +31,6 @@ class TopspinImporter:
         self._current_path_to_exp = None
         self._nmr_data = None
 
-    def import_topspin_data(self):
-        """
-        Import NMR data from TopSpin.
-        """
-        pass
-
     def _set_values(self):
         """
         Set internal values including scans, buildup time, x and y data.
@@ -55,7 +46,7 @@ class TopspinImporter:
         """
         Add a new spectrum to the dataset.
         """
-        self._dataset.spectra.append(CorziliusNMR.dataset.Spectra())
+        self._dataset.spectra.append(dataset.Spectra())
 
     def _get_physical_range(self):
         """
@@ -173,14 +164,6 @@ class ScreamImporter(TopspinImporter):
         return path_list
 
 
-class Pseudo2DImporter(TopspinImporter):
-    """
-    Class for importing and processing pseudo-2D NMR data.
-    """
-
-    pass
-
-
 class Exporter:
 
     def __init__(self, dataset):
@@ -227,11 +210,11 @@ class Exporter:
             self.dataset.lmfit_result_handler.prefit.params
         )
         simspec = [0 for _ in range(len(y_axis))]
-        for keys in valdict:
-            for val in valdict[keys]:
+        for _, values in valdict.items():
+            for val in values:
                 simspec = functions.calc_peak(x_axis, simspec, val)
 
-        fig, axs = plt.subplots(
+        _, axs = plt.subplots(
             2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}
         )
         axs[0].plot(x_axis, y_axis, color="black", label="Experiment")
@@ -241,13 +224,13 @@ class Exporter:
         axs[0].set_ylabel("$I$ / a.u.")
         residual = y_axis - simspec
         axs[1].plot(x_axis, residual, color="grey", label="Residual")
-        axs[1].set_xlabel("$\delta$ / ppm")
+        axs[1].set_xlabel("$\\delta$ / ppm")
         axs[1].set_ylabel("$I_{resid}$ / a.u.")
         axs[0].set_xlim(max(x_axis), min(x_axis))
         axs[1].set_xlim(max(x_axis), min(x_axis))
         axs[1].legend()
         plt.tight_layout()
-        # plt.show()
+        plt.show()
         plt.close()
 
     def _print_lmfit_prefit_report(self):
@@ -257,26 +240,26 @@ class Exporter:
         valdict = functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
-        fig, ax = plt.subplots(1, 1, sharex=True)
+        _, ax = plt.subplots(1, 1, sharex=True)
         first = True
-        for keys in valdict:
+        for key, values in valdict.items():
             simspec = np.zeros_like(
-                self.dataset.spectra[keys].y_axis, dtype=float
+                self.dataset.spectra[key].y_axis, dtype=float
             )
-            for val in valdict[keys]:
+            for val in values:
                 simspec = functions.calc_peak(
-                    self.dataset.spectra[keys].x_axis, simspec, val
+                    self.dataset.spectra[key].x_axis, simspec, val
                 )
             label_exp = "Experiment" if first else None
             label_sim = "Simulation" if first else None
             ax.plot(
-                self.dataset.spectra[keys].x_axis,
-                self.dataset.spectra[keys].y_axis,
+                self.dataset.spectra[key].x_axis,
+                self.dataset.spectra[key].y_axis,
                 color="black",
                 label=label_exp,
             )
             ax.plot(
-                self.dataset.spectra[keys].x_axis,
+                self.dataset.spectra[key].x_axis,
                 simspec,
                 "r--",
                 label=label_sim,
@@ -327,17 +310,15 @@ class Exporter:
         valdict = functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
-        for keys in valdict:
+        for keys, values in valdict.items():
             simspec = [
                 0 for _ in range(len(self.dataset.spectra[keys].y_axis))
             ]
-            fig, axs = plt.subplots(
+            _, axs = plt.subplots(
                 2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}
             )
-            residual = residual = copy.deepcopy(
-                self.dataset.spectra[keys].y_axis
-            )
-            for val in valdict[keys]:
+            residual = copy.deepcopy(self.dataset.spectra[keys].y_axis)
+            for val in values:
                 simspec = functions.calc_peak(
                     self.dataset.spectra[keys].x_axis, simspec, val
                 )
@@ -363,7 +344,7 @@ class Exporter:
             )
 
             axs[0].set_ylabel("$I$ / a.u.")
-            axs[1].set_xlabel("$\delta$ / ppm")
+            axs[1].set_xlabel("$\\delta$ / ppm")
             axs[1].set_ylabel("$I_{resid}$ / a.u.")
             axs[0].set_xlim(
                 max(self.dataset.spectra[keys].x_axis),
@@ -380,7 +361,7 @@ class Exporter:
             plt.close()
 
     def _print_report(self, filename="report.txt"):
-        with open(filename, "w") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write(str(self.dataset.props) + "\n")
             f.write(str(self.dataset) + "\n")
             f.write("[[Peaks]]\n")
@@ -433,7 +414,7 @@ class Exporter:
                 "".join(f"{h:<{w}}" for h, w in zip(header, column_widths))
                 + "\n"
             )
-            for val_nr, (key, values) in enumerate(valdict.items()):
+            for val_nr, (_, values) in enumerate(valdict.items()):
                 for val_index, val in enumerate(values):
                     if len(val) == 5:
                         row = [
@@ -456,8 +437,8 @@ class Exporter:
                         )
 
             f.write("[[Buildup fit results]]\n")
-            for type in self.dataset.props.buildup_types:
-                f.write(f"[{type}]\n")
+            for buildup_type in self.dataset.props.buildup_types:
+                f.write(f"[{buildup_type}]\n")
                 header = [
                     "Label",
                     "A1 / a.u.",
@@ -489,9 +470,11 @@ class Exporter:
                         "x1",
                     ],
                 }
-                type_format = format_mappings.get(type, [])
+                type_format = format_mappings.get(buildup_type, [])
                 for result_nr, result in enumerate(
-                    self.dataset.lmfit_result_handler.buildup_fit[type]
+                    self.dataset.lmfit_result_handler.buildup_fit[
+                        buildup_type
+                    ]
                 ):
                     row_data = [self.dataset.peak_list[result_nr].peak_label]
                     for param in type_format:
@@ -508,7 +491,34 @@ class Exporter:
 
 
 class LmfitResultHandler:
+    """
+    A class to handle the results of fitting operations.
+
+    This class stores and manages the results from different types of fits:
+    prefit, single fit, global fit, and buildup fit. It provides a container
+    for the various fit results to facilitate later analysis and processing.
+
+    Attributes:
+        prefit (object or None): Stores the prefit result, which may be an object or None.
+        single_fit (object or None): Stores the result of a single fit operation, or None if not available.
+        global_fit (object or None): Stores the result of a global fit operation, or None if not available.
+        buildup_fit (dict): A dictionary that stores results from buildup fits, keyed by fit identifiers.
+    """
+
     def __init__(self):
+        """
+        Initializes the LmfitResultHandler with default values.
+
+        The prefit, single_fit, and global_fit attributes are set to None,
+        indicating that no fit results have been stored yet. The buildup_fit
+        attribute is initialized as an empty dictionary to store multiple buildup fit results.
+
+        Attributes:
+            prefit (None): Default value for the prefit result.
+            single_fit (None): Default value for the single fit result.
+            global_fit (None): Default value for the global fit result.
+            buildup_fit (dict): Default empty dictionary for storing buildup fit results.
+        """
         self.prefit = None
         self.single_fit = None
         self.global_fit = None

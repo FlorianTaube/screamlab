@@ -85,8 +85,12 @@ autodoc_default_options = {
     "member-order": "bysource",
     "undoc-members": True,
     "show-inheritance": True,
+    "special-members": False,
+    "private-members": False,
+    "inherited-members": False,
     "exclude-members": "__weakref__",
 }
+
 
 # Multiversion configuration
 smv_branch_whitelist = r"^master.*$"
