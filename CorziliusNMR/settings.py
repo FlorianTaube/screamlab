@@ -54,7 +54,7 @@ class Properties:
         expno: list = None,
         loop20: str = "L 20",
         delay20: str = "D 20",
-        output_folder: str = "",
+        output_file: str = os.path.dirname(os.path.abspath(__file__)),
     ):
         """
         Initialize the Properties class with default or specified values.
@@ -105,7 +105,7 @@ class Properties:
         self._delay20 = None
         self.delay20 = delay20
         self._output_folder = None
-        self.output_folder = output_folder
+        self.output_folder = output_file
 
     def __str__(self):
         return (

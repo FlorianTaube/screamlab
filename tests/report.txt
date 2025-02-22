@@ -6,7 +6,7 @@ Prefit: True
 Spectrum for prefit: -2
 Spectrum fitting type: ['global']
 Buildup evaluation: ['exponential', 'exponential_with_offset']
-Calculated buildup time from L 20 and D 20 if SCREAM data given.Wrote output files to: 
+Calculated buildup time from L 20 and D 20 if SCREAM data given.Wrote output files to: C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR
 [[Dataset]]
 Fitted 1 peaks per spectrum in 8 spectra.
 [[Peaks]]
@@ -35,8 +35,8 @@ Label                    Time  Center                   Amplitude               
 [[Buildup fit results]]
 [exponential]
 Label               A1 / a.u.           t1 / s              A2 / a.u.           t2 / s              t_off / s           
-                    2119849.984395901   21.735004062587407  ---                 ---                 ---                 
+                    2119849.9689246677  21.73500377868787   ---                 ---                 ---                 
 [exponential_with_offset]
 Label               A1 / a.u.           t1 / s              A2 / a.u.           t2 / s              t_off / s           
-                    2020641.6310508836  19.344244656991275  ---                 ---                 0.35044021935225267 
+                    2020641.6293003429  19.344244623037135  ---                 ---                 0.3504402206934687  
 End

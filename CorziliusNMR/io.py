@@ -196,7 +196,12 @@ class Exporter:
             )
         plt.gca().invert_xaxis()
         plt.legend()
-        # plt.show()
+        plt.show()
+        plt.savefig(
+            f"{self.dataset.props.output_folder}/Exported_data.pdf",
+            dpi=500,
+            bbox_inches="tight",
+        )
         plt.close()
 
     def _plot_prefit(self):
@@ -231,6 +236,11 @@ class Exporter:
         axs[1].legend()
         plt.tight_layout()
         plt.show()
+        plt.savefig(
+            f"{self.dataset.props.output_folder}/Prefit_plot.pdf",
+            dpi=500,
+            bbox_inches="tight",
+        )
         plt.close()
 
     def _print_lmfit_prefit_report(self):
@@ -269,17 +279,25 @@ class Exporter:
         ax.invert_xaxis()
         ax.set_ylabel("$I$ / a.u.")
         plt.tight_layout()
-        # plt.show()
+        plt.savefig(
+            f"{self.dataset.props.output_folder}/Global_fit_summary.pdf",
+            dpi=500,
+            bbox_inches="tight",
+        )
         plt.close()
 
     def _plot_buildup(self, buildup_type):
-        colors = plt.colormaps.get_cmap("viridis")  # Hol dir die Colormap
+        colors = plt.get_cmap("viridis")
         norm = plt.Normalize(vmin=0, vmax=len(self.dataset.peak_list))
+
         for peak_nr, peak in enumerate(self.dataset.peak_list):
+            print(len(self.dataset.peak_list))
+            print(self.dataset.peak_list[0])
             peak_result = self.dataset.lmfit_result_handler.buildup_fit[
                 buildup_type
             ][peak_nr]
             color = colors(norm(peak_nr))
+
             plt.plot(
                 peak.buildup_vals.tdel,
                 peak.buildup_vals.intensity,
@@ -287,6 +305,7 @@ class Exporter:
                 color=color,
                 label=f"{peak.peak_label}",
             )
+            print(f"{peak.peak_label}")
             sim_tdel = np.linspace(0, peak.buildup_vals.tdel[-1], 1024)
             val_list = [param.value for param in peak_result.params.values()]
 
@@ -296,14 +315,21 @@ class Exporter:
                 "exponential_with_offset": functions.calc_exponential_with_offset,
                 "biexponential_with_offset": functions.calc_biexponential_with_offset,
             }
+
             plt.plot(
                 sim_tdel,
                 func_map[buildup_type](sim_tdel, val_list),
                 "-",
                 color=color,
             )
+
         plt.legend()
-        # plt.show()
+        plt.savefig(
+            f"{self.dataset.props.output_folder}/Buildup_fit_{buildup_type}.pdf",
+            dpi=500,
+            bbox_inches="tight",
+        )
+        plt.show()
         plt.close()
 
     def _plot_global_each_individual(self):
