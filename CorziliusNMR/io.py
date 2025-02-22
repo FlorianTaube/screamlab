@@ -235,7 +235,6 @@ class Exporter:
         axs[1].set_xlim(max(x_axis), min(x_axis))
         axs[1].legend()
         plt.tight_layout()
-        plt.show()
         plt.savefig(
             f"{self.dataset.props.output_folder}/Prefit_plot.pdf",
             dpi=500,
