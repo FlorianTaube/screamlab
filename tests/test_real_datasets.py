@@ -14,6 +14,7 @@ class TestDataset(unittest.TestCase):
         props.expno = [1, 8]
         props.procno = 103
         props.path_to_experiment = r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Alanin"
+        props.output_folder = r"..\tests\SCREAM_Test_Files\Alanin\result"
         ds = dataset.Dataset()
         ds.props = props
         ds.add_peak(-16)

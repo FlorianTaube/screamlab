@@ -1,3 +1,4 @@
+import lmfit
 from CorziliusNMR import io, utils, settings, functions
 import numpy as np
 
@@ -68,7 +69,6 @@ class Dataset:
         self,
         center_of_peak,
         peak_label="",
-        fitting_group=1,
         fitting_type="voigt",
         peak_sign="+",
         line_broadening=None,
@@ -79,7 +79,6 @@ class Dataset:
         Args:
             center_of_peak (float): Center of the peak.
             peak_label (str, optional): Label for the peak. Defaults to "".
-            fitting_group (int, optional): Grouping for fitting. Defaults to 1.
             fitting_type (str, optional): Type of fitting (e.g., "voigt"). Defaults to "voigt".
             peak_sign (str, optional): Sign of the peak ("+" or "-"). Defaults to "+".
             line_broadening (dict, optional): Line broadening parameters. Defaults to None.
@@ -90,7 +89,6 @@ class Dataset:
         peak = self.peak_list[-1]
         peak.peak_center = center_of_peak
         peak.peak_label = peak_label
-        peak.fitting_group = fitting_group
         peak.fitting_type = fitting_type
         peak.peak_sign = peak_sign
         peak.line_broadening = line_broadening
@@ -176,26 +174,17 @@ class Dataset:
         for peak in self.peak_list:
             peak.line_broadening = {
                 lw: {
-                    "min": round(
-                        result.params.get(
-                            f"{peak.peak_label}_{lw}_{self.props.spectrum_for_prefit}",
-                            0,
-                        ).value
-                        * 0.9,
-                        2,
-                    ),
-                    "max": round(
-                        result.params.get(
-                            f"{peak.peak_label}_{lw}_{self.props.spectrum_for_prefit}",
-                            0,
-                        ).value
-                        * 1.1,
-                        2,
-                    ),
+                    "min": result.params.get(
+                        f"{peak.peak_label}_{lw}_0"
+                    ).value
+                    * 0.9,
+                    "max": result.params.get(
+                        f"{peak.peak_label}_{lw}_0"
+                    ).value
+                    * 1.1,
                 }
                 for lw in ["sigma", "gamma"]
-                if f"{peak.peak_label}_{lw}_{self.props.spectrum_for_prefit}"
-                in result.params
+                if f"{peak.peak_label}_{lw}_0" in result.params
             }
 
 
@@ -224,7 +213,6 @@ class Peak:
         """
         self._peak_center = None
         self._peak_label = None
-        self._fitting_group = None
         self._fitting_type = None
         self._peak_sign = None
         self._line_broadening = None
@@ -241,7 +229,7 @@ class Peak:
             f"Peak label: {self.peak_label}\n"
             f"Peak shape: {self.fitting_type}\n"
             f"Peak sign: {self.peak_sign}\n"
-            f"Initial line broadening parameter: {self.line_broadening}\n"
+            f"Start global fit with: {self.line_broadening}\n"
             f"{self.buildup_vals}"
         )
 
@@ -368,6 +356,21 @@ class Peak:
                 f"'peak_center' must be of type 'int' or 'float', but got {type(value)}."
             )
         self._peak_center = float(value)
+
+    @property
+    def peak_label(self) -> str:
+        return self._peak_label
+
+    @peak_label.setter
+    def peak_label(self, value):
+        if not isinstance(value, str):
+            raise TypeError(
+                f"'peak_label' must be of type 'str', but got {type(value)}."
+            )
+        if value == "":
+            name = str(int(self.peak_center)).replace("-", "m")
+            value = f"Peak_at_{name}_ppm"
+        self._peak_label = value
 
     def _return_default_dict(self):
         """

@@ -309,7 +309,7 @@ class TestProperties(unittest.TestCase):
         self.assertEqual(props.output_folder, "")
 
     def test_output_folder_init(self):
-        props = Properties(output_file="Hallo")
+        props = Properties(output_folder="Hallo")
         self.assertEqual(props.output_folder, "Hallo")
 
     def test_output_folder_init_wrong_input_type(self):
@@ -319,5 +319,5 @@ class TestProperties(unittest.TestCase):
             props.output_folder = [1, "12"]
         self.assertEqual(
             str(context.exception),
-            "Expected 'output_file' to be of type 'str', got str.",
+            "Expected 'output_folder' to be of type 'str', got str.",
         )

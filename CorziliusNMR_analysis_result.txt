@@ -1,0 +1,42 @@
+[[Settings]]
+Experiment folder: C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Alanin
+Expno: ['1', '2', '3', '4', '5', '6', '7', '8']
+Procno: 103
+Prefit: True
+Spectrum for prefit: -2
+Spectrum fitting type: ['global']
+Buildup evaluation: ['exponential', 'exponential_with_offset']
+Calculated buildup time from L 20 and D 20 if SCREAM data given.Wrote output files to: C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR
+[[Dataset]]
+Fitted 1 peaks per spectrum in 8 spectra.
+[[Peaks]]
+[Peak 1]
+Peak center: -16.0
+Peak label: Peak_at_m16_ppm
+Peak shape: voigt
+Peak sign: +
+Initial line broadening parameter: {'sigma': {'min': 0, 'max': 20}, 'gamma': {'min': 0, 'max': 20}}
+Parameters for buildup fitting:
+Delay times:	0.25			0.5			1.0			2.0			4.0			8.0			16.0			32.0
+Intensities:	15664.481949436726	23551.94784549873	60833.95136426878	141593.05027390528	324818.9447424321	670902.4606342339	1133205.1664069514	1621764.0857903857
+[[Prefit]]
+Label			Center				Amplitude			Sigma				Gamma
+Peak_at_m16_ppm	-15.818063753689106	27994.9513103692	0.5077031732683801	2.035200378991341
+[[Global fit results]]
+Label                    Time  Center                   Amplitude                Sigma                    Gamma                    FWHM Lorentz             FWHM Gauss               FWHM Voigt               
+Peak_at_m16_ppm          0.25  -15.690712527134197      398.3097239184672        0.2849354878985766       2.2064928376318207       4.412985675263641        0.6709717984442416       4.467087699138751        
+Peak_at_m16_ppm          0.5   -15.690712527134197      598.9128809454525        0.2849354878985766       2.2064928376318207       4.412985675263641        0.6709717984442416       4.467087699138751        
+Peak_at_m16_ppm          1.0   -15.690712527134197      1546.9734100074913       0.2849354878985766       2.2064928376318207       4.412985675263641        0.6709717984442416       4.467087699138751        
+Peak_at_m16_ppm          2.0   -15.690712527134197      3600.6321947424967       0.2849354878985766       2.2064928376318207       4.412985675263641        0.6709717984442416       4.467087699138751        
+Peak_at_m16_ppm          4.0   -15.690712527134197      8259.96436717365         0.2849354878985766       2.2064928376318207       4.412985675263641        0.6709717984442416       4.467087699138751        
+Peak_at_m16_ppm          8.0   -15.690712527134197      17060.67490331322        0.2849354878985766       2.2064928376318207       4.412985675263641        0.6709717984442416       4.467087699138751        
+Peak_at_m16_ppm          16.0  -15.690712527134197      28816.774534628155       0.2849354878985766       2.2064928376318207       4.412985675263641        0.6709717984442416       4.467087699138751        
+Peak_at_m16_ppm          32.0  -15.690712527134197      41240.55501508011        0.2849354878985766       2.2064928376318207       4.412985675263641        0.6709717984442416       4.467087699138751        
+[[Buildup fit results]]
+[exponential]
+Label               A1 / a.u.           t1 / s              A2 / a.u.           t2 / s              t_off / s           
+Peak_at_m16_ppm     2119849.960685423   21.73500362748287   ---                 ---                 ---                 
+[exponential_with_offset]
+Label               A1 / a.u.           t1 / s              A2 / a.u.           t2 / s              t_off / s           
+Peak_at_m16_ppm     2020641.6244462093  19.344244528434825  ---                 ---                 0.350440224531253   
+End

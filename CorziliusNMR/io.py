@@ -164,6 +164,10 @@ class ScreamImporter(TopspinImporter):
         return path_list
 
 
+class Pseudo2DImporter(TopspinImporter):
+    pass
+
+
 class Exporter:
 
     def __init__(self, dataset):
@@ -195,8 +199,9 @@ class Exporter:
                 color=colors[idx],
             )
         plt.gca().invert_xaxis()
+        plt.xlabel("$t_{del}$ / s")
+        plt.ylabel("$I$ / a.u.")
         plt.legend()
-        plt.show()
         plt.savefig(
             f"{self.dataset.props.output_folder}/Exported_data.pdf",
             dpi=500,
@@ -234,6 +239,8 @@ class Exporter:
         axs[0].set_xlim(max(x_axis), min(x_axis))
         axs[1].set_xlim(max(x_axis), min(x_axis))
         axs[1].legend()
+        plt.xlabel("$t_{del}$ / s")
+        plt.ylabel("$I$ / a.u.")
         plt.tight_layout()
         plt.savefig(
             f"{self.dataset.props.output_folder}/Prefit_plot.pdf",
@@ -274,6 +281,8 @@ class Exporter:
                 label=label_sim,
             )
             first = False
+        plt.xlabel("$t_{del}$ / s")
+        plt.ylabel("$I$ / a.u.")
         ax.legend()
         ax.invert_xaxis()
         ax.set_ylabel("$I$ / a.u.")
@@ -290,8 +299,6 @@ class Exporter:
         norm = plt.Normalize(vmin=0, vmax=len(self.dataset.peak_list))
 
         for peak_nr, peak in enumerate(self.dataset.peak_list):
-            print(len(self.dataset.peak_list))
-            print(self.dataset.peak_list[0])
             peak_result = self.dataset.lmfit_result_handler.buildup_fit[
                 buildup_type
             ][peak_nr]
@@ -304,7 +311,7 @@ class Exporter:
                 color=color,
                 label=f"{peak.peak_label}",
             )
-            print(f"{peak.peak_label}")
+
             sim_tdel = np.linspace(0, peak.buildup_vals.tdel[-1], 1024)
             val_list = [param.value for param in peak_result.params.values()]
 
@@ -321,20 +328,27 @@ class Exporter:
                 "-",
                 color=color,
             )
-
+        plt.xlabel("$t_{del}$ / s")
+        plt.ylabel("$I$ / a.u.")
         plt.legend()
         plt.savefig(
             f"{self.dataset.props.output_folder}/Buildup_fit_{buildup_type}.pdf",
             dpi=500,
             bbox_inches="tight",
         )
-        plt.show()
         plt.close()
 
     def _plot_global_each_individual(self):
         valdict = functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
+        if not os.path.exists(
+            f"{self.dataset.props.output_folder}/fit_per_spectrum/"
+        ):
+            os.makedirs(
+                f"{self.dataset.props.output_folder}/fit_per_spectrum/"
+            )
+
         for keys, values in valdict.items():
             simspec = [
                 0 for _ in range(len(self.dataset.spectra[keys].y_axis))
@@ -382,11 +396,19 @@ class Exporter:
             axs[0].legend()
             axs[1].legend()
             plt.tight_layout()
-            # plt.show()
+            plt.savefig(
+                f"{self.dataset.props.output_folder}/fit_per_spectrum/Spectrum_at_{self.dataset.spectra[keys].tdel}_s.pdf",
+                dpi=500,
+                bbox_inches="tight",
+            )
             plt.close()
 
-    def _print_report(self, filename="report.txt"):
-        with open(filename, "w", encoding="utf-8") as f:
+    def _print_report(self):
+        with open(
+            f"{self.dataset.props.output_folder}/Analysis_result.txt",
+            "w",
+            encoding="utf-8",
+        ) as f:
             f.write(str(self.dataset.props) + "\n")
             f.write(str(self.dataset) + "\n")
             f.write("[[Peaks]]\n")

@@ -1,6 +1,6 @@
 import CorziliusNMR.settings
 import lmfit
-from CorziliusNMR import dataset, settings
+from CorziliusNMR import dataset, settings, functions
 import unittest
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,15 +27,15 @@ class TestDataset(unittest.TestCase):
             y_axis = np.zeros(len(spec.x_axis))
             for type in type_list:
                 if type == "voigt":
-                    y_axis = y_axis + CorziliusNMR.utils.voigt_profile(
+                    y_axis = y_axis + functions.voigt_profile(
                         spec.x_axis, 250, 2, 2, (spec_nr + 1) * 200
                     )
                 if type == "gauss":
-                    y_axis = y_axis + CorziliusNMR.utils.gauss_profile(
+                    y_axis = y_axis + functions.gauss_profile(
                         spec.x_axis, 150, 3, (spec_nr + 1) * 200
                     )
                 if type == "lorentz":
-                    y_axis = y_axis + CorziliusNMR.utils.lorentz_profile(
+                    y_axis = y_axis + functions.lorentz_profile(
                         spec.x_axis, 200, 4, (spec_nr + 1) * 200
                     )
             spec.y_axis = y_axis
@@ -119,9 +119,6 @@ class TestDataset(unittest.TestCase):
     def test_peak_init_label_is_none(self):
         self.assertIsNone(self.peak._peak_label)
 
-    def test_peak_init_fitting_group_is_none(self):
-        self.assertIsNone(self.peak._fitting_group)
-
     def test_peak_init_fitting_type_is_none(self):
         self.assertIsNone(self.peak._fitting_type)
 
@@ -204,34 +201,6 @@ class TestDataset(unittest.TestCase):
             peaks.append(peak_label.peak_label)
         self.assertListEqual(peaks, ["Peak_at_12_ppm", "C_alpha"])
 
-    def test_fitting_group_default(self):
-        self.peak.fitting_group = 1
-        self.assertEqual(self.peak.fitting_group, 1)
-
-    def test_fitting_group_other_than_default(self):
-        self.peak.fitting_group = 2
-        self.assertEqual(self.peak.fitting_group, 2)
-
-    def test_fitting_group_invalid(self):
-        with self.assertRaises(TypeError) as context:
-            self.peak.fitting_group = "str"
-        self.assertEqual(
-            str(context.exception),
-            "'fitting_group' must be of type 'int', but got <class 'str'>.",
-        )
-
-    def test_fitting_group_private_varible(self):
-        self.peak.fitting_group = 2
-        self.assertEqual(self.peak._fitting_group, 2)
-
-    def test_dataset_add_two_peaks_check_correct_fitting_groups(self):
-        self.ds.add_peak(12.3)
-        self.ds.add_peak(14.1, fitting_group=3)
-        peaks = []
-        for fitting_group in self.ds.peak_list:
-            peaks.append(fitting_group.fitting_group)
-        self.assertListEqual(peaks, [1, 3])
-
     def test_fitting_type_default(self):
         self.peak.fitting_type = "voigt"
         self.assertEqual(self.peak.fitting_type, "voigt")
@@ -253,7 +222,7 @@ class TestDataset(unittest.TestCase):
             self.peak.fitting_type = "weibull"
         self.assertEqual(
             str(context.exception),
-            "All elements in 'fitting_type' must be one of ['gauss', 'lorentz', 'voigt'].",
+            "'fitting_type' must be one of ['gauss', 'lorentz', 'voigt'].",
         )
 
     def test_fitting_type_private_variable(self):
@@ -289,7 +258,7 @@ class TestDataset(unittest.TestCase):
             self.peak.peak_sign = "12"
         self.assertEqual(
             str(context.exception),
-            "All elements in 'peak_sign' must be one of ['+', '-'].",
+            "'peak_sign' must be one of ['+', '-'].",
         )
 
     def test_peak_sign_private_variable(self):

@@ -54,7 +54,7 @@ class Properties:
         expno: list = None,
         loop20: str = "L 20",
         delay20: str = "D 20",
-        output_file: str = os.path.dirname(os.path.abspath(__file__)),
+        output_folder: str = os.path.dirname(os.path.abspath(__file__)),
     ):
         """
         Initialize the Properties class with default or specified values.
@@ -105,7 +105,7 @@ class Properties:
         self._delay20 = None
         self.delay20 = delay20
         self._output_folder = None
-        self.output_folder = output_file
+        self.output_folder = output_folder
 
     def __str__(self):
         return (
@@ -117,7 +117,7 @@ class Properties:
             f"Spectrum for prefit: {self.spectrum_for_prefit}\n"
             f"Spectrum fitting type: {self.spectrum_fit_type}\n"
             f"Buildup evaluation: {self.buildup_types}\n"
-            f"Calculated buildup time from {self.loop20} and {self.delay20} if SCREAM data given."
+            f"Calculated buildup time from {self.loop20} and {self.delay20} if SCREAM data given.\n"
             f"Wrote output files to: {self.output_folder}"
         )
 
@@ -127,10 +127,14 @@ class Properties:
 
     @output_folder.setter
     def output_folder(self, value: Any):
+
         if not isinstance(value, str):
             raise TypeError(
                 f"Expected 'output_folder' to be of type 'str', got {type(value).__name__}."
             )
+        if not os.path.exists(f"{value}"):
+            os.makedirs(f"{value}")
+
         self._output_folder = value
 
     @property
