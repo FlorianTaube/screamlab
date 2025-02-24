@@ -279,6 +279,7 @@ class Peak:
         self._overwrite_init_params(
             value, allowed_values, inner_allowed_values, params
         )
+
         self._line_broadening = params
 
     @property
@@ -482,7 +483,7 @@ class BuildupList:
         return (
             "Parameters for buildup fitting:\nDelay times:\t"
             + "\t\t\t".join(str(x) for x in self.tdel)
-            + "\nIntensities:\t"
+            + "\nIntegral:\t"
             + "\t".join(str(x) for x in self.intensity)
         )
 

@@ -184,6 +184,7 @@ class Exporter:
         for buildup_type in self.dataset.props.buildup_types:
             self._plot_buildup(buildup_type)
         self._print_report()
+        self._write_global_fit_results_to_semicolon_separated_something()
 
     def _plot_topspin_data(self):
         colormap = plt.cm.viridis
@@ -339,65 +340,48 @@ class Exporter:
         plt.close()
 
     def _plot_global_each_individual(self):
+        output_dir = f"{self.dataset.props.output_folder}/fit_per_spectrum/"
+        os.makedirs(output_dir, exist_ok=True)
+
         valdict = functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
-        if not os.path.exists(
-            f"{self.dataset.props.output_folder}/fit_per_spectrum/"
-        ):
-            os.makedirs(
-                f"{self.dataset.props.output_folder}/fit_per_spectrum/"
-            )
 
-        for keys, values in valdict.items():
-            simspec = [
-                0 for _ in range(len(self.dataset.spectra[keys].y_axis))
-            ]
-            _, axs = plt.subplots(
+        first_plot = True
+
+        for key, param_list in valdict.items():
+            spectrum = self.dataset.spectra[key]
+            x_axis, y_axis = spectrum.x_axis, spectrum.y_axis
+            simspec = [0] * len(y_axis)
+            residual = copy.deepcopy(y_axis)
+
+            fig, axs = plt.subplots(
                 2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}
             )
-            residual = copy.deepcopy(self.dataset.spectra[keys].y_axis)
-            for val in values:
-                simspec = functions.calc_peak(
-                    self.dataset.spectra[keys].x_axis, simspec, val
-                )
-                axs[0].plot(
-                    self.dataset.spectra[keys].x_axis,
-                    self.dataset.spectra[keys].y_axis,
-                    color="black",
-                    label="Experiment",
-                )
+
+            for params in param_list:
+                simspec = functions.calc_peak(x_axis, simspec, params)
+                if first_plot:
+                    axs[0].plot(
+                        x_axis, y_axis, color="black", label="Experiment"
+                    )
+                    first_plot = False
 
             residual -= simspec
-            axs[0].plot(
-                self.dataset.spectra[keys].x_axis,
-                simspec,
-                "r--",
-                label="Simulation",
-            )
-            axs[1].plot(
-                self.dataset.spectra[keys].x_axis,
-                residual,
-                color="grey",
-                label="Residual",
-            )
+            axs[0].plot(x_axis, simspec, "r--", label="Simulation")
+            axs[1].plot(x_axis, residual, color="grey", label="Residual")
 
             axs[0].set_ylabel("$I$ / a.u.")
             axs[1].set_xlabel("$\\delta$ / ppm")
             axs[1].set_ylabel("$I_{resid}$ / a.u.")
-            axs[0].set_xlim(
-                max(self.dataset.spectra[keys].x_axis),
-                min(self.dataset.spectra[keys].x_axis),
-            )
-            axs[1].set_xlim(
-                max(self.dataset.spectra[keys].x_axis),
-                min(self.dataset.spectra[keys].x_axis),
-            )
-            axs[0].legend()
-            axs[1].legend()
+
+            for ax in axs:
+                ax.set_xlim(max(x_axis), min(x_axis))
+                ax.legend()
+
             plt.tight_layout()
             plt.savefig(
-                f"{self.dataset.props.output_folder}/fit_per_spectrum/Spectrum_at_{self.dataset.spectra[keys].tdel}_s.pdf",
+                f"{output_dir}/Spectrum_at_{spectrum.tdel}_s.pdf",
                 dpi=500,
                 bbox_inches="tight",
             )
@@ -425,18 +409,18 @@ class Exporter:
                     "Label\t\t\tCenter\t\t\t\tAmplitude\t\t\tSigma\t\t\t\tGamma\n"
                 )
                 for key_nr, keys in enumerate(valdict):
-                    for val in valdict[keys]:
+                    for val_nr, val in enumerate(valdict[keys]):
                         if len(val) == 5:
                             f.write(
-                                f"{self.dataset.peak_list[key_nr].peak_label}\t{val[1]}\t{val[0]}\t{val[2]}\t{val[3]}\n"
+                                f"{self.dataset.peak_list[val_nr].peak_label}\t{val[1]}\t{val[0]}\t{val[2]}\t{val[3]}\n"
                             )
                         elif len(val) == 3:
                             f.write(
-                                f"{self.dataset.peak_list[key_nr].peak_label}\t{val[1]}\t{val[0]}\t{val[2]}\t---\n"
+                                f"{self.dataset.peak_list[val_nr].peak_label}\t{val[1]}\t{val[0]}\t{val[2]}\t---\n"
                             )
                         elif len(val) == 4:
                             f.write(
-                                f"{self.dataset.peak_list[key_nr].peak_label}\t{val[1]}\t{val[0]}\t---\t{val[2]}\n"
+                                f"{self.dataset.peak_list[val_nr].peak_label}\t{val[1]}\t{val[0]}\t---\t{val[2]}\n"
                             )
             else:
                 f.write("[[Prefit]]\nNo prefit performed.\n")
@@ -456,7 +440,7 @@ class Exporter:
                 "FWHM Gauss",
                 "FWHM Voigt",
             ]
-            column_widths = [25, 6, 25, 25, 25, 25, 25, 25, 25]
+            column_widths = [25, 6, 10, 15, 10, 10, 15, 15, 15]
             f.write(
                 "".join(f"{h:<{w}}" for h, w in zip(header, column_widths))
                 + "\n"
@@ -467,13 +451,13 @@ class Exporter:
                         row = [
                             self.dataset.peak_list[val_index].peak_label,
                             self.dataset.spectra[val_nr].tdel,
-                            val[1],
-                            val[0],
-                            val[2],
-                            val[3],
-                            functions.fwhm_lorentzian(val[3]),
-                            functions.fwhm_gaussian(val[2]),
-                            functions.fwhm_voigt(val[2], val[3]),
+                            round(val[1], 3),
+                            round(val[0], 3),
+                            round(val[2], 3),
+                            round(val[3], 3),
+                            round(functions.fwhm_lorentzian(val[3]), 3),
+                            round(functions.fwhm_gaussian(val[2]), 3),
+                            round(functions.fwhm_voigt(val[2], val[3]), 3),
                         ]
                         f.write(
                             "".join(
@@ -493,6 +477,10 @@ class Exporter:
                     "A2 / a.u.",
                     "t2 / s",
                     "t_off / s",
+                    "R1 / 1/s",
+                    "R2 / 1/s",
+                    "Sensitivity1 (A1/sqrt(t1)",
+                    "Sensitivity2 (A2/sqrt(t2)",
                 ]
                 column_widths = [20] * len(header)
                 f.write(
@@ -535,6 +523,43 @@ class Exporter:
                         "".join(cell.ljust(20) for cell in row_data) + "\n"
                     )
             f.write("End\n")
+
+    def _write_global_fit_results_to_semicolon_separated_something(self):
+        with open(
+            f"{self.dataset.props.output_folder}/Global_fit_result.txt",
+            "w",
+            encoding="utf-8",
+        ) as f:
+            valdict = functions.generate_spectra_param_dict(
+                self.dataset.lmfit_result_handler.global_fit.params
+            )
+            header = [
+                "Label",
+                "Time / s",
+                "Center / ppm",
+                "Amplitude / a.u.",
+                "Sigma / ppm",
+                "Gamma / ppm",
+                "FWHM Lorentz / ppm",
+                "FWHM Gauss / ppm",
+                "FWHM Voigt / ppm",
+            ]
+            f.write(";".join(str(item) for item in header) + "\n")
+            for val_nr, (_, values) in enumerate(valdict.items()):
+                for val_index, val in enumerate(values):
+                    if len(val) == 5:
+                        row = [
+                            self.dataset.peak_list[val_index].peak_label,
+                            self.dataset.spectra[val_nr].tdel,
+                            round(val[1], 3),
+                            round(val[0], 3),
+                            round(val[2], 3),
+                            round(val[3], 3),
+                            round(functions.fwhm_lorentzian(val[3]), 3),
+                            round(functions.fwhm_gaussian(val[2]), 3),
+                            round(functions.fwhm_voigt(val[2], val[3]), 3),
+                        ]
+                        f.write(";".join(str(item) for item in row) + "\n")
 
 
 class LmfitResultHandler:

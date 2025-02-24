@@ -23,15 +23,12 @@ class TestDataset(unittest.TestCase):
     def test_prolin_one_peak(self):
         props = settings.Properties()
         props.prefit = True
-        props.spectrum_for_prefit = -2
+        props.spectrum_for_prefit = -1
         props.buildup_types = [
             "biexponential",
-            "exponential",
-            "exponential_with_offset",
-            "biexponential_with_offset",
         ]
-        props.expno = [25, 32]
-
+        props.expno = [29, 32]
+        props.output_folder = r"..\tests\SCREAM_Test_Files\Prolin\result"
         props.procno = 103
         props.path_to_experiment = r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Prolin"
         ds = dataset.Dataset()
@@ -42,13 +39,13 @@ class TestDataset(unittest.TestCase):
         ds.add_peak(
             43, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
         )
-        # ds.add_peak(
-        #    30, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
-        # )
-        # ds.add_peak(
-        #    13, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
-        # )
-        # ds.add_peak(
-        #    8, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
-        # )
+        """ds.add_peak(
+            30, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
+        )
+        ds.add_peak(
+            13, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
+        )
+        ds.add_peak(
+            8, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
+        )"""
         ds.start_buildup_fit_from_topspin()

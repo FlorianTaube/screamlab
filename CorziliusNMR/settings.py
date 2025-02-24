@@ -48,7 +48,7 @@ class Properties:
         prefit: bool = False,
         buildup_types: list = None,
         spectrum_fit_type: list = None,
-        spectrum_for_prefit: int = 0,
+        spectrum_for_prefit: int = -1,
         path_to_experiment: str = os.path.dirname(os.path.abspath(__file__)),
         procno: int = 103,
         expno: list = None,
@@ -117,7 +117,7 @@ class Properties:
             f"Spectrum for prefit: {self.spectrum_for_prefit}\n"
             f"Spectrum fitting type: {self.spectrum_fit_type}\n"
             f"Buildup evaluation: {self.buildup_types}\n"
-            f"Calculated buildup time from {self.loop20} and {self.delay20} if SCREAM data given.\n"
+            f"Calculated polarization time from {self.loop20} and {self.delay20} if SCREAM data given.\n"
             f"Wrote output files to: {self.output_folder}"
         )
 
