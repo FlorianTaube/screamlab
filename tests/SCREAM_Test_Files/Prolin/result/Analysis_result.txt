@@ -1,0 +1,51 @@
+[[Settings]]
+Experiment folder: C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Prolin
+Expno: ['29', '30', '31', '32']
+Procno: 103
+Prefit: True
+Spectrum for prefit: -1
+Spectrum fitting type: ['global']
+Buildup evaluation: ['biexponential']
+Calculated buildup time from L 20 and D 20 if SCREAM data given.
+Wrote output files to: ..\tests\SCREAM_Test_Files\Prolin\result
+[[Dataset]]
+Fitted 2 peaks per spectrum in 4 spectra.
+[[Peaks]]
+[Peak 1]
+Peak center: 160.0
+Peak label: Peak_at_160_ppm
+Peak shape: voigt
+Peak sign: +
+Start global fit with: {'sigma': {'min': 1.6566439839894906, 'max': 2.024787091542711}, 'gamma': {'min': 1.43395582608008e-07, 'max': 1.7526126763200978e-07}}
+Parameters for buildup fitting:
+Delay times:	64.0			128.0			256.0			512.0
+Intensities:	39405.26650463069	53414.15422003936	67936.30172001214	83242.36742706085
+[Peak 2]
+Peak center: 43.0
+Peak label: Peak_at_43_ppm
+Peak shape: voigt
+Peak sign: +
+Start global fit with: {'sigma': {'min': 0.8930135849638577, 'max': 1.0914610482891596}, 'gamma': {'min': 0.43417115039920934, 'max': 0.5306536282657003}}
+Parameters for buildup fitting:
+Delay times:	64.0			128.0			256.0			512.0
+Intensities:	49698.87310558262	74788.38931156864	103160.1094809839	120622.2219605665
+[[Prefit]]
+Label			Center				Amplitude			Sigma				Gamma
+Peak_at_160_ppm	159.8356179553236	2010.3372646017503	1.8407155377661006	1.593284251200089e-07
+Peak_at_43_ppm	42.72437496666755	3080.0334267481003	0.9922373166265086	0.4824123893324548
+[[Global fit results]]
+Label                    Time  Center                   Amplitude                Sigma                    Gamma                    FWHM Lorentz             FWHM Gauss               FWHM Voigt               
+Peak_at_160_ppm          64.0  159.7456466605407        995.174006754126         2.0247869993589434       1.4341061231800146e-07   2.868212246360029e-07    4.768009013008507        3.371491659191523        
+Peak_at_43_ppm           64.0  42.74504970256446        1257.1908468416495       0.8930178351104142       0.5306536279311598       1.0613072558623196       2.1028962986881465       2.134237594868572        
+Peak_at_160_ppm          128.0 159.7456466605407        1348.966333378122        2.0247869993589434       1.4341061231800146e-07   2.868212246360029e-07    4.768009013008507        3.371491659191523        
+Peak_at_43_ppm           128.0 42.74504970256446        1891.8593645531255       0.8930178351104142       0.5306536279311598       1.0613072558623196       2.1028962986881465       2.134237594868572        
+Peak_at_160_ppm          256.0 159.7456466605407        1715.720957725707        2.0247869993589434       1.4341061231800146e-07   2.868212246360029e-07    4.768009013008507        3.371491659191523        
+Peak_at_43_ppm           256.0 42.74504970256446        2609.555052146792        0.8930178351104142       0.5306536279311598       1.0613072558623196       2.1028962986881465       2.134237594868572        
+Peak_at_160_ppm          512.0 159.7456466605407        2102.273317054012        2.0247869993589434       1.4341061231800146e-07   2.868212246360029e-07    4.768009013008507        3.371491659191523        
+Peak_at_43_ppm           512.0 42.74504970256446        3051.2795139713517       0.8930178351104142       0.5306536279311598       1.0613072558623196       2.1028962986881465       2.134237594868572        
+[[Buildup fit results]]
+[biexponential]
+Label               A1 / a.u.           t1 / s              A2 / a.u.           t2 / s              t_off / s           
+Peak_at_160_ppm     61554.79703675482   326.6031373689069   34523.887645622446  36.82617449084597   ---                 
+Peak_at_43_ppm      11338.45477939527   1.019045480929634   113592.42193778747  155.75216496765293  ---                 
+End

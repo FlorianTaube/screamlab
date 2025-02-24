@@ -380,8 +380,8 @@ class Peak:
         :return: A dictionary with default values for 'sigma' and 'gamma'.
         """
         return {
-            "sigma": {"min": 0, "max": 20},
-            "gamma": {"min": 0, "max": 20},
+            "sigma": {"min": 0, "max": 2},
+            "gamma": {"min": 0, "max": 2},
         }
 
     def _check_if_value_is_dict(self, value):
