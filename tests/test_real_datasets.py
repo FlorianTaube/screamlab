@@ -39,7 +39,7 @@ class TestDataset(unittest.TestCase):
         ds.add_peak(
             43, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
         )
-        """ds.add_peak(
+        """        ds.add_peak(
             30, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
         )
         ds.add_peak(

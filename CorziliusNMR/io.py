@@ -8,6 +8,7 @@ import bruker.api.topspin as top
 import os
 import matplotlib.pyplot as plt
 import copy
+import math
 
 
 class TopspinImporter:
@@ -429,6 +430,7 @@ class Exporter:
             valdict = functions.generate_spectra_param_dict(
                 self.dataset.lmfit_result_handler.global_fit.params
             )
+            print(valdict)
             header = [
                 "Label",
                 "Time",
@@ -439,25 +441,49 @@ class Exporter:
                 "FWHM Lorentz",
                 "FWHM Gauss",
                 "FWHM Voigt",
+                "Integral",
             ]
-            column_widths = [25, 6, 10, 15, 10, 10, 15, 15, 15]
+            column_widths = [25, 6, 10, 15, 10, 10, 15, 15, 15, 10]
             f.write(
                 "".join(f"{h:<{w}}" for h, w in zip(header, column_widths))
                 + "\n"
             )
-            for val_nr, (_, values) in enumerate(valdict.items()):
-                for val_index, val in enumerate(values):
-                    if len(val) == 5:
+
+            for delay_time in range(0, len(valdict[0])):
+                for val_nr, (_, values) in enumerate(valdict.items()):
+                    if len(values[delay_time]) == 5:
                         row = [
-                            self.dataset.peak_list[val_index].peak_label,
+                            self.dataset.peak_list[delay_time].peak_label,
                             self.dataset.spectra[val_nr].tdel,
-                            round(val[1], 3),
-                            round(val[0], 3),
-                            round(val[2], 3),
-                            round(val[3], 3),
-                            round(functions.fwhm_lorentzian(val[3]), 3),
-                            round(functions.fwhm_gaussian(val[2]), 3),
-                            round(functions.fwhm_voigt(val[2], val[3]), 3),
+                            round(values[delay_time][1], 3),
+                            round(values[delay_time][0], 3),
+                            round(values[delay_time][2], 3),
+                            round(values[delay_time][3], 3),
+                            round(
+                                functions.fwhm_lorentzian(
+                                    values[delay_time][3]
+                                ),
+                                3,
+                            ),
+                            round(
+                                functions.fwhm_gaussian(
+                                    values[delay_time][2]
+                                ),
+                                3,
+                            ),
+                            round(
+                                functions.fwhm_voigt(
+                                    values[delay_time][2],
+                                    values[delay_time][3],
+                                ),
+                                3,
+                            ),
+                            round(
+                                self.dataset.peak_list[
+                                    delay_time
+                                ].buildup_vals.intensity[val_nr],
+                                3,
+                            ),
                         ]
                         f.write(
                             "".join(
@@ -482,27 +508,55 @@ class Exporter:
                     "Sensitivity1 (A1/sqrt(t1)",
                     "Sensitivity2 (A2/sqrt(t2)",
                 ]
-                column_widths = [20] * len(header)
+                column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35]
                 f.write(
                     "".join(h.ljust(w) for h, w in zip(header, column_widths))
                     + "\n"
                 )
                 format_mappings = {
-                    "exponential": ["A1", "t1", "---", "---", "---"],
+                    "exponential": [
+                        "A1",
+                        "t1",
+                        "---",
+                        "---",
+                        "---",
+                        "R1",
+                        "---",
+                        "S1",
+                        "---",
+                    ],
                     "exponential_with_offset": [
                         "A1",
                         "t1",
                         "---",
                         "---",
                         "x1",
+                        "R1",
+                        "---",
+                        "S1",
+                        "---",
                     ],
-                    "biexponential": ["A1", "t1", "A2", "t2", "---"],
+                    "biexponential": [
+                        "A1",
+                        "t1",
+                        "A2",
+                        "t2",
+                        "---",
+                        "R1",
+                        "R2",
+                        "S1",
+                        "S2",
+                    ],
                     "biexponential_with_offset": [
                         "A1",
                         "t1",
                         "A2",
                         "t2",
                         "x1",
+                        "R1",
+                        "R2",
+                        "S1",
+                        "S2",
                     ],
                 }
                 type_format = format_mappings.get(buildup_type, [])
@@ -512,15 +566,39 @@ class Exporter:
                     ]
                 ):
                     row_data = [self.dataset.peak_list[result_nr].peak_label]
+
+                    param_calculations = {
+                        "R1": lambda: str(round(1 / float(row_data[2]), 5)),
+                        "R2": lambda: str(round(1 / float(row_data[4]), 5)),
+                        "S1": lambda: str(
+                            round(
+                                float(row_data[1])
+                                / math.sqrt(float(row_data[2])),
+                                3,
+                            )
+                        ),
+                        "S2": lambda: str(
+                            round(
+                                float(row_data[3])
+                                / math.sqrt(float(row_data[4])),
+                                3,
+                            )
+                        ),
+                    }
                     for param in type_format:
-                        value = (
-                            str(result.params[param].value)
-                            if param != "---"
-                            else "---"
-                        )
+                        if param == "---":
+                            value = "---"
+                        elif param in param_calculations:
+                            value = param_calculations[param]()
+                        else:
+                            value = str(round(result.params[param].value, 3))
                         row_data.append(value)
                     f.write(
-                        "".join(cell.ljust(20) for cell in row_data) + "\n"
+                        "".join(
+                            h.ljust(w)
+                            for h, w in zip(row_data, column_widths)
+                        )
+                        + "\n"
                     )
             f.write("End\n")
 
@@ -543,21 +621,44 @@ class Exporter:
                 "FWHM Lorentz / ppm",
                 "FWHM Gauss / ppm",
                 "FWHM Voigt / ppm",
+                "Integral",
             ]
             f.write(";".join(str(item) for item in header) + "\n")
-            for val_nr, (_, values) in enumerate(valdict.items()):
-                for val_index, val in enumerate(values):
-                    if len(val) == 5:
+            for delay_time in range(0, len(valdict[0])):
+                for val_nr, (_, values) in enumerate(valdict.items()):
+                    if len(values[delay_time]) == 5:
                         row = [
-                            self.dataset.peak_list[val_index].peak_label,
+                            self.dataset.peak_list[delay_time].peak_label,
                             self.dataset.spectra[val_nr].tdel,
-                            round(val[1], 3),
-                            round(val[0], 3),
-                            round(val[2], 3),
-                            round(val[3], 3),
-                            round(functions.fwhm_lorentzian(val[3]), 3),
-                            round(functions.fwhm_gaussian(val[2]), 3),
-                            round(functions.fwhm_voigt(val[2], val[3]), 3),
+                            round(values[delay_time][1], 3),
+                            round(values[delay_time][0], 3),
+                            round(values[delay_time][2], 3),
+                            round(values[delay_time][3], 3),
+                            round(
+                                functions.fwhm_lorentzian(
+                                    values[delay_time][3]
+                                ),
+                                3,
+                            ),
+                            round(
+                                functions.fwhm_gaussian(
+                                    values[delay_time][2]
+                                ),
+                                3,
+                            ),
+                            round(
+                                functions.fwhm_voigt(
+                                    values[delay_time][2],
+                                    values[delay_time][3],
+                                ),
+                                3,
+                            ),
+                            round(
+                                self.dataset.peak_list[
+                                    delay_time
+                                ].buildup_vals.intensity[val_nr],
+                                3,
+                            ),
                         ]
                         f.write(";".join(str(item) for item in row) + "\n")
 

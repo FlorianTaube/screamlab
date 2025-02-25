@@ -90,7 +90,6 @@ props.output_folder = (
     r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\PG-100K"
 )
 ds = dataset.Dataset()
-props.spectrum_for_prefit = -3
 ds.props = props
 ds.add_peak(172, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
 ds.add_peak(60, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
