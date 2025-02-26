@@ -2,26 +2,23 @@ from CorziliusNMR import dataset, settings
 import sys
 
 
-props = settings.Properties(buildup_types=["biexponential"], expno=[24, 32])
-
+props = settings.Properties(
+    prefit=True, buildup_types=["biexponential"], expno=[24, 32]
+)
 props.path_to_experiment = (
     r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_150K"
 )
-
 props.output_folder = (
     r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-150K"
 )
 
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(175, peak_label="CO", peak_sign="-", fitting_type="gauss")
+ds = dataset.Dataset(props=props)
 
-ds = dataset.Dataset()
-ds.props = props
+ds.add_peak(175)
 ds.add_peak(61)
-ds.add_peak(46, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(29, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(25, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
+ds.add_peak(46)
+ds.add_peak(29)
+ds.add_peak(25)
 ds.start_buildup_fit_from_topspin()
 
 
@@ -50,7 +47,7 @@ props.path_to_experiment = (
     r"F:\NMR\Max\20230818_100mM_HN-PA-OH_10mM_AUPOL_1p3mm_18kHz_DNP_150K"
 )
 props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\PA-100K"
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\PA-150K"
 )
 ds = dataset.Dataset()
 ds.props = props

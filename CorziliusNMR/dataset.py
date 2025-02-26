@@ -1,6 +1,7 @@
 import lmfit
 from CorziliusNMR import io, utils, settings, functions
 import numpy as np
+from datetime import datetime
 
 
 class Dataset:
@@ -41,13 +42,18 @@ class Dataset:
         """
         Initiates buildup fitting using data imported from TopSpin.
         """
+
         print(
-            f"Start loading data from topspin: {self.props.path_to_experiment}"
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start loading data from topspin: {self.props.path_to_experiment}"
         )
         self._read_in_data_from_topspin()
-        print("Start peak fitting.")
+        print(
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start peak fitting."
+        )
         self._calculate_peak_intensities()
-        print("Start buildup fit.")
+        print(
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start buildup fit."
+        )
         self._start_buildup_fit()
         self._print_all()
 
@@ -55,15 +61,13 @@ class Dataset:
         """
         Starts buildup fitting using data imported from spectra CSV files.
         """
-        self._read_in_data_from_csv()
-        self._calculate_peak_intensities()
-        self._start_buildup_fit()
+        pass
 
     def start_buildup_from_intensitys(self):
         """
         Placeholder for starting buildup fitting from intensity values.
         """
-        return
+        pass
 
     def add_peak(
         self,
@@ -117,7 +121,9 @@ class Dataset:
     def _calculate_peak_intensities(self):
         """Calculates peak intensities based on fitting methods."""
         if self.props.prefit:
-            print("Start prefit.")
+            print(
+                f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start prefit."
+            )
             self._set_prefitter()
             result = self.fitter.fit()
             self.lmfit_result_handler.prefit = result
@@ -128,7 +134,9 @@ class Dataset:
             self.lmfit_result_handler.single_fit = result
             self._get_intensities(result)
         if "global" in self.props.spectrum_fit_type:
-            print("Start global fit.")
+            print(
+                f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start global fit."
+            )
             self._set_global_fitter()
             result = self.fitter.fit()
             self.lmfit_result_handler.global_fit = result

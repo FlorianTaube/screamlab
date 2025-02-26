@@ -1,0 +1,46 @@
+##TITLE= Parameter file, TopSpin 4.1.4
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 125	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmr
+$$ 2023-08-25 09:06:40.273 +0200  Florian Taube@Siavash
+$$ F:/NMR/Max/20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/1/pdata/1/t1par
+$$ process C:\Bruker\TopSpin4.1.4\prog\mod\dataserver.exe
+##$BIGDEL= 100
+##$CALCDN= yes
+##$COMPNO= 1
+##$CONV= 1e-05
+##$CURSOR= 5
+##$DRIFT= 5
+##$EDGUESS= 0
+##$EDPARM= 0
+##$FCTTYPE= 2
+##$FIDNUMB= 16
+##$FITT1T2= 0
+##$FITTYPE= 0
+##$GAMM= 10000
+##$GRADIEN= 1
+##$GUESSES= (0..23)
+1 1 1 1 1 1 1 1 1 1 1 1 0.1 0.1 1 1 1 1 1 1 1 1 1 1
+##$INC= 1
+##$INTRNG= 1
+##$LISTINC= 0.001
+##$LISTTYP= <vdlist>
+##$LITDEL= 10
+##$MAXPNTS= 16
+##$NUMPNTS= 16
+##$NUMTERM= 2
+##$PARM= (0..11)
+0.954186937760099 2.93679186221399 0 0 0 0 0 0 0 0 0 0
+##$PDTYP= <pd>
+##$REGIONS= 5
+##$SHOWINT= no
+##$SHOWPP= no
+##$SHOWTXT= 1
+##$START= 1
+##$X_END= 8.192
+##$X_START= 0.01
+##$Y_END= 5.256989e+08
+##$Y_START= 0
+##END=

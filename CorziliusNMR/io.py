@@ -8,7 +8,9 @@ import bruker.api.topspin as top
 import os
 import matplotlib.pyplot as plt
 import copy
+import csv
 import math
+import sys
 
 
 class TopspinImporter:
@@ -90,11 +92,34 @@ class TopspinImporter:
         """
         self._top.apiClient.pool.close()
 
+    def _generate_path_to_experiment(self):
+        """
+        Generate file paths for all experiment numbers.
+
+        :return: List of file paths to experiment data.
+        :rtype: list
+        """
+        base_path = self._dataset.props.path_to_experiment
+        procno = self._dataset.props.procno
+        path_list = [
+            os.path.join(base_path, str(expno), "pdata", str(procno))
+            for expno in self._dataset.props.expno
+        ]
+        return path_list
+
 
 class ScreamImporter(TopspinImporter):
     """
     Class for importing and processing Scream NMR data.
     """
+
+    def _set_number_of_scans(self):
+        """
+        Set the number of scans for the last spectrum in the dataset.
+        """
+        self._dataset.spectra[-1].number_of_scans = int(
+            self._nmr_data.getPar("NS")
+        )
 
     def import_topspin_data(self):
         """
@@ -105,14 +130,6 @@ class ScreamImporter(TopspinImporter):
             self._add_spectrum()
             self._nmr_data = self._data_provider.getNMRData(file)
             self._set_values()
-
-    def _set_number_of_scans(self):
-        """
-        Set the number of scans for the last spectrum in the dataset.
-        """
-        self._dataset.spectra[-1].number_of_scans = int(
-            self._nmr_data.getPar("NS")
-        )
 
     def _set_buildup_time(self):
         """
@@ -149,24 +166,53 @@ class ScreamImporter(TopspinImporter):
             self._dataset.spectra[-1].number_of_scans,
         )
 
-    def _generate_path_to_experiment(self):
-        """
-        Generate file paths for all experiment numbers.
-
-        :return: List of file paths to experiment data.
-        :rtype: list
-        """
-        base_path = self._dataset.props.path_to_experiment
-        procno = self._dataset.props.procno
-        path_list = [
-            os.path.join(base_path, str(expno), "pdata", str(procno))
-            for expno in self._dataset.props.expno
-        ]
-        return path_list
-
 
 class Pseudo2DImporter(TopspinImporter):
     pass
+
+    def import_topspin_data(self):
+        """
+        Import NMR data from TopSpin and process it.
+        """
+        files = self._generate_path_to_experiment()
+        vdlist = os.path.join(
+            self._dataset.props.path_to_experiment,
+            str(self._dataset.props.expno[0]),
+            "vdlist",
+        )
+        vdfile = open(vdlist, "r")
+        for tdel in vdfile:
+            self._add_spectrum()
+            self._dataset.spectra[-1].tdel = float(tdel)
+        vdfile.close()
+
+        self._nmr_data = self._data_provider.getNMRData(files[0])
+        for spectrum_nr in range(
+            0,
+            self._nmr_data.getSpecDataPoints()["indexRanges"][1][
+                "numberOfPoints"
+            ],
+        ):
+            physical_range = self._nmr_data.getSpecDataPoints()[
+                "physicalRanges"
+            ][0]
+            number_of_datapoints = self._nmr_data.getSpecDataPoints()[
+                "indexRanges"
+            ][0]["numberOfPoints"]
+            self._dataset.spectra[spectrum_nr].x_axis = self._calc_x_axis(
+                physical_range, number_of_datapoints
+            )
+            start = 0 + spectrum_nr * number_of_datapoints
+            stop = number_of_datapoints + spectrum_nr * number_of_datapoints
+            self._dataset.spectra[spectrum_nr].number_of_scans = (
+                self._nmr_data.getPar("NS")
+            )
+            self._dataset.spectra[
+                spectrum_nr
+            ].y_axis = self._nmr_data.getSpecDataPoints()["dataPoints"][
+                start:stop
+            ]
+        self._close()
 
 
 class Exporter:
@@ -186,6 +232,7 @@ class Exporter:
             self._plot_buildup(buildup_type)
         self._print_report()
         self._write_global_fit_results_to_semicolon_separated_something()
+        self._csv_output()
 
     def _plot_topspin_data(self):
         colormap = plt.cm.viridis
@@ -341,35 +388,37 @@ class Exporter:
         plt.close()
 
     def _plot_global_each_individual(self):
-        output_dir = f"{self.dataset.props.output_folder}/fit_per_spectrum/"
+        output_dir = os.path.join(
+            self.dataset.props.output_folder, "fit_per_spectrum"
+        )
         os.makedirs(output_dir, exist_ok=True)
 
-        valdict = functions.generate_spectra_param_dict(
+        param_dict = functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
 
-        first_plot = True
-
-        for key, param_list in valdict.items():
+        for key, param_list in param_dict.items():
             spectrum = self.dataset.spectra[key]
             x_axis, y_axis = spectrum.x_axis, spectrum.y_axis
+
             simspec = [0] * len(y_axis)
             residual = copy.deepcopy(y_axis)
 
             fig, axs = plt.subplots(
-                2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}
+                2,
+                1,
+                sharex=True,
+                sharey=True,
+                gridspec_kw={"height_ratios": [3, 1]},
             )
 
             for params in param_list:
                 simspec = functions.calc_peak(x_axis, simspec, params)
-                if first_plot:
-                    axs[0].plot(
-                        x_axis, y_axis, color="black", label="Experiment"
-                    )
-                    first_plot = False
+
+            axs[0].plot(x_axis, y_axis, color="black", label="Experiment")
+            axs[0].plot(x_axis, simspec, "r--", label="Simulation", alpha=0.8)
 
             residual -= simspec
-            axs[0].plot(x_axis, simspec, "r--", label="Simulation")
             axs[1].plot(x_axis, residual, color="grey", label="Residual")
 
             axs[0].set_ylabel("$I$ / a.u.")
@@ -381,12 +430,11 @@ class Exporter:
                 ax.legend()
 
             plt.tight_layout()
-            plt.savefig(
-                f"{output_dir}/Spectrum_at_{spectrum.tdel}_s.pdf",
-                dpi=500,
-                bbox_inches="tight",
+            plot_filename = os.path.join(
+                output_dir, f"Spectrum_at_{spectrum.tdel}_s.pdf"
             )
-            plt.close()
+            plt.savefig(plot_filename, dpi=500, bbox_inches="tight")
+            plt.close(fig)
 
     def _print_report(self):
         with open(
@@ -430,7 +478,6 @@ class Exporter:
             valdict = functions.generate_spectra_param_dict(
                 self.dataset.lmfit_result_handler.global_fit.params
             )
-            print(valdict)
             header = [
                 "Label",
                 "Time",
@@ -661,6 +708,20 @@ class Exporter:
                             ),
                         ]
                         f.write(";".join(str(item) for item in row) + "\n")
+
+    def _csv_output(self):
+        spectral_data = []
+        with open(
+            f"{self.dataset.props.output_folder}\Spectral_data_csv.csv",
+            "w",
+            newline="",
+        ) as file:
+            for spectrum in self.dataset.spectra:
+                spectral_data.append(spectrum.x_axis)
+                spectral_data.append(spectrum.y_axis)
+            writer = csv.writer(file, delimiter=";")
+            for row in zip(*spectral_data):
+                writer.writerow(row)
 
 
 class LmfitResultHandler:
