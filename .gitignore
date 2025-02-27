@@ -30,6 +30,8 @@ docs/_build
 
 # Temporary files from tests
 tests/*tex
+tests/Pseud2DTestFiles/
+tests/SCREAM_Test_Files/
 
 # coverage
 .coverage

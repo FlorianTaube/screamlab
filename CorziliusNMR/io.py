@@ -444,6 +444,7 @@ class Exporter:
         ) as f:
             f.write(str(self.dataset.props) + "\n")
             f.write(str(self.dataset) + "\n")
+
             f.write("[[Peaks]]\n")
             for peak_nr, peak in enumerate(self.dataset.peak_list):
                 f.write(f"[Peak {peak_nr + 1}]\n")

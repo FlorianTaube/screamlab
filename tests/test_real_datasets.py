@@ -59,7 +59,5 @@ class TestDataset(unittest.TestCase):
         props.path_to_experiment = r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\Pseud2DTestFiles"
         ds = dataset.Dataset()
         ds.props = props
-        ds.add_peak(
-            173,
-        )
+        ds.add_peak(173)
         ds.start_buildup_fit_from_topspin()
