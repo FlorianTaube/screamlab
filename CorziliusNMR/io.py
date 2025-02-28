@@ -641,6 +641,17 @@ class Exporter:
                             value = param_calculations[param]()
                         else:
                             value = str(round(result.params[param].value, 3))
+                        if param == "t2":
+                            if float(result.params[param].value) < float(
+                                row_data[2]
+                            ):
+                                row_data[1], row_data[3] = (
+                                    row_data[3],
+                                    row_data[1],
+                                )
+                                value, row_data[2] = str(row_data[2]), str(
+                                    value
+                                )
                         row_data.append(value)
                     f.write(
                         "".join(
@@ -746,7 +757,6 @@ class Exporter:
                             )
                         ),
                     }
-
                     for param in type_format:
                         if param == "---":
                             value = "---"
@@ -754,8 +764,18 @@ class Exporter:
                             value = param_calculations[param]()
                         else:
                             value = str(round(result.params[param].value, 3))
+                        if param == "t2":
+                            if float(result.params[param].value) < float(
+                                row_data[2]
+                            ):
+                                row_data[1], row_data[3] = (
+                                    row_data[3],
+                                    row_data[1],
+                                )
+                                value, row_data[2] = str(row_data[2]), str(
+                                    value
+                                )
                         row_data.append(value)
-
                     f.write(";".join(row_data) + "\n")
 
     def _write_global_fit_results_to_semicolon_separated_something(self):
