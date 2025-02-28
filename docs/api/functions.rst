@@ -1,5 +1,5 @@
 CorziliusNMR.functions module
----------------------------
+------------------------------
 
 .. automodule:: CorziliusNMR.functions
    :members:

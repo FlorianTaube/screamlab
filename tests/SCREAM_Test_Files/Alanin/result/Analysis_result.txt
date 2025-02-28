@@ -25,19 +25,10 @@ Label			Center				Amplitude			Sigma				Gamma
 Peak_at_m16_ppm	-15.817481727030497	27858.840234268675	0.5664552252764269	1.9999999783712985
 [[Global fit results]]
 Label                    Time  Center    Amplitude      Sigma     Gamma     FWHM Lorentz   FWHM Gauss     FWHM Voigt     Integral  
-Peak_at_m16_ppm          0.25  -15.688   395.081        0.51      2.127     4.255          1.201          4.429          15541.296 
-Peak_at_m16_ppm          0.5   -15.688   593.512        0.51      2.127     4.255          1.201          4.429          23345.326 
-Peak_at_m16_ppm          1.0   -15.688   1534.098       0.51      2.127     4.255          1.201          4.429          60342.565 
-Peak_at_m16_ppm          2.0   -15.688   3570.293       0.51      2.127     4.255          1.201          4.429          140434.768
-Peak_at_m16_ppm          4.0   -15.688   8188.574       0.51      2.127     4.255          1.201          4.429          322091.333
-Peak_at_m16_ppm          8.0   -15.688   16912.76       0.51      2.127     4.255          1.201          4.429          665250.504
-Peak_at_m16_ppm          16.0  -15.688   28562.987      0.51      2.127     4.255          1.201          4.429          1123503.332
-Peak_at_m16_ppm          32.0  -15.688   40870.69       0.51      2.127     4.255          1.201          4.429          1607617.412
 [[Buildup fit results]]
 [exponential]
 Label               A1 / a.u.      t1 / s    A2 / a.u.      t2 / s    t_off / s      R1 / 1/s       R2 / 1/s       Sensitivity1 (A1/sqrt(t1)          Sensitivity2 (A2/sqrt(t2)          
-Peak_at_m16_ppm     2100715.184    21.72     ---            ---       ---            0.04604        ---            450751.587                         ---                                
+Peak_at_m16_ppm     2100715.182    21.72     ---            ---       ---            0.04604        ---            450751.586                         ---                                
 [exponential_with_offset]
 Label               A1 / a.u.      t1 / s    A2 / a.u.      t2 / s    t_off / s      R1 / 1/s       R2 / 1/s       Sensitivity1 (A1/sqrt(t1)          Sensitivity2 (A2/sqrt(t2)          
-Peak_at_m16_ppm     2002502.918    19.332    ---            ---       0.35           0.05173        ---            455443.769                         ---                                
-End
+Peak_at_m16_ppm     2002502.917    19.332    ---            ---       0.35           0.05173        ---            455443.768                         ---                                

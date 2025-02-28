@@ -189,3 +189,127 @@ def calc_peak(x_axis, simspec, val):
     if len(val) == 4:
         simspec += lorentz_profile(x_axis, val[1], val[2], val[0])
     return simspec
+
+
+def format_mapping():
+    """
+    Returns a dictionary mapping each buildup function type to its corresponding parameter names.
+
+    The dictionary defines the parameters required for fitting different buildup functions such as
+    'exponential', 'biexponential', etc. The parameters are returned as lists of strings.
+
+    :return: Dictionary mapping function types to parameter names.
+    :rtype: dict
+    """
+    return {
+        "exponential": [
+            "A1",
+            "t1",
+            "---",
+            "---",
+            "---",
+            "R1",
+            "---",
+            "S1",
+            "---",
+        ],
+        "exponential_with_offset": [
+            "A1",
+            "t1",
+            "---",
+            "---",
+            "x1",
+            "R1",
+            "---",
+            "S1",
+            "---",
+        ],
+        "biexponential": [
+            "A1",
+            "t1",
+            "A2",
+            "t2",
+            "---",
+            "R1",
+            "R2",
+            "S1",
+            "S2",
+        ],
+        "biexponential_with_offset": [
+            "A1",
+            "t1",
+            "A2",
+            "t2",
+            "x1",
+            "R1",
+            "R2",
+            "S1",
+            "S2",
+        ],
+    }
+
+
+def buildup_header():
+    """
+    Returns a list of headers for the buildup analysis table.
+
+    This header list defines the labels for the columns in the buildup fit table, which includes
+    parameters like amplitude, time constants, offsets, and sensitivities.
+
+    :return: List of headers for the buildup table.
+    :rtype: list
+    """
+    return [
+        "Label",
+        "A1 / a.u.",
+        "t1 / s",
+        "A2 / a.u.",
+        "t2 / s",
+        "t_off / s",
+        "R1 / 1/s",
+        "R2 / 1/s",
+        "Sensitivity1 (A1/sqrt(t1))",
+        "Sensitivity2 (A2/sqrt(t2))",
+    ]
+
+
+def spectrum_fit_header():
+    """
+    Returns a list of headers for the spectrum fitting results table.
+
+    The header includes typical fitting parameters such as time, center, amplitude, sigma,
+    gamma, and full width at half maximum (FWHM) for various line shapes.
+
+    :return: List of headers for the spectrum fit table.
+    :rtype: list
+    """
+    return [
+        "Label",
+        "Time",
+        "Center",
+        "Amplitude",
+        "Sigma",
+        "Gamma",
+        "FWHM Lorentz",
+        "FWHM Gauss",
+        "FWHM Voigt",
+        "Integral",
+    ]
+
+
+def return_func_map():
+    """
+    Returns a dictionary mapping function types to their corresponding fitting functions.
+
+    The dictionary maps buildup function types (e.g., 'exponential', 'biexponential') to
+    the respective function used for calculation (e.g., `calc_exponential`, `calc_biexponential`).
+
+    :return: Dictionary mapping function types to fitting functions.
+    :rtype: dict
+    """
+    return {
+        "exponential": calc_exponential,
+        "biexponential": calc_biexponential,
+        "exponential_with_offset": calc_exponential_with_offset,
+        "biexponential_with_offset": calc_biexponential_with_offset,
+    }

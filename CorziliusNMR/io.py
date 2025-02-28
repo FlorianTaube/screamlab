@@ -216,11 +216,35 @@ class Pseudo2DImporter(TopspinImporter):
 
 
 class Exporter:
+    """
+    A class to handle exporting and printing dataset information.
+
+    :param dataset: The dataset to be processed.
+    :type dataset: object
+    """
 
     def __init__(self, dataset):
+        """
+        Initializes the Exporter with a dataset.
+
+        :param dataset: The dataset to be processed.
+        :type dataset: object
+        """
         self.dataset = dataset
 
     def print(self):
+        """
+        Prints and exports various components of the dataset.
+
+        - Plots TopSpin data.
+        - If prefit is enabled, plots prefit and prints the lmfit prefit report.
+        - If spectrum fit type includes "global", plots global fit and individual global components.
+        - Iterates through all buildup types and plots buildup data.
+        - Prints a report.
+        - Writes global fit results to a semicolon-separated file.
+        - Writes buildup fit results to a semicolon-separated file.
+        - Outputs results in CSV format.
+        """
         self._plot_topspin_data()
         if self.dataset.props.prefit:
             self._plot_prefit()
@@ -231,11 +255,19 @@ class Exporter:
         for buildup_type in self.dataset.props.buildup_types:
             self._plot_buildup(buildup_type)
         self._print_report()
-        self._write_global_fit_results_to_semicolon_separated_something()
-        self._write_buildup_fit_to_semicolon_separated_something()
+        self._write_global_fit_results_to_semicolon_separated_file()
+        self._write_buildup_fit_to_semicolon_separated_file()
         self._csv_output()
 
     def _plot_topspin_data(self):
+        """
+        Plots the spectral data from the dataset, displaying time delays (t_del) on the x-axis and intensity values on the y-axis.
+
+        The spectra are plotted with different colors, and the resulting plot is saved as a high-resolution PDF.
+
+        :return: None
+        :rtype: None
+        """
         colormap = plt.cm.viridis
         colors = [
             colormap(i / len(self.dataset.spectra))
@@ -259,26 +291,30 @@ class Exporter:
         )
         plt.close()
 
+    import matplotlib.pyplot as plt
+
     def _plot_prefit(self):
-        x_axis = self.dataset.spectra[
+        """
+        Plots experimental data, simulation results, and residuals for the prefit analysis.
+
+        The plot contains two subplots: the first shows the experimental data and simulation,
+        while the second displays the residuals. The plot is saved as a high-resolution PDF.
+        """
+        spectrum = self.dataset.spectra[
             self.dataset.props.spectrum_for_prefit
-        ].x_axis
-        y_axis = self.dataset.spectra[
-            self.dataset.props.spectrum_for_prefit
-        ].y_axis
+        ]
+        x_axis, y_axis = spectrum.x_axis, spectrum.y_axis
         valdict = functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.prefit.params
         )
-        simspec = [0 for _ in range(len(y_axis))]
-        for _, values in valdict.items():
+        simspec = [0] * len(y_axis)
+        for values in valdict.values():
             for val in values:
                 simspec = functions.calc_peak(x_axis, simspec, val)
-
         _, axs = plt.subplots(
             2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}
         )
         axs[0].plot(x_axis, y_axis, color="black", label="Experiment")
-
         axs[0].plot(x_axis, simspec, "r--", label="Simulation")
         axs[0].legend()
         axs[0].set_ylabel("$I$ / a.u.")
@@ -289,8 +325,6 @@ class Exporter:
         axs[0].set_xlim(max(x_axis), min(x_axis))
         axs[1].set_xlim(max(x_axis), min(x_axis))
         axs[1].legend()
-        plt.xlabel("$t_{del}$ / s")
-        plt.ylabel("$I$ / a.u.")
         plt.tight_layout()
         plt.savefig(
             f"{self.dataset.props.output_folder}/Prefit_plot.pdf",
@@ -303,11 +337,19 @@ class Exporter:
         pass
 
     def _plot_global(self):
+        """
+        Plots experimental data and simulation results for the global fit summary.
+
+        The plot shows experimental data and corresponding simulations for each spectrum. The x-axis represents
+        time delay (`t_del`), and the y-axis represents intensity (`I`). The plot is saved as a high-resolution PDF.
+        """
         valdict = functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
+
         _, ax = plt.subplots(1, 1, sharex=True)
         first = True
+
         for key, values in valdict.items():
             simspec = np.zeros_like(
                 self.dataset.spectra[key].y_axis, dtype=float
@@ -331,11 +373,10 @@ class Exporter:
                 label=label_sim,
             )
             first = False
-        plt.xlabel("$t_{del}$ / s")
-        plt.ylabel("$I$ / a.u.")
+        ax.set_xlabel("$t_{del}$ / s")
+        ax.set_ylabel("$I$ / a.u.")
         ax.legend()
         ax.invert_xaxis()
-        ax.set_ylabel("$I$ / a.u.")
         plt.tight_layout()
         plt.savefig(
             f"{self.dataset.props.output_folder}/Global_fit_summary.pdf",
@@ -345,15 +386,25 @@ class Exporter:
         plt.close()
 
     def _plot_buildup(self, buildup_type):
+        """
+        Plots the buildup data and corresponding model fits for a specified buildup type.
+
+        The plot includes experimental data and simulations (exponential, biexponential, etc.) for each peak.
+        The resulting plot is saved as a high-resolution PDF.
+
+        :param buildup_type: The type of buildup function to fit (e.g., 'exponential', 'biexponential').
+        :type buildup_type: str
+        """
         colors = plt.get_cmap("viridis")
         norm = plt.Normalize(vmin=0, vmax=len(self.dataset.peak_list))
+
+        func_map = functions.return_func_map()
 
         for peak_nr, peak in enumerate(self.dataset.peak_list):
             peak_result = self.dataset.lmfit_result_handler.buildup_fit[
                 buildup_type
             ][peak_nr]
             color = colors(norm(peak_nr))
-
             plt.plot(
                 peak.buildup_vals.tdel,
                 peak.buildup_vals.intensity,
@@ -361,17 +412,8 @@ class Exporter:
                 color=color,
                 label=f"{peak.peak_label}",
             )
-
             sim_tdel = np.linspace(0, peak.buildup_vals.tdel[-1], 1024)
             val_list = [param.value for param in peak_result.params.values()]
-
-            func_map = {
-                "exponential": functions.calc_exponential,
-                "biexponential": functions.calc_biexponential,
-                "exponential_with_offset": functions.calc_exponential_with_offset,
-                "biexponential_with_offset": functions.calc_biexponential_with_offset,
-            }
-
             plt.plot(
                 sim_tdel,
                 func_map[buildup_type](sim_tdel, val_list),
@@ -463,15 +505,15 @@ class Exporter:
                     for val_nr, val in enumerate(valdict[keys]):
                         if len(val) == 5:
                             f.write(
-                                f"{self.dataset.peak_list[val_nr].peak_label}\t{val[1]}\t{val[0]}\t{val[2]}\t{val[3]}\n"
+                                f"{self.dataset.peak_list[val_nr].peak_label}\t{round(val[1],3)}\t{round(val[0],3)}\t{round(val[2],3)}\t{round(val[3],3)}\n"
                             )
                         elif len(val) == 3:
                             f.write(
-                                f"{self.dataset.peak_list[val_nr].peak_label}\t{val[1]}\t{val[0]}\t{val[2]}\t---\n"
+                                f"{self.dataset.peak_list[val_nr].peak_label}\t{round(val[1],3)}\t{round(val[0],3)}\t{round(val[2],3)}\t---\n"
                             )
                         elif len(val) == 4:
                             f.write(
-                                f"{self.dataset.peak_list[val_nr].peak_label}\t{val[1]}\t{val[0]}\t---\t{val[2]}\n"
+                                f"{self.dataset.peak_list[val_nr].peak_label}\t{round(val[1],3)}\t{round(val[0],3)}\t---\t{round(val[2],3)}\n"
                             )
             else:
                 f.write("[[Prefit]]\nNo prefit performed.\n")
@@ -480,18 +522,7 @@ class Exporter:
             valdict = functions.generate_spectra_param_dict(
                 self.dataset.lmfit_result_handler.global_fit.params
             )
-            header = [
-                "Label",
-                "Time",
-                "Center",
-                "Amplitude",
-                "Sigma",
-                "Gamma",
-                "FWHM Lorentz",
-                "FWHM Gauss",
-                "FWHM Voigt",
-                "Integral",
-            ]
+            header = functions.spectrum_fit_header()
             column_widths = [25, 6, 10, 15, 10, 10, 15, 15, 15, 10]
             f.write(
                 "".join(f"{h:<{w}}" for h, w in zip(header, column_widths))
@@ -500,114 +531,31 @@ class Exporter:
 
             for delay_time in range(0, len(valdict[0])):
                 for val_nr, (_, values) in enumerate(valdict.items()):
-                    if len(values[delay_time]) == 5:
-                        row = [
-                            self.dataset.peak_list[delay_time].peak_label,
-                            self.dataset.spectra[val_nr].tdel,
-                            round(values[delay_time][1], 3),
-                            round(values[delay_time][0], 3),
-                            round(values[delay_time][2], 3),
-                            round(values[delay_time][3], 3),
-                            round(
-                                functions.fwhm_lorentzian(
-                                    values[delay_time][3]
-                                ),
-                                3,
-                            ),
-                            round(
-                                functions.fwhm_gaussian(
-                                    values[delay_time][2]
-                                ),
-                                3,
-                            ),
-                            round(
-                                functions.fwhm_voigt(
-                                    values[delay_time][2],
-                                    values[delay_time][3],
-                                ),
-                                3,
-                            ),
-                            round(
-                                self.dataset.peak_list[
-                                    delay_time
-                                ].buildup_vals.intensity[val_nr],
-                                3,
-                            ),
-                        ]
-                        f.write(
-                            "".join(
-                                f"{str(item):<{w}}"
-                                for item, w in zip(row, column_widths)
-                            )
-                            + "\n"
+                    row = self._generate_fit_param_row(
+                        values, delay_time, val_nr
+                    )
+            for delay_time in range(0, len(valdict[0])):
+                for val_nr, (_, values) in enumerate(valdict.items()):
+                    row = self._generate_fit_param_row(
+                        values, delay_time, val_nr
+                    )
+                    f.write(
+                        "".join(
+                            f"{h:<{w}}" for h, w in zip(row, column_widths)
                         )
+                        + "\n"
+                    )
 
             f.write("[[Buildup fit results]]\n")
             for buildup_type in self.dataset.props.buildup_types:
                 f.write(f"[{buildup_type}]\n")
-                header = [
-                    "Label",
-                    "A1 / a.u.",
-                    "t1 / s",
-                    "A2 / a.u.",
-                    "t2 / s",
-                    "t_off / s",
-                    "R1 / 1/s",
-                    "R2 / 1/s",
-                    "Sensitivity1 (A1/sqrt(t1)",
-                    "Sensitivity2 (A2/sqrt(t2)",
-                ]
+                header = functions.buildup_header()
                 column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35]
                 f.write(
                     "".join(h.ljust(w) for h, w in zip(header, column_widths))
                     + "\n"
                 )
-                format_mappings = {
-                    "exponential": [
-                        "A1",
-                        "t1",
-                        "---",
-                        "---",
-                        "---",
-                        "R1",
-                        "---",
-                        "S1",
-                        "---",
-                    ],
-                    "exponential_with_offset": [
-                        "A1",
-                        "t1",
-                        "---",
-                        "---",
-                        "x1",
-                        "R1",
-                        "---",
-                        "S1",
-                        "---",
-                    ],
-                    "biexponential": [
-                        "A1",
-                        "t1",
-                        "A2",
-                        "t2",
-                        "---",
-                        "R1",
-                        "R2",
-                        "S1",
-                        "S2",
-                    ],
-                    "biexponential_with_offset": [
-                        "A1",
-                        "t1",
-                        "A2",
-                        "t2",
-                        "x1",
-                        "R1",
-                        "R2",
-                        "S1",
-                        "S2",
-                    ],
-                }
+                format_mappings = functions.format_mapping()
                 type_format = format_mappings.get(buildup_type, [])
                 for result_nr, result in enumerate(
                     self.dataset.lmfit_result_handler.buildup_fit[
@@ -616,43 +564,13 @@ class Exporter:
                 ):
                     row_data = [self.dataset.peak_list[result_nr].peak_label]
 
-                    param_calculations = {
-                        "R1": lambda: str(round(1 / float(row_data[2]), 5)),
-                        "R2": lambda: str(round(1 / float(row_data[4]), 5)),
-                        "S1": lambda: str(
-                            round(
-                                float(row_data[1])
-                                / math.sqrt(float(row_data[2])),
-                                3,
-                            )
-                        ),
-                        "S2": lambda: str(
-                            round(
-                                float(row_data[3])
-                                / math.sqrt(float(row_data[4])),
-                                3,
-                            )
-                        ),
-                    }
                     for param in type_format:
-                        if param == "---":
-                            value = "---"
-                        elif param in param_calculations:
-                            value = param_calculations[param]()
-                        else:
-                            value = str(round(result.params[param].value, 3))
-                        if param == "t2":
-                            if float(result.params[param].value) < float(
-                                row_data[2]
-                            ):
-                                row_data[1], row_data[3] = (
-                                    row_data[3],
-                                    row_data[1],
-                                )
-                                value, row_data[2] = str(row_data[2]), str(
-                                    value
-                                )
+                        value = self._set_value(param, result, row_data)
+                        value, row_data = self._sort_value_list(
+                            param, value, row_data, result
+                        )
                         row_data.append(value)
+
                     f.write(
                         "".join(
                             h.ljust(w)
@@ -660,194 +578,79 @@ class Exporter:
                         )
                         + "\n"
                     )
-            f.write("End\n")
 
-    def _write_buildup_fit_to_semicolon_separated_something(self):
+    def _write_buildup_fit_to_semicolon_separated_file(self):
+        """
+        Writes the buildup fit results to semicolon-separated text files for each buildup type.
+
+        This method iterates over the different buildup types, retrieves the corresponding buildup fit results,
+        formats them using a predefined header and value mapping, and writes the results into individual text files.
+
+        Each file is named as 'Buildup_fit_result_<buildup_type>.txt' and includes a header row followed by the
+        formatted data rows for each result.
+        """
         for buildup_type in self.dataset.props.buildup_types:
-            with open(
-                f"{self.dataset.props.output_folder}/Buildup_fit_result_{buildup_type}.txt",
-                "w",
-                encoding="utf-8",
-            ) as f:
-                header = [
-                    "Label",
-                    "A1 / a.u.",
-                    "t1 / s",
-                    "A2 / a.u.",
-                    "t2 / s",
-                    "t_off / s",
-                    "R1 / 1/s",
-                    "R2 / 1/s",
-                    "Sensitivity1 (A1/sqrt(t1))",
-                    "Sensitivity2 (A2/sqrt(t2))",
-                ]
+            output_file_path = f"{self.dataset.props.output_folder}/Buildup_fit_result_{buildup_type}.txt"
+            with open(output_file_path, "w", encoding="utf-8") as f:
+                header = functions.buildup_header()
                 f.write(";".join(header) + "\n")
-
-                format_mappings = {
-                    "exponential": [
-                        "A1",
-                        "t1",
-                        "---",
-                        "---",
-                        "---",
-                        "R1",
-                        "---",
-                        "S1",
-                        "---",
-                    ],
-                    "exponential_with_offset": [
-                        "A1",
-                        "t1",
-                        "---",
-                        "---",
-                        "x1",
-                        "R1",
-                        "---",
-                        "S1",
-                        "---",
-                    ],
-                    "biexponential": [
-                        "A1",
-                        "t1",
-                        "A2",
-                        "t2",
-                        "---",
-                        "R1",
-                        "R2",
-                        "S1",
-                        "S2",
-                    ],
-                    "biexponential_with_offset": [
-                        "A1",
-                        "t1",
-                        "A2",
-                        "t2",
-                        "x1",
-                        "R1",
-                        "R2",
-                        "S1",
-                        "S2",
-                    ],
-                }
-
+                format_mappings = functions.format_mapping()
                 type_format = format_mappings.get(buildup_type, [])
-
                 for result_nr, result in enumerate(
                     self.dataset.lmfit_result_handler.buildup_fit[
                         buildup_type
                     ]
                 ):
                     row_data = [self.dataset.peak_list[result_nr].peak_label]
-
-                    param_calculations = {
-                        "R1": lambda: str(round(1 / float(row_data[2]), 5)),
-                        "R2": lambda: str(round(1 / float(row_data[4]), 5)),
-                        "S1": lambda: str(
-                            round(
-                                float(row_data[1])
-                                / math.sqrt(float(row_data[2])),
-                                3,
-                            )
-                        ),
-                        "S2": lambda: str(
-                            round(
-                                float(row_data[3])
-                                / math.sqrt(float(row_data[4])),
-                                3,
-                            )
-                        ),
-                    }
                     for param in type_format:
-                        if param == "---":
-                            value = "---"
-                        elif param in param_calculations:
-                            value = param_calculations[param]()
-                        else:
-                            value = str(round(result.params[param].value, 3))
-                        if param == "t2":
-                            if float(result.params[param].value) < float(
-                                row_data[2]
-                            ):
-                                row_data[1], row_data[3] = (
-                                    row_data[3],
-                                    row_data[1],
-                                )
-                                value, row_data[2] = str(row_data[2]), str(
-                                    value
-                                )
+                        value = self._set_value(param, result, row_data)
+                        value, row_data = self._sort_value_list(
+                            param, value, row_data, result
+                        )
                         row_data.append(value)
                     f.write(";".join(row_data) + "\n")
 
-    def _write_global_fit_results_to_semicolon_separated_something(self):
-        with open(
-            f"{self.dataset.props.output_folder}/Global_fit_result.txt",
-            "w",
-            encoding="utf-8",
-        ) as f:
+    def _write_global_fit_results_to_semicolon_separated_file(self):
+        """
+        Writes the global fit results to a semicolon-separated text file.
+
+        This method retrieves the global fit parameters, generates a dictionary of spectra parameters,
+        formats the data into rows, and writes the results to a file named 'Global_fit_result.txt'.
+        The file includes a header row followed by the formatted data rows for each delay time and parameter value.
+
+        The output file is stored in the specified output folder.
+        """
+        output_file_path = (
+            f"{self.dataset.props.output_folder}/Global_fit_result.txt"
+        )
+
+        with open(output_file_path, "w", encoding="utf-8") as f:
             valdict = functions.generate_spectra_param_dict(
                 self.dataset.lmfit_result_handler.global_fit.params
             )
-            header = [
-                "Label",
-                "Delay Time / s",
-                "Center / ppm",
-                "Amplitude / a.u.",
-                "Sigma / ppm",
-                "Gamma / ppm",
-                "FWHM Lorentz / ppm",
-                "FWHM Gauss / ppm",
-                "FWHM Voigt / ppm",
-                "Integral / a.u.",
-            ]
+            header = functions.spectrum_fit_header()
             f.write(";".join(str(item) for item in header) + "\n")
             for delay_time in range(0, len(valdict[0])):
                 for val_nr, (_, values) in enumerate(valdict.items()):
-                    if len(values[delay_time]) == 5:
-                        row = [
-                            (
-                                self.dataset.peak_list[delay_time].peak_label
-                                if val_nr == 0
-                                else ""
-                            ),
-                            self.dataset.spectra[val_nr].tdel,
-                            round(values[delay_time][1], 3),
-                            round(values[delay_time][0], 3),
-                            round(values[delay_time][2], 3),
-                            round(values[delay_time][3], 3),
-                            round(
-                                functions.fwhm_lorentzian(
-                                    values[delay_time][3]
-                                ),
-                                3,
-                            ),
-                            round(
-                                functions.fwhm_gaussian(
-                                    values[delay_time][2]
-                                ),
-                                3,
-                            ),
-                            round(
-                                functions.fwhm_voigt(
-                                    values[delay_time][2],
-                                    values[delay_time][3],
-                                ),
-                                3,
-                            ),
-                            round(
-                                self.dataset.peak_list[
-                                    delay_time
-                                ].buildup_vals.intensity[val_nr],
-                                3,
-                            ),
-                        ]
-                        f.write(";".join(str(item) for item in row) + "\n")
+                    row = self._generate_fit_param_row(
+                        values, delay_time, val_nr
+                    )
+                    f.write(";".join(str(item) for item in row) + "\n")
 
     def _csv_output(self):
+        """
+        Writes spectral data to a CSV file with semicolon-separated values.
+
+        This method extracts the x-axis and y-axis data from each spectrum in the dataset,
+        and writes the data to a CSV file named 'Spectral_data_csv.csv' in the specified output folder.
+        The file is structured such that each row contains the corresponding values for the x-axis and y-axis.
+        """
         spectral_data = []
+        output_file_path = (
+            f"{self.dataset.props.output_folder}\\Spectral_data_csv.csv"
+        )
         with open(
-            f"{self.dataset.props.output_folder}\Spectral_data_csv.csv",
-            "w",
-            newline="",
+            output_file_path, "w", newline="", encoding="utf-8"
         ) as file:
             for spectrum in self.dataset.spectra:
                 spectral_data.append(spectrum.x_axis)
@@ -855,6 +658,91 @@ class Exporter:
             writer = csv.writer(file, delimiter=";")
             for row in zip(*spectral_data):
                 writer.writerow(row)
+
+    def _set_value(self, param, result, row_data):
+        param_calc = {
+            "R1": lambda: str(round(1 / float(row_data[2]), 5)),
+            "R2": lambda: str(round(1 / float(row_data[4]), 5)),
+            "S1": lambda: str(
+                round(
+                    float(row_data[1]) / math.sqrt(float(row_data[2])),
+                    3,
+                )
+            ),
+            "S2": lambda: str(
+                round(
+                    float(row_data[3]) / math.sqrt(float(row_data[4])),
+                    3,
+                )
+            ),
+        }
+        if param == "---":
+            value = "---"
+        elif param in param_calc:
+            value = param_calc[param]()
+        else:
+            value = str(round(result.params[param].value, 3))
+        return value
+
+    def _sort_value_list(self, param, value, row_data, result):
+        if param != "t2":
+            return value, row_data
+        param_value = float(result.params[param].value)
+        if param_value < float(row_data[2]):
+            row_data[1], row_data[3] = row_data[3], row_data[1]
+            value, row_data[2] = row_data[2], str(value)
+        return value, row_data
+
+    def _generate_fit_param_row(self, values, delay_time, val_nr):
+        """
+        Generates a row of fit parameters for a given delay time and spectrum index.
+
+        This function extracts and formats the fitting parameters, including peak label, delay time,
+        center, amplitude, sigma, gamma, and full-width at half maximum (FWHM) for Lorentzian, Gaussian,
+        and Voigt line shapes. It also includes the corresponding intensity value.
+
+        :param values: Dictionary containing fitting parameters for each delay time.
+        :type values: dict
+        :param delay_time: The index of the delay time corresponding to the fit parameters.
+        :type delay_time: int
+        :param val_nr: The index of the spectrum being processed.
+        :type val_nr: int
+        :return: A list containing the formatted fit parameter row or None if values do not match the expected format.
+        :rtype: list or None
+        """
+        row = None
+        if len(values[delay_time]) == 5:
+            row = [
+                (
+                    self.dataset.peak_list[delay_time].peak_label
+                    if val_nr == 0
+                    else ""
+                ),
+                self.dataset.spectra[val_nr].tdel,
+                round(values[delay_time][1], 3),  # Center
+                round(values[delay_time][0], 3),  # Amplitude
+                round(values[delay_time][2], 3),  # Sigma
+                round(values[delay_time][3], 3),  # Gamma
+                round(
+                    functions.fwhm_lorentzian(values[delay_time][3]), 3
+                ),  # FWHM Lorentzian
+                round(
+                    functions.fwhm_gaussian(values[delay_time][2]), 3
+                ),  # FWHM Gaussian
+                round(
+                    functions.fwhm_voigt(
+                        values[delay_time][2], values[delay_time][3]
+                    ),
+                    3,
+                ),  # FWHM Voigt
+                round(
+                    self.dataset.peak_list[delay_time].buildup_vals.intensity[
+                        val_nr
+                    ],
+                    3,
+                ),  # Intensity
+            ]
+        return row
 
 
 class LmfitResultHandler:
