@@ -4,4 +4,9 @@ CorziliusNMR
 .. toctree::
    :maxdepth: 2
 
-   CorziliusNMR
+   dataset
+   functions
+   io
+   settings
+   utils
+

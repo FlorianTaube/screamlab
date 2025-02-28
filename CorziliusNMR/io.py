@@ -232,6 +232,7 @@ class Exporter:
             self._plot_buildup(buildup_type)
         self._print_report()
         self._write_global_fit_results_to_semicolon_separated_something()
+        self._write_buildup_fit_to_semicolon_separated_something()
         self._csv_output()
 
     def _plot_topspin_data(self):
@@ -650,6 +651,113 @@ class Exporter:
                     )
             f.write("End\n")
 
+    def _write_buildup_fit_to_semicolon_separated_something(self):
+        for buildup_type in self.dataset.props.buildup_types:
+            with open(
+                f"{self.dataset.props.output_folder}/Buildup_fit_result_{buildup_type}.txt",
+                "w",
+                encoding="utf-8",
+            ) as f:
+                header = [
+                    "Label",
+                    "A1 / a.u.",
+                    "t1 / s",
+                    "A2 / a.u.",
+                    "t2 / s",
+                    "t_off / s",
+                    "R1 / 1/s",
+                    "R2 / 1/s",
+                    "Sensitivity1 (A1/sqrt(t1))",
+                    "Sensitivity2 (A2/sqrt(t2))",
+                ]
+                f.write(";".join(header) + "\n")
+
+                format_mappings = {
+                    "exponential": [
+                        "A1",
+                        "t1",
+                        "---",
+                        "---",
+                        "---",
+                        "R1",
+                        "---",
+                        "S1",
+                        "---",
+                    ],
+                    "exponential_with_offset": [
+                        "A1",
+                        "t1",
+                        "---",
+                        "---",
+                        "x1",
+                        "R1",
+                        "---",
+                        "S1",
+                        "---",
+                    ],
+                    "biexponential": [
+                        "A1",
+                        "t1",
+                        "A2",
+                        "t2",
+                        "---",
+                        "R1",
+                        "R2",
+                        "S1",
+                        "S2",
+                    ],
+                    "biexponential_with_offset": [
+                        "A1",
+                        "t1",
+                        "A2",
+                        "t2",
+                        "x1",
+                        "R1",
+                        "R2",
+                        "S1",
+                        "S2",
+                    ],
+                }
+
+                type_format = format_mappings.get(buildup_type, [])
+
+                for result_nr, result in enumerate(
+                    self.dataset.lmfit_result_handler.buildup_fit[
+                        buildup_type
+                    ]
+                ):
+                    row_data = [self.dataset.peak_list[result_nr].peak_label]
+
+                    param_calculations = {
+                        "R1": lambda: str(round(1 / float(row_data[2]), 5)),
+                        "R2": lambda: str(round(1 / float(row_data[4]), 5)),
+                        "S1": lambda: str(
+                            round(
+                                float(row_data[1])
+                                / math.sqrt(float(row_data[2])),
+                                3,
+                            )
+                        ),
+                        "S2": lambda: str(
+                            round(
+                                float(row_data[3])
+                                / math.sqrt(float(row_data[4])),
+                                3,
+                            )
+                        ),
+                    }
+
+                    for param in type_format:
+                        if param == "---":
+                            value = "---"
+                        elif param in param_calculations:
+                            value = param_calculations[param]()
+                        else:
+                            value = str(round(result.params[param].value, 3))
+                        row_data.append(value)
+
+                    f.write(";".join(row_data) + "\n")
+
     def _write_global_fit_results_to_semicolon_separated_something(self):
         with open(
             f"{self.dataset.props.output_folder}/Global_fit_result.txt",
@@ -661,7 +769,7 @@ class Exporter:
             )
             header = [
                 "Label",
-                "Time / s",
+                "Delay Time / s",
                 "Center / ppm",
                 "Amplitude / a.u.",
                 "Sigma / ppm",
@@ -669,14 +777,18 @@ class Exporter:
                 "FWHM Lorentz / ppm",
                 "FWHM Gauss / ppm",
                 "FWHM Voigt / ppm",
-                "Integral",
+                "Integral / a.u.",
             ]
             f.write(";".join(str(item) for item in header) + "\n")
             for delay_time in range(0, len(valdict[0])):
                 for val_nr, (_, values) in enumerate(valdict.items()):
                     if len(values[delay_time]) == 5:
                         row = [
-                            self.dataset.peak_list[delay_time].peak_label,
+                            (
+                                self.dataset.peak_list[delay_time].peak_label
+                                if val_nr == 0
+                                else ""
+                            ),
                             self.dataset.spectra[val_nr].tdel,
                             round(values[delay_time][1], 3),
                             round(values[delay_time][0], 3),

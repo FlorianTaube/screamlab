@@ -36,8 +36,8 @@ Peak_at_m16_ppm          32.0  -15.688   40870.69       0.51      2.127     4.25
 [[Buildup fit results]]
 [exponential]
 Label               A1 / a.u.      t1 / s    A2 / a.u.      t2 / s    t_off / s      R1 / 1/s       R2 / 1/s       Sensitivity1 (A1/sqrt(t1)          Sensitivity2 (A2/sqrt(t2)          
-Peak_at_m16_ppm     2100715.193    21.72     ---            ---       ---            0.04604        ---            450751.589                         ---                                
+Peak_at_m16_ppm     2100715.184    21.72     ---            ---       ---            0.04604        ---            450751.587                         ---                                
 [exponential_with_offset]
 Label               A1 / a.u.      t1 / s    A2 / a.u.      t2 / s    t_off / s      R1 / 1/s       R2 / 1/s       Sensitivity1 (A1/sqrt(t1)          Sensitivity2 (A2/sqrt(t2)          
-Peak_at_m16_ppm     2002502.916    19.332    ---            ---       0.35           0.05173        ---            455443.768                         ---                                
+Peak_at_m16_ppm     2002502.918    19.332    ---            ---       0.35           0.05173        ---            455443.769                         ---                                
 End
