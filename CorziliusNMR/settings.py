@@ -1,18 +1,3 @@
-"""
-Properties Module
-=================
-
-This module provides the `Properties` class, which manages and validates properties related to spectral fitting and buildup types.
-
-Classes
--------
-.. autoclass:: Properties
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-"""
-
 from typing import Any
 import os
 
@@ -55,31 +40,8 @@ class Properties:
         loop20: str = "L 20",
         delay20: str = "D 20",
         output_folder: str = os.path.dirname(os.path.abspath(__file__)),
+        subspec=[],
     ):
-        """
-        Initialize the Properties class with default or specified values.
-
-        Parameters
-        ----------
-        prefit : bool, optional
-            Indicates whether prefit mode is enabled. Default is False.
-        buildup_types : list of str, optional
-            Types of buildup to be used. Default is ["exponential"].
-        spectrum_fit_type : list of str, optional
-            Spectrum fit type. Default is ["global"].
-        spectrum_for_prefit : int, optional
-            Spectrum index used for prefit. Default is 0.
-        path_to_experiment : str, optional
-            Path to the experiment data. Default is the current script's directory.
-        procno : int, optional
-            Process number. Default is 103.
-        expno : list of int, optional
-            Experiment numbers. Default is [1].
-        loop20 : str, optional
-            Loop parameter. Default is "L 20".
-        delay20 : str, optional
-            Delay parameter. Default is "D 20".
-        """
         if buildup_types is None:
             buildup_types = ["exponential"]
         if spectrum_fit_type is None:
@@ -106,6 +68,7 @@ class Properties:
         self.delay20 = delay20
         self._output_folder = None
         self.output_folder = output_folder
+        self.subspec = subspec
 
     def __str__(self):
         return (

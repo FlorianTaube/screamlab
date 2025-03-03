@@ -285,15 +285,15 @@ def spectrum_fit_header():
     """
     return [
         "Label",
-        "Time",
-        "Center",
-        "Amplitude",
-        "Sigma",
-        "Gamma",
-        "FWHM Lorentz",
-        "FWHM Gauss",
-        "FWHM Voigt",
-        "Integral",
+        "Time / s",
+        "Center / ppm",
+        "Amplitude / a.u.",
+        "Sigma / ppm",
+        "Gamma / ppm",
+        "FWHM Lorentz / ppm",
+        "FWHM Gauss / ppm",
+        "FWHM Voigt / ppm",
+        "Integral / a.u.",
     ]
 
 
@@ -313,3 +313,9 @@ def return_func_map():
         "exponential_with_offset": calc_exponential_with_offset,
         "biexponential_with_offset": calc_biexponential_with_offset,
     }
+
+
+def generate_subspec(spectrum, subspec):
+    start = np.argmax(spectrum.x_axis < max(subspec))
+    stop = np.argmax(spectrum.x_axis < min(subspec))
+    return spectrum.x_axis[start:stop], spectrum.y_axis[start:stop]

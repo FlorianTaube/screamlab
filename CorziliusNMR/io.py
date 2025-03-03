@@ -43,6 +43,8 @@ class TopspinImporter:
         self._set_x_data()
         self._set_y_data()
         self._normalize_y_values_to_number_of_scans()
+        if len(self._dataset.props.subspec) == 2:
+            self._gen_subspectrum()
         self._close()
 
     def _add_spectrum(self):
@@ -166,6 +168,13 @@ class ScreamImporter(TopspinImporter):
             self._dataset.spectra[-1].number_of_scans,
         )
 
+    def _gen_subspectrum(self):
+        self._dataset.spectra[-1].x_axis, self._dataset.spectra[-1].y_axis = (
+            functions.generate_subspec(
+                self._dataset.spectra[-1], self._dataset.props.subspec
+            )
+        )
+
 
 class Pseudo2DImporter(TopspinImporter):
     pass
@@ -183,16 +192,25 @@ class Pseudo2DImporter(TopspinImporter):
         vdfile = open(vdlist, "r")
         for tdel in vdfile:
             self._add_spectrum()
+            if "u" in tdel:
+                tdel = tdel.replace("u", "")
+                tdel = float(tdel) * 10**-6
+            elif "m" in tdel:
+                tdel = tdel.replace("m", "")
+                tdel = float(tdel) * 10**-3
             self._dataset.spectra[-1].tdel = float(tdel)
+
         vdfile.close()
 
         self._nmr_data = self._data_provider.getNMRData(files[0])
+
         for spectrum_nr in range(
             0,
             self._nmr_data.getSpecDataPoints()["indexRanges"][1][
                 "numberOfPoints"
             ],
         ):
+
             physical_range = self._nmr_data.getSpecDataPoints()[
                 "physicalRanges"
             ][0]
@@ -202,6 +220,7 @@ class Pseudo2DImporter(TopspinImporter):
             self._dataset.spectra[spectrum_nr].x_axis = self._calc_x_axis(
                 physical_range, number_of_datapoints
             )
+
             start = 0 + spectrum_nr * number_of_datapoints
             stop = number_of_datapoints + spectrum_nr * number_of_datapoints
             self._dataset.spectra[spectrum_nr].number_of_scans = (
@@ -212,6 +231,14 @@ class Pseudo2DImporter(TopspinImporter):
             ].y_axis = self._nmr_data.getSpecDataPoints()["dataPoints"][
                 start:stop
             ]
+            if len(self._dataset.props.subspec) == 2:
+                (
+                    self._dataset.spectra[spectrum_nr].x_axis,
+                    self._dataset.spectra[spectrum_nr].y_axis,
+                ) = functions.generate_subspec(
+                    self._dataset.spectra[spectrum_nr],
+                    self._dataset.props.subspec,
+                )
         self._close()
 
 
@@ -246,6 +273,7 @@ class Exporter:
         - Outputs results in CSV format.
         """
         self._plot_topspin_data()
+        self._plot_global_all_together()
         if self.dataset.props.prefit:
             self._plot_prefit()
             self._print_lmfit_prefit_report()
@@ -478,6 +506,82 @@ class Exporter:
             )
             plt.savefig(plot_filename, dpi=500, bbox_inches="tight")
             plt.close(fig)
+
+    def _plot_global_all_together(self):
+        output_dir = os.path.join(
+            self.dataset.props.output_folder, "fit_per_spectrum"
+        )
+        os.makedirs(output_dir, exist_ok=True)
+
+        param_dict = functions.generate_spectra_param_dict(
+            self.dataset.lmfit_result_handler.global_fit.params
+        )
+
+        num_spectra = len(param_dict)
+        cols = 3
+        rows = math.ceil(num_spectra / cols)
+
+        fig, axs = plt.subplots(
+            rows * 2,
+            cols,
+            sharex=True,
+            sharey=False,
+            figsize=(cols * 4, rows * 3),
+            gridspec_kw={"height_ratios": [3, 1] * rows},
+        )
+
+        if rows == 1:
+            axs = [axs]
+
+        for i, (key, param_list) in enumerate(param_dict.items()):
+            row, col = divmod(i, cols)
+            ax_spectrum = axs[row * 2][col]
+            ax_residual = axs[row * 2 + 1][col]
+
+            spectrum = self.dataset.spectra[key]
+            x_axis, y_axis = spectrum.x_axis, spectrum.y_axis
+            simspec = [0] * len(y_axis)
+            residual = copy.deepcopy(y_axis)
+
+            for params in param_list:
+                simspec = functions.calc_peak(x_axis, simspec, params)
+
+            ax_spectrum.plot(
+                x_axis, y_axis, color="black", label="Experiment"
+            )
+            ax_spectrum.plot(
+                x_axis, simspec, "r--", label="Simulation", alpha=0.8
+            )
+            residual -= simspec
+            ax_residual.plot(x_axis, residual, color="grey", label="Residual")
+
+            ax_spectrum.set_ylabel("$I$ / a.u.")
+            ax_residual.set_xlabel("$\\delta$ / ppm")
+            ax_residual.set_ylabel("$I_{resid}$ / a.u.")
+
+            ax_spectrum.set_xlim(max(x_axis), min(x_axis))
+            ax_spectrum.legend(fontsize=8)
+            ax_residual.legend(fontsize=8)
+            ax_residual.set_ylim(
+                -1 * max(abs(y_axis)) / 2, max(abs(y_axis)) / 2
+            )
+
+            ax_spectrum.text(
+                0.05,
+                0.85,
+                f"$t_{{pol}} = {spectrum.tdel:.2f} \, \mathrm{{s}}$",
+                transform=ax_spectrum.transAxes,
+                fontsize=7,
+                bbox=dict(facecolor="white", alpha=0.5),
+            )
+
+        plot_filename_pdf = os.path.join(output_dir, "All_Spectra.pdf")
+        plot_filename_png = os.path.join(output_dir, "All_Spectra.png")
+
+        plt.tight_layout()
+        plt.savefig(plot_filename_png, dpi=1000, bbox_inches="tight")
+        plt.savefig(plot_filename_pdf, dpi=1000, bbox_inches="tight")
+        plt.close(fig)
 
     def _print_report(self):
         with open(

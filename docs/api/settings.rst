@@ -1,5 +1,5 @@
 CorziliusNMR.settings module
----------------------------
+----------------------------
 
 .. automodule:: CorziliusNMR.settings
    :members:

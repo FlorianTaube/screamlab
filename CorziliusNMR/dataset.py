@@ -48,13 +48,16 @@ class Dataset:
         )
         self._read_in_data_from_topspin()
         print(
-            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start peak fitting."
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start fitting."
         )
         self._calculate_peak_intensities()
         print(
             f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start buildup fit."
         )
         self._start_buildup_fit()
+        print(
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start generating result files."
+        )
         self._print_all()
 
     def start_buildup_fit_from_spectra(self):
