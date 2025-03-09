@@ -6,127 +6,24 @@ props = settings.Properties(
     buildup_types=["biexponential"],
     expno=[24, 32],
     subspec=[200, 0],
+    spectrum_for_prefit=-2,
 )
 props.path_to_experiment = (
-    r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K"
+    r"F:\NMR\Max\20230817_100mM_HN-PA-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K"
 )
 props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-100K"
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\PA-100K"
 )
 ds = dataset.Dataset()
 ds.props = props
-ds.add_peak(175, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(46, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(29, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(25, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
+ds.add_peak(171, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(48, peak_label="Cdelta")
+ds.add_peak(32, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
 ds.start_buildup_fit_from_topspin()
 
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["biexponential"],
-    expno=[24, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = (
-    r"F:\NMR\Max\20230814_100mM_H2N-PG-OH_10mM_AMUPOL_1p3mm_18kHz_DNP_150K"
-)
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\PG-150K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(172, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(60, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(48, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(32, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(26, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.start_buildup_fit_from_topspin()
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["biexponential"],
-    expno=[24, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = (
-    r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K"
-)
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-100K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(175, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(46, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(29, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(25, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.start_buildup_fit_from_topspin()
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["biexponential"],
-    expno=[24, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = (
-    r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_125K"
-)
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-125K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(175, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(46, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(29, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(25, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.start_buildup_fit_from_topspin()
-
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["biexponential"],
-    expno=[24, 25, 26, 27, 28, 29, 31, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = (
-    r"F:\NMR\Max\20231220_100mM_Ac_N-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_150K"
-)
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AcPro-150K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(178, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(50, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(32, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(26, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.start_buildup_fit_from_topspin()
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["biexponential"],
-    expno=[24, 25, 26, 27, 28, 29, 31, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = (
-    r"F:\NMR\Max\20231218_100mM_Ac_N-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_125K"
-)
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AcPro-125K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(178, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(50, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(32, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(26, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.start_buildup_fit_from_topspin()
+sys.exit()
 
 
 props = settings.Properties(
@@ -136,20 +33,247 @@ props = settings.Properties(
     subspec=[200, 0],
 )
 props.path_to_experiment = (
-    r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_150K"
+    r"F:\NMR\Max\20230818_100mM_HN-PA-OH_10mM_AUPOL_1p3mm_18kHz_DNP_150K"
 )
 props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-150K"
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\PA-150K"
 )
-
-ds = dataset.Dataset(props=props)
-
-ds.add_peak(175)
-ds.add_peak(61)
-ds.add_peak(46)
-ds.add_peak(29)
-ds.add_peak(25)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(171, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(48, peak_label="Cdelta")
+ds.add_peak(31, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
 ds.start_buildup_fit_from_topspin()
+
+
+sys.exit()
+
+
+sys.exit()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential", "exponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+    spectrum_for_prefit=-4,
+)
+props.path_to_experiment = r"F:\ssNMR\20241128_S36F_100K"
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-na-100K"
+)
+ds = dataset.Dataset()
+ds.props = props
+# ds.add_peak(175, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(46, peak_label="Cdelta")
+ds.add_peak(30, peak_label="Cbeta")
+ds.add_peak(24, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential", "exponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+    spectrum_for_prefit=-2,
+)
+props.path_to_experiment = r"F:\ssNMR\20241203_S36F_150K"
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-na-150K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(176, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(45, peak_label="Cdelta")
+ds.add_peak(30, peak_label="Cbeta")
+ds.add_peak(24, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+sys.exit()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential", "exponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = r"F:\ssNMR\20250120_S47F_100K"
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\GP-100K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(176, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(49, peak_label="Cdelta")
+ds.add_peak(30, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = r"F:\ssNMR\20250120_S47F_125K"
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\GP-125K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(176, peak_label="CO")
+ds.add_peak(72, peak_label="Glycerol_1")
+
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(49, peak_label="Cdelta")
+ds.add_peak(30, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = r"F:\ssNMR\20250120_S47F_150K"
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\GP-150K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(176, peak_label="CO")
+ds.add_peak(72, peak_label="Glycerol_1")
+ds.add_peak(63, peak_label="Glycerol_2")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(49, peak_label="Cdelta")
+ds.add_peak(30, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = r"F:\ssNMR\20250121_S48F_125K"
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AP-125K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(178, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(48, peak_label="Cdelta")
+ds.add_peak(30, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = r"F:\ssNMR\20250121_S48F_150K"
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AP-150K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(178, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(48, peak_label="Cdelta")
+ds.add_peak(30, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = r"F:\ssNMR\20250224_S49F_100K"
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AcPro-na-100K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(178, peak_label="CO")
+ds.add_peak(174, peak_label="Acetyl")
+ds.add_peak(73, peak_label="Glycerol2")
+ds.add_peak(63, peak_label="Glycerol1")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(50, peak_label="Cdelta")
+ds.add_peak(32, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
+ds.add_peak(23, peak_label="CH3")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = r"F:\ssNMR\20250224_S49F_125K"
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AcPro-na-125K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(178, peak_label="CO")
+ds.add_peak(174, peak_label="Acetyl")
+ds.add_peak(73, peak_label="Glycerol2")
+ds.add_peak(63, peak_label="Glycerol1")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(50, peak_label="Cdelta")
+ds.add_peak(32, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
+ds.add_peak(23, peak_label="CH3")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = r"F:\ssNMR\20250224_S49F_150K"
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AcPro-na-150K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(178, peak_label="CO")
+ds.add_peak(174, peak_label="Acetyl")
+ds.add_peak(73, peak_label="Glycerol2")
+ds.add_peak(63, peak_label="Glycerol1")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(50, peak_label="Cdelta")
+ds.add_peak(32, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
+ds.add_peak(23, peak_label="CH3")
+ds.start_buildup_fit_from_topspin()
+
+
+sys.exit()
 
 
 props = settings.Properties(
@@ -166,12 +290,13 @@ props.output_folder = (
 )
 ds = dataset.Dataset()
 ds.props = props
-ds.add_peak(171, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(48, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(32, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(25, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
+ds.add_peak(171, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(48, peak_label="Cdelta")
+ds.add_peak(31, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
 ds.start_buildup_fit_from_topspin()
+
 
 props = settings.Properties(
     prefit=True,
@@ -187,54 +312,11 @@ props.output_folder = (
 )
 ds = dataset.Dataset()
 ds.props = props
-ds.add_peak(171, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(48, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(32, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(25, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.start_buildup_fit_from_topspin()
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["biexponential"],
-    expno=[24, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = (
-    r"F:\NMR\Max\20231026_100mM_HN-PA-OH_10mM_AUPOL_1p3mm_18kHz_DNP_150K_2"
-)
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\PA-100K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(171, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(48, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(32, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(25, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.start_buildup_fit_from_topspin()
-
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["biexponential"],
-    expno=[24, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = (
-    r"F:\NMR\Max\20230620_100mM_H2N-PG-OH_10mM_AMUPOL_1p3mm_18kHz_DNP_100K"
-)
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\PG-100K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(172, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(60, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(48, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(32, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(26, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
+ds.add_peak(171, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(48, peak_label="Cdelta")
+ds.add_peak(31, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
 ds.start_buildup_fit_from_topspin()
 
 
@@ -252,12 +334,35 @@ props.output_folder = (
 )
 ds = dataset.Dataset()
 ds.props = props
-ds.add_peak(178, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(50, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(32, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(26, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
+ds.add_peak(178, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(50, peak_label="Cdelta")
+ds.add_peak(32, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
 ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = (
+    r"F:\NMR\Max\20231218_100mM_Ac_N-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_125K"
+)
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AcPro-125K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(178, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(50, peak_label="Cdelta")
+ds.add_peak(32, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+
 
 props = settings.Properties(
     prefit=True,
@@ -273,72 +378,126 @@ props.output_folder = (
 )
 ds = dataset.Dataset()
 ds.props = props
-ds.add_peak(178, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(50, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(32, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(26, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
+ds.add_peak(178, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(50, peak_label="Cdelta")
+ds.add_peak(32, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
 ds.start_buildup_fit_from_topspin()
 
 props = settings.Properties(
     prefit=True,
     buildup_types=["biexponential"],
-    expno=[24, 25, 26, 27, 28, 29, 31, 32],
+    expno=[24, 32],
     subspec=[200, 0],
 )
 props.path_to_experiment = (
-    r"F:\NMR\Max\20231218_100mM_Ac_N-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_125K"
+    r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K"
 )
 props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AcPro-125K"
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-100K"
 )
 ds = dataset.Dataset()
 ds.props = props
-ds.add_peak(178, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(61, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(50, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(32, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.add_peak(26, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}})
-ds.start_buildup_fit_from_topspin()
-
-props.path_to_experiment = r"F:\ssNMR\20250121_S48F_125K"
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AP-125K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(158)
-# ds.add_peak(53)
-ds.add_peak(41)
-ds.add_peak(30)
-ds.add_peak(11)
-ds.add_peak(7)
+ds.add_peak(175, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(46, peak_label="Cdelta")
+ds.add_peak(29, peak_label="Cbeta")
+ds.add_peak(25, peak_label="Cgamma")
 ds.start_buildup_fit_from_topspin()
 
 
 props = settings.Properties(
     prefit=True,
-    buildup_types=["exponential", "biexponential"],
-    subspec=[200, 0],
+    buildup_types=["biexponential"],
     expno=[24, 32],
+    subspec=[200, 0],
 )
-props.path_to_experiment = r"F:\ssNMR\20250120_S47F_100K"
+props.path_to_experiment = (
+    r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_125K"
+)
 props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\GP-100K"
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-125K"
 )
 ds = dataset.Dataset()
 ds.props = props
-ds.add_peak(158)
-ds.add_peak(42)
-ds.add_peak(30)
-ds.add_peak(11)
-ds.add_peak(7)
+ds.add_peak(175, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(46, peak_label="Cdelta")
+ds.add_peak(29, peak_label="Cbeta")
+ds.add_peak(25, peak_label="Cgamma")
 ds.start_buildup_fit_from_topspin()
 
 
 props = settings.Properties(
     prefit=True,
-    buildup_types=["exponential", "biexponential"],
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = (
+    r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_150K"
+)
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-150K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(175, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(46, peak_label="Cdelta")
+ds.add_peak(29, peak_label="Cbeta")
+ds.add_peak(25, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = (
+    r"F:\NMR\Max\20230620_100mM_H2N-PG-OH_10mM_AMUPOL_1p3mm_18kHz_DNP_100K"
+)
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\PG-100K"
+)
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(172, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(48, peak_label="Cdelta")
+ds.add_peak(32, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
+    expno=[24, 32],
+    subspec=[200, 0],
+)
+props.path_to_experiment = (
+    r"F:\NMR\Max\20230815_1M_HN-P-OH_na_10mM_AUPOL_1p3mm_18kHz_DNP_100K"
+)
+props.output_folder = (
+    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\Pro-na-100K"
+)
+ds = dataset.Dataset()
+ds.props = props
+# ds.add_peak(172, peak_label="CO")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(46, peak_label="Cdelta")
+ds.add_peak(30, peak_label="Cbeta")
+ds.add_peak(24, peak_label="Cgamma")
+ds.start_buildup_fit_from_topspin()
+
+
+props = settings.Properties(
+    prefit=True,
+    buildup_types=["biexponential"],
     expno=[24, 32],
     subspec=[200, 0],
 )
@@ -348,110 +507,11 @@ props.output_folder = (
 )
 ds = dataset.Dataset()
 ds.props = props
-ds.add_peak(158)
-ds.add_peak(42)
-ds.add_peak(30)
-ds.add_peak(11)
-ds.add_peak(7)
-ds.start_buildup_fit_from_topspin()
-
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["exponential", "biexponential"],
-    expno=[24, 32],
-    spectrum_for_prefit=3,
-    subspec=[200, 0],
-)
-props.path_to_experiment = r"F:\ssNMR\20250120_S47F_150K"
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\GP-150K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(158)
-ds.add_peak(42)
-ds.add_peak(30)
-ds.add_peak(11)
-ds.add_peak(7)
-ds.start_buildup_fit_from_topspin()
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["exponential", "biexponential"],
-    expno=[24, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = r"F:\ssNMR\20250121_S48F_150K"
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AP-150K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(158)
-# ds.add_peak(53)
-ds.add_peak(41)
-ds.add_peak(30)
-ds.add_peak(11)
-ds.add_peak(7)
-ds.start_buildup_fit_from_topspin()
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["exponential", "biexponential"],
-    expno=[23, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = r"F:\ssNMR\20250224_S49F_150K"
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AcPro_na-150K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(2)
-ds.add_peak(10)
-ds.add_peak(29)
-ds.add_peak(41)
-ds.add_peak(51)
-ds.add_peak(153)
-ds.start_buildup_fit_from_topspin()
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["exponential", "biexponential"],
-    expno=[23, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = r"F:\ssNMR\20250224_S49F_125K"
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AcPro_na-120K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(2)
-ds.add_peak(10)
-ds.add_peak(29)
-ds.add_peak(41)
-ds.add_peak(51)
-ds.add_peak(153)
-ds.start_buildup_fit_from_topspin()
-
-props = settings.Properties(
-    prefit=True,
-    buildup_types=["exponential", "biexponential"],
-    expno=[23, 32],
-    subspec=[200, 0],
-)
-props.path_to_experiment = r"F:\ssNMR\20250224_S49F_100K"
-props.output_folder = (
-    r"C:\Users\Florian Taube\Desktop\Prolin_auswertung\AcPro_na-100K"
-)
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(2)
-ds.add_peak(10)
-ds.add_peak(29)
-ds.add_peak(41)
-ds.add_peak(51)
-ds.add_peak(153)
+ds.add_peak(176, peak_label="CO")
+ds.add_peak(72, peak_label="Glycerol_1")
+ds.add_peak(63, peak_label="Glycerol_2")
+ds.add_peak(61, peak_label="Calpha")
+ds.add_peak(49, peak_label="Cdelta")
+ds.add_peak(30, peak_label="Cbeta")
+ds.add_peak(26, peak_label="Cgamma")
 ds.start_buildup_fit_from_topspin()

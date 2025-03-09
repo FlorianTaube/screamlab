@@ -2,6 +2,7 @@
 io module of the CorziliusNMR package.
 """
 
+import lmfit
 from CorziliusNMR import dataset, functions
 import numpy as np
 import bruker.api.topspin as top
@@ -305,11 +306,11 @@ class Exporter:
             plt.plot(
                 spectrum.x_axis,
                 spectrum.y_axis,
-                label=f"t_del = {spectrum.tdel} s",
+                label=f"t_pol = {spectrum.tdel} s",
                 color=colors[idx],
             )
         plt.gca().invert_xaxis()
-        plt.xlabel("$t_{del}$ / s")
+        plt.xlabel("$t_{pol}$ / s")
         plt.ylabel("$I$ / a.u.")
         plt.legend()
         plt.savefig(
@@ -401,7 +402,7 @@ class Exporter:
                 label=label_sim,
             )
             first = False
-        ax.set_xlabel("$t_{del}$ / s")
+        ax.set_xlabel("$t_{pol}$ / s")
         ax.set_ylabel("$I$ / a.u.")
         ax.legend()
         ax.invert_xaxis()
@@ -448,12 +449,17 @@ class Exporter:
                 "-",
                 color=color,
             )
-        plt.xlabel("$t_{del}$ / s")
+        plt.xlabel("$t_{pol}$ / s")
         plt.ylabel("$I$ / a.u.")
         plt.legend()
         plt.savefig(
             f"{self.dataset.props.output_folder}/Buildup_fit_{buildup_type}.pdf",
             dpi=500,
+            bbox_inches="tight",
+        )
+        plt.savefig(
+            f"{self.dataset.props.output_folder}/Buildup_fit_{buildup_type}.png",
+            dpi=1500,
             bbox_inches="tight",
         )
         plt.close()
@@ -505,6 +511,7 @@ class Exporter:
                 output_dir, f"Spectrum_at_{spectrum.tdel}_s.pdf"
             )
             plt.savefig(plot_filename, dpi=500, bbox_inches="tight")
+
             plt.close(fig)
 
     def _plot_global_all_together(self):
