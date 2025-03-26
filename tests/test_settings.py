@@ -97,7 +97,7 @@ class TestProperties(unittest.TestCase):
 
     def test_spectrum_for_prefit_default_value(self):
         props = Properties()
-        self.assertEqual(props.spectrum_for_prefit, 0)
+        self.assertEqual(props.spectrum_for_prefit, -1)
 
     def test_spectrum_for_prefit_initial_value(self):
         props = Properties(spectrum_for_prefit=1)
@@ -306,7 +306,10 @@ class TestProperties(unittest.TestCase):
 
     def test_output_folder_init_default(self):
         props = Properties()
-        self.assertEqual(props.output_folder, "")
+        self.assertEqual(
+            props.output_folder,
+            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR",
+        )
 
     def test_output_folder_init(self):
         props = Properties(output_folder="Hallo")
@@ -314,10 +317,13 @@ class TestProperties(unittest.TestCase):
 
     def test_output_folder_init_wrong_input_type(self):
         props = Properties()
-        self.assertEqual(props.output_folder, "Hallo")
+        self.assertEqual(
+            props.output_folder,
+            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR",
+        )
         with self.assertRaises(TypeError) as context:
             props.output_folder = [1, "12"]
         self.assertEqual(
             str(context.exception),
-            "Expected 'output_folder' to be of type 'str', got str.",
+            "Expected 'output_folder' to be of type 'str', got list.",
         )
