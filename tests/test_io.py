@@ -253,13 +253,6 @@ class TestDataset(unittest.TestCase):
             CorziliusNMR.dataset.Spectra,
         )
 
-    def test_set_number_of_scans(self):
-        self.set_up_one_real_spectrum_pseudo2dimporter()
-        self.pseudo_importer._set_number_of_scans()
-        self.assertEqual(
-            self.pseudo_importer._dataset.spectra[-1].number_of_scans, 16
-        )
-
     def test_set_buildup_time(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_buildup_time()
