@@ -11,9 +11,13 @@ build-job:       # This job runs in the build stage, which runs first.
 
 unit-test-job:
   stage: test
-  image: python:3.10  # Nutzt ein offizielles Python-Image
+  image: python:3.10
   script:
-    - python -m unittest discover -s tests -p "*.py" -v
+    - python -m unittest discover -s tests -p "*.py" -v | tee test_logs/unittest.log
+  artifacts:
+    paths:
+      - test_logs/unittest.log  # Speichert das Log als Artefakt
+    expire_in: 1 week  # Optional: Log bleibt für 1 Woche gespeichert
 
 
 deploy-job:      # This job runs in the deploy stage.
