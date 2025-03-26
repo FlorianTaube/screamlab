@@ -16,7 +16,7 @@ unit-test-job:
     - python -m unittest discover -s tests -p "*.py" -v | tee test_logs/unittest.log
   artifacts:
     paths:
-      - test_logs/unittest.log  # Speichert das Log als Artefakt
+      - unittest.log  # Speichert das Log als Artefakt
     expire_in: 1 week  # Optional: Log bleibt für 1 Woche gespeichert
 
 
