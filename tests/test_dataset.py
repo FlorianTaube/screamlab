@@ -277,14 +277,14 @@ class TestDataset(unittest.TestCase):
         self.peak.fitting_type = "gauss"
         self.peak.line_broadening = dict()
         self.assertDictEqual(
-            self.peak.line_broadening, {"sigma": {"min": 0, "max": 20}}
+            self.peak.line_broadening, {"sigma": {"min": 0, "max": 3}}
         )
 
     def test_line_broadening_default_lorentz(self):
         self.peak.fitting_type = "lorentz"
         self.peak.line_broadening = dict()
         self.assertDictEqual(
-            self.peak.line_broadening, {"gamma": {"min": 0, "max": 20}}
+            self.peak.line_broadening, {"gamma": {"min": 0, "max": 3}}
         )
 
     def test_line_broadening_default_lorentz(self):
@@ -292,7 +292,7 @@ class TestDataset(unittest.TestCase):
         self.peak.line_broadening = dict()
         self.assertDictEqual(
             self.peak.line_broadening,
-            {"sigma": {"min": 0, "max": 20}, "gamma": {"min": 0, "max": 20}},
+            {"sigma": {"min": 0, "max": 3}, "gamma": {"min": 0, "max": 3}},
         )
 
     def test_line_broadening_invalid_type(self):
