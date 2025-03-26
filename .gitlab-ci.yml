@@ -17,7 +17,11 @@ unit-test-job:
   stage: test
   image: python:3.10
   script:
-    - python -m unittest discover -s tests -p "*.py" -v | tee test_logs/unittest.log
+    - python -m unittest discover -s tests -p "*.py" -v | tee unittest.log  # Speichert direkt im Root-Verzeichnis
+  artifacts:
+    paths:
+      - unittest.log  # Stellt sicher, dass die Datei als Artefakt gespeichert wird
+    expire_in: 1 week  # Optional: Artefakt für eine Woche speichern
 
 
 deploy-job:      # This job runs in the deploy stage.
