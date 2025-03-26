@@ -96,6 +96,20 @@ def calc_exponential(time_vals, param):
     return list(param[0] * (1 - np.exp(-np.asarray(time_vals) / param[1])))
 
 
+def calc_stretched_exponential(time_vals, param):
+    """
+    Compute a stretched exponential decay function.
+
+    :param time_vals: Time values.
+    :param param: List containing amplitude, time constant, and stretching exponent.
+    :return: List of computed stretched exponential values.
+    """
+    return list(
+        param[0]
+        * (1 - np.exp(-((np.asarray(time_vals) / param[1]) ** param[2])))
+    )
+
+
 def calc_biexponential(time_vals, param):
     """
     Compute a biexponential decay function.
@@ -212,6 +226,19 @@ def format_mapping():
             "---",
             "S1",
             "---",
+            "---",
+        ],
+        "streched_exponential": [
+            "A1",
+            "t1",
+            "---",
+            "---",
+            "---",
+            "R1",
+            "---",
+            "S1",
+            "---",
+            "beta",
         ],
         "exponential_with_offset": [
             "A1",
@@ -222,6 +249,7 @@ def format_mapping():
             "R1",
             "---",
             "S1",
+            "---",
             "---",
         ],
         "biexponential": [
@@ -234,6 +262,7 @@ def format_mapping():
             "R2",
             "S1",
             "S2",
+            "---",
         ],
         "biexponential_with_offset": [
             "A1",
@@ -245,6 +274,7 @@ def format_mapping():
             "R2",
             "S1",
             "S2",
+            "---",
         ],
     }
 
@@ -312,6 +342,7 @@ def return_func_map():
         "biexponential": calc_biexponential,
         "exponential_with_offset": calc_exponential_with_offset,
         "biexponential_with_offset": calc_biexponential_with_offset,
+        "streched_exponential": calc_stretched_exponential,
     }
 
 

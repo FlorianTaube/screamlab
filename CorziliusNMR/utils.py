@@ -16,6 +16,8 @@ import numpy as np
 import copy
 from pyDOE2 import lhs
 from CorziliusNMR import functions
+import matplotlib.pyplot as plt
+import sys
 
 
 class Fitter:
@@ -47,6 +49,10 @@ class Fitter:
         x_axis, y_axis = self._generate_axis_list()
         params = self._generate_params_list()
         params = self._set_param_expr(params)
+
+        return self._start_minimize(x_axis, y_axis, params)
+
+    def _start_minimize(self, x_axis, y_axis, params):
         return lmfit.minimize(
             self._spectral_fitting, params, args=(x_axis, y_axis)
         )
@@ -213,6 +219,31 @@ class Prefitter(Fitter):
         y_axis.append(self.dataset.spectra[spectrum_for_prefit].y_axis)
         return x_axis, y_axis
 
+    def _start_minimize(self, x_axis, y_axis, params):
+        n_samples = int(len(params) / 2)
+
+        lhs_samples = lhs(int(len(params) / 2), samples=n_samples)
+        best_result = None
+        best_chisqr = np.inf
+        for sample_nr, sample in enumerate(lhs_samples):
+            print(f"{sample_nr+1}/{len(lhs_samples)}")
+            i = 0
+            for param in params:
+                if "sigma_0" in param or "gamma_0" in param:
+                    params[param].value = sample[i] * (
+                        params[param].max - params[param].min
+                    )
+                    i += 1
+            result = lmfit.minimize(
+                self._spectral_fitting, params, args=(x_axis, y_axis)
+            )
+            if best_chisqr > result.chisqr:
+                best_chisqr = result.chisqr
+
+                best_result = result
+
+        return best_result
+
 
 class SingleFitter(Fitter):
     pass
@@ -317,6 +348,7 @@ class BuildupFitter:
         :param result: The new fitting result.
         :return: The best result and its chi-squared value.
         """
+
         if result.chisqr < best_chisqr:
             return result, result.chisqr
         return best_result, best_chisqr
@@ -413,6 +445,9 @@ class BuildupFitter:
         :return: Dictionary with default time parameter values.
         """
         return {"value": 5, "min": 0, "max": max(peak.buildup_vals.tdel) * 3}
+
+    def _get_beta_dict(self, peak):
+        return {"value": 0, "min": 0, "max": 1}
 
 
 class BiexpFitter(BuildupFitter):
@@ -531,3 +566,32 @@ class ExpFitterWithOffset(BuildupFitter):
         :return: Calculated intensity values.
         """
         return functions.calc_exponential_with_offset(tdel, param)
+
+
+class StrechedExponentialFitter(BuildupFitter):
+    """
+    Class for fitting streched exponential models to buildup data.
+    """
+
+    def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for streched exponential fitting.
+
+        :param peak: Peak object.
+        :return: Dictionary of parameter defaults.
+        """
+        return {
+            "A1": self._get_intensity_dict(peak),
+            "t1": self._get_time_dict(peak),
+            "beta": self._get_beta_dict(peak),
+        }
+
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate biexponential intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_stretched_exponential(tdel, param)

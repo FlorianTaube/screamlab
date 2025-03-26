@@ -277,6 +277,7 @@ class Properties:
             "biexponential",
             "biexponential_with_offset",
             "exponential_with_offset",
+            "streched_exponential",
         }
         if not isinstance(value, list):
             raise TypeError(

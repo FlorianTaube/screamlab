@@ -152,6 +152,7 @@ class Dataset:
             "biexponential_with_offset": utils.BiexpFitterWithOffset,
             "exponential": utils.ExpFitter,
             "exponential_with_offset": utils.ExpFitterWithOffset,
+            "streched_exponential": utils.StrechedExponentialFitter,
         }
 
         for b_type in self.props.buildup_types:
@@ -391,8 +392,8 @@ class Peak:
         :return: A dictionary with default values for 'sigma' and 'gamma'.
         """
         return {
-            "sigma": {"min": 0, "max": 2},
-            "gamma": {"min": 0, "max": 2},
+            "sigma": {"min": 0, "max": 3},
+            "gamma": {"min": 0, "max": 3},
         }
 
     def _check_if_value_is_dict(self, value):

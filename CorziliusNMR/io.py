@@ -215,6 +215,7 @@ class Pseudo2DImporter(TopspinImporter):
             physical_range = self._nmr_data.getSpecDataPoints()[
                 "physicalRanges"
             ][0]
+
             number_of_datapoints = self._nmr_data.getSpecDataPoints()[
                 "indexRanges"
             ][0]["numberOfPoints"]
@@ -451,6 +452,7 @@ class Exporter:
             )
         plt.xlabel("$t_{pol}$ / s")
         plt.ylabel("$I$ / a.u.")
+
         plt.legend()
         plt.savefig(
             f"{self.dataset.props.output_folder}/Buildup_fit_{buildup_type}.pdf",
@@ -712,6 +714,10 @@ class Exporter:
                         buildup_type
                     ]
                 ):
+                    lmfit_report = f"{self.dataset.props.output_folder}/Buildup_fit_result_{buildup_type}_{result_nr}.txt"
+                    with open(lmfit_report, "w", encoding="utf-8") as a:
+                        a.write(lmfit.fit_report(result))
+                    a.close()
                     row_data = [self.dataset.peak_list[result_nr].peak_label]
                     for param in type_format:
                         value = self._set_value(param, result, row_data)
@@ -830,10 +836,10 @@ class Exporter:
                     else ""
                 ),
                 self.dataset.spectra[val_nr].tdel,
-                round(values[delay_time][1], 3),  # Center
-                round(values[delay_time][0], 3),  # Amplitude
-                round(values[delay_time][2], 3),  # Sigma
-                round(values[delay_time][3], 3),  # Gamma
+                round(values[delay_time][1], 3),
+                round(values[delay_time][0], 3),
+                round(values[delay_time][2], 3),
+                round(values[delay_time][3], 3),
                 round(
                     functions.fwhm_lorentzian(values[delay_time][3]), 3
                 ),  # FWHM Lorentzian
