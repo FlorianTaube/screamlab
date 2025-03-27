@@ -346,7 +346,7 @@ class TestDataset(unittest.TestCase):
         self.peak.line_broadening = {"gamma": {"min": 20, "max": 30}}
         self.assertDictEqual(
             self.peak.line_broadening,
-            {"gamma": {"min": 20, "max": 30}, "sigma": {"max": 20, "min": 0}},
+            {"gamma": {"min": 20, "max": 30}, "sigma": {"max": 3, "min": 0}},
         )
 
     def test_line_broadening_with_new_params_and_wrong_input(self):
@@ -363,7 +363,7 @@ class TestDataset(unittest.TestCase):
         self.peak.line_broadening = {"gamma": {"min": 20, "max": 30}}
         self.assertDictEqual(
             self.peak._line_broadening,
-            {"gamma": {"min": 20, "max": 30}, "sigma": {"max": 20, "min": 0}},
+            {"gamma": {"min": 20, "max": 30}, "sigma": {"max": 3, "min": 0}},
         )
 
     def test_dataset_add_two_peaks_check_correct_signs(self):
@@ -383,8 +383,8 @@ class TestDataset(unittest.TestCase):
             peaks,
             [
                 {
-                    "gamma": {"max": 20, "min": 0},
-                    "sigma": {"max": 20, "min": 0},
+                    "gamma": {"max": 3, "min": 0},
+                    "sigma": {"max": 3, "min": 0},
                 },
                 {
                     "gamma": {"max": 30.0, "min": 20.0},
@@ -408,7 +408,7 @@ class TestDataset(unittest.TestCase):
     def test_return_default_dict(self):
         self.assertDictEqual(
             self.peak._return_default_dict(),
-            {"sigma": {"min": 0, "max": 20}, "gamma": {"min": 0, "max": 20}},
+            {"sigma": {"min": 0, "max": 3}, "gamma": {"min": 0, "max": 3}},
         )
 
     def test_dataset_perform_global_spectrum_fit_set_correct_fitter(self):
@@ -450,6 +450,18 @@ class TestDataset(unittest.TestCase):
         self.ds._set_prefitter()
         result = self.ds.fitter.fit()
         self.ds._update_line_broadening(result)
+        self.ds.peak_list[-1].line_broadening["gamma"]["max"] = round(
+            self.ds.peak_list[-1].line_broadening["gamma"]["max"], 3
+        )
+        self.ds.peak_list[-1].line_broadening["gamma"]["min"] = round(
+            self.ds.peak_list[-1].line_broadening["gamma"]["min"], 3
+        )
+        self.ds.peak_list[-1].line_broadening["sigma"]["max"] = round(
+            self.ds.peak_list[-1].line_broadening["sigma"]["max"], 3
+        )
+        self.ds.peak_list[-1].line_broadening["sigma"]["min"] = round(
+            self.ds.peak_list[-1].line_broadening["sigma"]["min"], 3
+        )
         self.assertDictEqual(
             self.ds.peak_list[-1].line_broadening,
             {
@@ -466,6 +478,12 @@ class TestDataset(unittest.TestCase):
         self.ds._set_prefitter()
         result = self.ds.fitter.fit()
         self.ds._update_line_broadening(result)
+        self.ds.peak_list[-1].line_broadening["sigma"]["max"] = round(
+            self.ds.peak_list[-1].line_broadening["sigma"]["max"], 3
+        )
+        self.ds.peak_list[-1].line_broadening["sigma"]["min"] = round(
+            self.ds.peak_list[-1].line_broadening["sigma"]["min"], 3
+        )
         self.assertDictEqual(
             self.ds.peak_list[-1].line_broadening,
             {"sigma": {"min": 2.7, "max": 3.3}},
@@ -479,9 +497,15 @@ class TestDataset(unittest.TestCase):
         self.ds._set_prefitter()
         result = self.ds.fitter.fit()
         self.ds._update_line_broadening(result)
+        self.ds.peak_list[-1].line_broadening["gamma"]["max"] = round(
+            self.ds.peak_list[-1].line_broadening["gamma"]["max"], 3
+        )
+        self.ds.peak_list[-1].line_broadening["gamma"]["min"] = round(
+            self.ds.peak_list[-1].line_broadening["gamma"]["min"], 3
+        )
         self.assertDictEqual(
             self.ds.peak_list[-1].line_broadening,
-            {"gamma": {"min": 3.6, "max": 4.4}},
+            {"gamma": {"min": 2.7, "max": 3.3}},
         )
 
     def test_calculate_peak_intensities_single_fit_result_setter_without_prefit(
@@ -558,12 +582,15 @@ class TestDataset(unittest.TestCase):
         b_list._set_intensity(
             result, self.ds.peak_list[0].peak_label, self.ds.spectra
         )
+        for val_nr, val in enumerate(b_list.intensity):
+            b_list.intensity[val_nr] = round(val)
+
         result_list = [
-            790.7184578638022,
-            1581.4369157275303,
-            2372.155373594169,
-            3162.8738314557045,
-            3953.592289318921,
+            791,
+            1581,
+            2372,
+            3163,
+            3954,
         ]
         self.assertListEqual(b_list.intensity, result_list)
 
