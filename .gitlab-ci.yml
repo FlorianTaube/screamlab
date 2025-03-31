@@ -19,6 +19,7 @@ unit-test-job:
     - pip install nmrglue
     - pip install pyDOE2
   script:
+    - ls -R tests
     - python -m unittest discover -s tests -p "*.py" -v
 
 
