@@ -1,5 +1,5 @@
 import unittest
-
+import os
 import lmfit
 from CorziliusNMR import settings, dataset
 

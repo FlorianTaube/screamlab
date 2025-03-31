@@ -1,6 +1,7 @@
 import unittest
 import CorziliusNMR.dataset
 from CorziliusNMR import io, dataset
+import os
 
 
 class TestDataset(unittest.TestCase):
