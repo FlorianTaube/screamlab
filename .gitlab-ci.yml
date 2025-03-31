@@ -17,6 +17,7 @@ unit-test-job:
     - pip install lmfit
     - pip install matplotlib
     - pip install nmrglue
+    - pip install pyDOE2
   script:
     - python -m unittest discover -s tests -p "*.py" -v
 
