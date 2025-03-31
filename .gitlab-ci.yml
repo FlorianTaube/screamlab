@@ -15,6 +15,7 @@ unit-test-job:
   image: python:3.10
   before_script:
     - pip install lmfit
+    - pip install matplotlib
   script:
     - python -m unittest discover -s tests -p "*.py" -v
 
