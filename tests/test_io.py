@@ -34,6 +34,9 @@ class TestDataset(unittest.TestCase):
     def test_scream_init_nmr_data_is_none(self):
         self.assertIsNone(self.scream_importer._nmr_data)
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_generate_path_to_experiment(self):
         self.scream_importer._dataset.props.expno = [2, 3]
         pathlist = self.scream_importer._generate_path_to_experiment()

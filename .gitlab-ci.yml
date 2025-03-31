@@ -14,12 +14,12 @@ unit-test-job:
   stage: test
   image: python:3.10
   before_script:
+    - export CI=true
     - pip install lmfit
     - pip install matplotlib
     - pip install nmrglue
     - pip install pyDOE2
   script:
-    - ls -R tests
     - python -m unittest discover -s tests -p "*.py" -v
 
 

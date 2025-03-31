@@ -6,6 +6,10 @@ from CorziliusNMR import settings, dataset
 
 class TestDataset(unittest.TestCase):
     # TODO Write assertEQUALS
+
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_alanine_one_peak(self):
         props = settings.Properties()
         props.prefit = True
@@ -24,6 +28,9 @@ class TestDataset(unittest.TestCase):
         ds.add_peak(-16)
         ds.start_buildup_fit_from_topspin()
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_prolin_one_peak(self):
         props = settings.Properties()
         props.prefit = True
