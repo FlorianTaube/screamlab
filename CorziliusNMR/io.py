@@ -132,6 +132,7 @@ class ScreamImporter(TopspinImporter):
         """
         Set the number of scans for the last spectrum in the dataset.
         """
+        print(self.file)
         with open(f"{self.file}\\acqu", "r", encoding="utf-8") as acqu_file:
             for acqu_line in acqu_file:
                 if "##$NS=" in acqu_line:

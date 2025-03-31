@@ -14,12 +14,14 @@ class TestDataset(unittest.TestCase):
         self.scream_importer._dataset.spectra.append(
             CorziliusNMR.dataset.Spectra()
         )
-        self.scream_importer.file = r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Alanin\8"
+        self.scream_importer.file = r"..\tests\SCREAM_Test_Files\Alanin\8"
 
     def set_up_real_dataset(self):
         self.scream_importer._dataset.props.procno = 103
         self.scream_importer._dataset.props.expno = [1, 8]
-        self.scream_importer._dataset.props.path_to_experiment = r"C:/Users/Florian Taube/Documents/Programmierung/CorziliusNMR/tests\SCREAM_Test_Files/Alanin"
+        self.scream_importer._dataset.props.path_to_experiment = (
+            r"..\tests\SCREAM_Test_Files/Alanin"
+        )
 
     def test_scream_init_set_dataset(self):
         self.assertEqual(

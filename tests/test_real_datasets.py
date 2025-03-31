@@ -17,7 +17,7 @@ class TestDataset(unittest.TestCase):
         ]
         props.expno = [1, 8]
         props.procno = 103
-        props.path_to_experiment = r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Alanin"
+        props.path_to_experiment = r"..\tests\SCREAM_Test_Files\Alanin"
         props.output_folder = r"..\tests\SCREAM_Test_Files\Alanin\result"
         ds = dataset.Dataset()
         ds.props = props
@@ -33,7 +33,7 @@ class TestDataset(unittest.TestCase):
         ]
         props.expno = [29, 32]
         props.output_folder = r"..\tests\SCREAM_Test_Files\Prolin\result"
-        props.path_to_experiment = r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Prolin"
+        props.path_to_experiment = r"..\tests\SCREAM_Test_Files\Prolin"
         ds = dataset.Dataset()
         ds.props = props
         ds.add_peak(
