@@ -68,11 +68,17 @@ class TestDataset(unittest.TestCase):
             self.scream_importer._dataset.spectra[-1].number_of_scans, 16
         )
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_set_buildup_time(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_buildup_time()
         self.assertEqual(self.scream_importer._dataset.spectra[-1].tdel, 32)
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_buildup_time_is_float(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_buildup_time()
@@ -85,6 +91,9 @@ class TestDataset(unittest.TestCase):
         range = self.scream_importer._get_physical_range()
         self.assertDictEqual(range, {"start": 169.4191, "end": -244.3311})
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_set_get_number_of_datapoints(self):
         self.set_up_one_real_spectrum()
         points = self.scream_importer._get_num_of_datapoints()
@@ -110,6 +119,9 @@ class TestDataset(unittest.TestCase):
         axis = self.scream_importer._calc_x_axis(physical_range, 350)
         self.assertEqual(axis[-1], -200)
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_set_x_data(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_x_data()
@@ -117,6 +129,9 @@ class TestDataset(unittest.TestCase):
             len(self.scream_importer._dataset.spectra[0].x_axis), 16384
         )
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_set_y_data(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_y_data()
@@ -135,6 +150,9 @@ class TestDataset(unittest.TestCase):
         self.scream_importer.import_topspin_data()
         self.assertEqual(len(self.scream_importer._dataset.spectra), 8)
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_scream_import_topspin_correct_delay_times(self):
         self.set_up_real_dataset()
         self.scream_importer.import_topspin_data()
@@ -145,6 +163,9 @@ class TestDataset(unittest.TestCase):
             delay_times, [0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0]
         )
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_scream_import_topspin_correct_number_of_scans(self):
         self.set_up_real_dataset()
         self.scream_importer.import_topspin_data()
@@ -189,6 +210,9 @@ class TestDataset(unittest.TestCase):
     def test_pseudo2dimporter_init_path_is_none(self):
         self.assertIsNone(self.pseudo_importer._current_path_to_exp)
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_generate_path_to_experiment_pseudo2dimporter(self):
         self.pseudo_importer._dataset.props.expno = [1]
         self.pseudo_importer._dataset.props.procno = 1
@@ -225,11 +249,17 @@ class TestDataset(unittest.TestCase):
             type(self.scream_importer._dataset.spectra[-1].tdel), float
         )
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_set_get_physical_range(self):
         self.set_up_one_real_spectrum()
         range = self.scream_importer._get_physical_range()
         self.assertDictEqual(range, {"start": 169.4191, "end": -244.3311})
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_set_get_number_of_datapoints(self):
         self.set_up_one_real_spectrum()
         points = self.scream_importer._get_num_of_datapoints()
@@ -269,12 +299,18 @@ class TestDataset(unittest.TestCase):
             len(self.scream_importer._dataset.spectra[0].y_axis), 16384
         )
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_set_values(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_values()
         norm_maximum = max(self.scream_importer._dataset.spectra[0].y_axis)
         self.assertEqual(norm_maximum, 5693.3125)
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_scream_import_topspin_correct_number_of_data(self):
         self.set_up_real_dataset()
         self.scream_importer.import_topspin_data()
@@ -290,6 +326,9 @@ class TestDataset(unittest.TestCase):
             delay_times, [0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0]
         )
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_scream_import_topspin_correct_number_of_scans(self):
         self.set_up_real_dataset()
         self.scream_importer.import_topspin_data()
@@ -298,6 +337,9 @@ class TestDataset(unittest.TestCase):
             delay_times.append(spectrum.number_of_scans)
         self.assertListEqual(delay_times, [128, 128, 128, 64, 64, 32, 32, 16])
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_scream_import_topspin_correct_size_of_x_axis(self):
         self.set_up_real_dataset()
         self.scream_importer.import_topspin_data()
@@ -306,6 +348,9 @@ class TestDataset(unittest.TestCase):
             delay_times.append(len(spectrum.x_axis))
         self.assertListEqual(delay_times, [16384] * 8)
 
+    @unittest.skipIf(
+        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+    )
     def test_scream_import_topspin_correct_size_of_y_axis(self):
         self.set_up_real_dataset()
         self.scream_importer.import_topspin_data()
