@@ -52,16 +52,3 @@ class TestDataset(unittest.TestCase):
             8, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
         )"""
         ds.start_buildup_fit_from_topspin()
-
-    def test_prolin_protons_peak(self):
-        props = settings.Properties()
-        props.prefit = True
-        props.spectrum_for_prefit = -1
-        props.expno = [1]
-        props.procno = 1
-        props.output_folder = r"..\tests\Pseud2DTestFiles\result"
-        props.path_to_experiment = r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\Pseud2DTestFiles"
-        ds = dataset.Dataset()
-        ds.props = props
-        ds.add_peak(173)
-        ds.start_buildup_fit_from_topspin()
