@@ -4,25 +4,24 @@ CorziliusNMR
 
 *.*
 
-Welcome! This is CorziliusNMR, a Python package for analyzing SCREAM-DNP (Specific cross-relaxation enhancement by active motion under dynamic nuclear polarization) kinetics.
-
+Welcome! This is CorziliusNMR, a Python package for the evaluation of relaxation processes in multi-spin system observed by  SCREAM-DNP (Specific Cross Relaxation Enhancement by Active Motions under Dynamic Nuclear Polarization).
 Features
 ========
 
 A list of features:
 
-* Spectral deconvolution
+* Spectral deconvolution with various possible lineshapes (Gaussian, Lorentzian, Voigtian)
 
-* Relaxation dynamics analysis
+* Global fitting of spectra with consistent parameters
 
-* Full fitting history in output
+* Subsequent fitting of peak areas over time with exponential or biexponential behavior, or involving Solomon equations for a more complex fitting.
 
 
 And to make it even more convenient for users and future-proof:
 
 * Open source project written in Python (>= 3.7)
 
-* Developed fully test-driven
+* High test coverage
 
 * Extensive user and API documentation
 
