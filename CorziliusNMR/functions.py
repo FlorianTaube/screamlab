@@ -5,14 +5,14 @@ from scipy.special import wofz
 
 def voigt_profile(x, center, sigma, gamma, amplitude):
     """
-    Compute the Voigt profile, a convolution of a Gaussian and Lorentzian function.
-
-    :param x: Array of x values.
-    :param center: Center of the peak.
-    :param sigma: Standard deviation of the Gaussian component.
-    :param gamma: Half-width at half-maximum (HWHM) of the Lorentzian component.
-    :param amplitude: Peak amplitude.
-    :return: Voigt profile evaluated at x.
+        Compute the Voigt profile, a convolution of a Gaussian and Lorentzian function.
+    a
+        :param x: Array of x values.
+        :param center: Center of the peak.
+        :param sigma: Standard deviation of the Gaussian component.
+        :param gamma: Half-width at half-maximum (HWHM) of the Lorentzian component.
+        :param amplitude: Peak amplitude.
+        :return: Voigt profile evaluated at x.
     """
     z = ((x - center) + 1j * gamma) / (sigma * np.sqrt(2))
     return amplitude * np.real(wofz(z)) / (sigma * np.sqrt(2 * np.pi))
