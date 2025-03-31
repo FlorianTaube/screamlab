@@ -1,0 +1,48 @@
+[[Settings]]
+Experiment folder: C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\Pseud2DTestFiles
+Expno: ['1']
+Procno: 1
+Prefit: True
+Spectrum for prefit: -1
+Spectrum fitting type: ['global']
+Buildup evaluation: ['exponential']
+Calculated polarization time from L 20 and D 20 if SCREAM data given.
+Wrote output files to: ..\tests\Pseud2DTestFiles\result
+[[Dataset]]
+Fitted 1 peaks per spectrum in 16 spectra.
+[[Peaks]]
+[Peak 1]
+Peak center: 173.0
+Peak label: Peak_at_173_ppm
+Peak shape: voigt
+Peak sign: +
+Start global fit with: {'sigma': {'min': 1.6190721519638485, 'max': 1.9788659635113706}, 'gamma': {'min': 1.7742564370704096e-06, 'max': 2.1685356453082786e-06}}
+Parameters for buildup fitting:
+Delay times:	0.01			0.016			0.024			0.038			0.06			0.094			0.146			0.229			0.358			0.56			0.876			1.369			2.141			3.349			5.238			8.192
+Integral:	207549.95819081133	218282.4949002925	374380.47290463734	843948.0225029789	1711457.198885908	3507573.675115134	6236499.21342281	10325779.002900198	16915603.23654371	26578645.081154525	40012041.55044076	58181369.60282687	80823156.3540174	105708809.69981435	128037996.03453441	143216244.8702118
+[[Prefit]]
+Label			Center				Amplitude			Sigma				Gamma
+Peak_at_173_ppm	173.04774121837954	14441698.266080277	1.7989690577376094	1.971396041189344e-06
+[[Global fit results]]
+Label                    Time  Center    Amplitude      Sigma     Gamma     FWHM Lorentz   FWHM Gauss     FWHM Voigt     Integral  
+Peak_at_173_ppm          0.01  173.05    20967.85       1.806     0.0       0.0            4.252          3.006          207549.958
+Peak_at_173_ppm          0.016 173.05    22052.111      1.806     0.0       0.0            4.252          3.006          218282.495
+Peak_at_173_ppm          0.024 173.05    37821.996      1.806     0.0       0.0            4.252          3.006          374380.473
+Peak_at_173_ppm          0.038 173.05    85260.32       1.806     0.0       0.0            4.252          3.006          843948.023
+Peak_at_173_ppm          0.06  173.05    172900.918     1.806     0.0       0.0            4.252          3.006          1711457.199
+Peak_at_173_ppm          0.094 173.05    354354.587     1.806     0.0       0.0            4.252          3.006          3507573.675
+Peak_at_173_ppm          0.146 173.05    630045.812     1.806     0.0       0.0            4.252          3.006          6236499.213
+Peak_at_173_ppm          0.229 173.05    1043167.584    1.806     0.0       0.0            4.252          3.006          10325779.003
+Peak_at_173_ppm          0.358 173.05    1708908.253    1.806     0.0       0.0            4.252          3.006          16915603.237
+Peak_at_173_ppm          0.56  173.05    2685122.446    1.806     0.0       0.0            4.252          3.006          26578645.081
+Peak_at_173_ppm          0.876 173.05    4042238.819    1.806     0.0       0.0            4.252          3.006          40012041.55
+Peak_at_173_ppm          1.369 173.05    5877805.321    1.806     0.0       0.0            4.252          3.006          58181369.603
+Peak_at_173_ppm          2.141 173.05    8165204.458    1.806     0.0       0.0            4.252          3.006          80823156.354
+Peak_at_173_ppm          3.349 173.05    10679291.47    1.806     0.0       0.0            4.252          3.006          105708809.7
+Peak_at_173_ppm          5.238 173.05    12935109.976   1.806     0.0       0.0            4.252          3.006          128037996.035
+Peak_at_173_ppm          8.192 173.05    14468501.032   1.806     0.0       0.0            4.252          3.006          143216244.87
+[[Buildup fit results]]
+[exponential]
+Label               A1 / a.u.      t1 / s    A2 / a.u.      t2 / s    t_off / s      R1 / 1/s       R2 / 1/s       Sensitivity1 (A1/sqrt(t1)          Sensitivity2 (A2/sqrt(t2)          
+Peak_at_173_ppm     152430851.885  2.865     ---            ---       ---            0.34904        ---            90055566.725                       ---                                
+End

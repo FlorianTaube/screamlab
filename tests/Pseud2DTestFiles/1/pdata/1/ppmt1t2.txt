@@ -1,0 +1,5 @@
+Peak 1 at 173.137 ppm
+Peak 2 at 58.891 ppm
+Peak 3 at 44.244 ppm
+Peak 4 at 27.779 ppm
+Peak 5 at 22.728 ppm

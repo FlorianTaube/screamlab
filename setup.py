@@ -48,6 +48,7 @@ setuptools.setup(
         "numpy",
         "lmfit",
         "scipy",
+        "pyDOE2",
     ],
     extras_require={
         "dev": [

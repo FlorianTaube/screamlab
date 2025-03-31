@@ -1,0 +1,16 @@
+##TITLE= Parameter file, TopSpin 3.5 pl 6
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 1	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmr
+$$ 2025-01-22 12:54:03.641 +0100  nmr@Solid-NMR
+$$ C:/Users/nmr/TopSpin_Data_Corzilius/Florian/20250121_S48F_100K/25/pdata/102/used_from
+$$ process C:\Bruker\TopSpin3.5pl6\prog\mod\mvrow.exe
+##$CUREXP= <row>
+##$DATPATH= <C:/Users/nmr/TopSpin_Data_Corzilius/Florian>
+##$EXPNO= 25
+##$NAME= <20250121_S48F_100K>
+##$PROCNO= 1
+##$PROCNO2= 2
+##END=

@@ -1,0 +1,26 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build-job:
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - echo "Compile complete."
+
+
+unit-test-job:
+  stage: test
+  image: python:3.10
+  script:
+    - python -m unittest discover -s tests -p "*.py" -v
+
+
+
+deploy-job:
+  stage: deploy
+  environment: production
+  script:
+    - echo "Deploying application..."
+    - echo "Application successfully deployed."

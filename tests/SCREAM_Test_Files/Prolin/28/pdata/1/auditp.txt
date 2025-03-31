@@ -1,0 +1,29 @@
+##TITLE= Audit trail, TopSpin 3.5 pl 6
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmr
+$$ C:/Users/nmr/TopSpin_Data_Corzilius/Florian/20250120_S47F_100K/28/pdata/1/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2025-01-20 12:49:28.780 +0100>,<nmr>,<Solid-NMR>,<go4>,<TopSpin 3.5.6>,
+      <created by zg
+	started at 2025-01-20 12:32:14.329 +0100,
+	POWCHK enabled, PULCHK disabled,
+       configuration hash MD5:
+       BC FF AC 2A F0 72 9D 51 78 3C FB 21 BD 42 42 73
+       data hash MD5: 2K * 2
+       98 91 CB A4 45 25 26 D5 90 23 80 2D 19 B4 8C 43>)
+(   2,<2025-01-20 15:32:32.609 +0100>,<nmr>,<Solid-NMR>,<proc2d>,<TopSpin 3.5.6>,
+      <Start of raw data processing
+       xf2 same F2: SI = 16K WDW = 1 LB = 50 FT_mod = 6 PKNL = 1 PHC0 = 255.4815 PHC1 = -35.47437 F1: SI = 1K MC2 = 0
+       data hash MD5: 16K * 1K
+       D1 94 BA 7F 16 DD 08 B9 F5 4B 4E 00 25 AF 37 DE>)
+$$ F:/ssNMR/20250121_S48F_100K/28/pdata/1/auditp.txt
+(   3,<2025-01-22 12:49:15.644 +0100>,<Florian Taube>,<Siavash>,<proc2d>,<TopSpin 4.1.4>,
+      <Start of raw data processing
+       xf2 same F2: SI = 16K WDW = 1 LB = 50 FT_mod = 6 PKNL = 1 PHC0 = 255.4815 PHC1 = -35.47437 F1: SI = 1K MC2 = 0
+       data hash MD5: 16K * 1K
+       98 17 9E 2B 10 2B AE 59 F7 D0 E4 97 71 8F 86 46>)
+##END=
+
+$$ hash MD5
+$$ 19 27 67 23 BE 01 33 43 89 62 E4 46 28 FB 3E 0C

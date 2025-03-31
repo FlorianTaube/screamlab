@@ -1,438 +1,453 @@
-import sys
+"""
+Fitting module for spectral analysis.
+
+This module provides classes for fitting spectral data using the `lmfit` package.
+It includes different types of fitters, such as `Fitter`, `Prefitter`, `GlobalFitter`, and `SingleFitter`.
+
+Classes:
+    Fitter: Base class for fitting spectral data.
+    Prefitter: A specialized fitter that only fits a preselected spectrum.
+    GlobalFitter: A fitter that enforces parameter constraints across multiple spectra.
+    SingleFitter: A simple extension of `Fitter` with no additional functionality.
+"""
 
 import lmfit
 import numpy as np
-from collections import defaultdict
-from scipy.special import wofz
-import matplotlib.pyplot as plt
+import copy
 from pyDOE2 import lhs
+from CorziliusNMR import functions
+import matplotlib.pyplot as plt
+import sys
 
 
 class Fitter:
+    """
+    Base class for spectral fitting using `lmfit`.
+
+    This class handles parameter initialization and spectral fitting for a dataset.
+
+    Attributes:
+        dataset: The dataset containing spectra and peak information.
+    """
 
     def __init__(self, dataset):
+        """
+        Initializes the Fitter with a dataset.
+
+        Args:
+            dataset: An object containing spectral data and peak list.
+        """
         self.dataset = dataset
-        self.model = None
-        self.result = None
-
-    def set_model(self):
-        pass
-
-    def start_prefit(self):
-        pass
 
     def fit(self):
-        pass
+        """
+        Performs spectral fitting using the `lmfit.minimize` function.
 
+        Returns:
+            lmfit.MinimizerResult: The result of the fitting process.
+        """
+        x_axis, y_axis = self._generate_axis_list()
+        params = self._generate_params_list()
+        params = self._set_param_expr(params)
 
-class GlobalSpectrumFitter(Fitter):
-    def __init__(self, dataset):
-        super().__init__(dataset)
-        self.lineshapes = defaultdict(list)
+        return self._start_minimize(x_axis, y_axis, params)
 
-    def start_prefit(self):
-        # Extract bounds and initial values from parameters
-        param_names = []
-        param_bounds = []
-        for peak in self.dataset.spectra[
-            self.dataset._spectrum_number_for_prefit
-        ].peaks:
-            if peak.fitting_model == "voigt":
-                tmp_lineshape = Voigt(
-                    self.dataset.spectra[
-                        self.dataset._spectrum_number_for_prefit
-                    ],
-                    peak,
-                )
-            elif peak.fitting_model == "lorentz":
-                tmp_lineshape = Lorentz(
-                    self.dataset.spectra[
-                        self.dataset._spectrum_number_for_prefit
-                    ],
-                    peak,
-                )
-            tmp_lineshape.set_init_params()
-            self.lineshapes["prefit"].append(tmp_lineshape)
-
-        params = lmfit.Parameters()
-        for fit_peak in self.lineshapes["prefit"]:
-            for param_name, param_attrs in fit_peak.params.items():
-                param_name = param_name.replace(".", "_")
-                params.add(param_name, **param_attrs)
-                # Collect parameter bounds for LHS
-                if "min" in param_attrs and "max" in param_attrs:
-                    param_names.append(param_name)
-                    param_bounds.append(
-                        (param_attrs["min"], param_attrs["max"])
-                    )
-        n_samples = 10
-        lhs_samples = lhs(len(param_names), samples=n_samples)
-        sampled_params = []
-        for sample in lhs_samples:
-            scaled_sample = []
-            for i, (low, high) in enumerate(param_bounds):
-                scaled_sample.append(low + sample[i] * (high - low))
-            sampled_params.append(scaled_sample)
-        results = []
-        best_result = None
-        best_chisquared = np.inf
-        for sample_nr, sample in enumerate(sampled_params):
-            print(f"{sample_nr+1}/{n_samples}")
-            for i, value in enumerate(sample):
-                params[param_names[i]].value = value
-
-            result = lmfit.minimize(
-                prefit_objective, params, args=(self.lineshapes["prefit"],)
-            )
-
-            print(f"Number of function evaluations: {result.nfev}")
-            if result.chisqr < best_chisquared:
-                best_result = result
-                best_chisquared = result.chisqr
-                print(best_chisquared)
-
-        bestfit = np.zeros(
-            len(
-                self.dataset.spectra[
-                    self.dataset._spectrum_number_for_prefit
-                ].y_axis
-            )
+    def _start_minimize(self, x_axis, y_axis, params):
+        return lmfit.minimize(
+            self._spectral_fitting, params, args=(x_axis, y_axis)
         )
-        sim_params = []
-        for key_nr, key in enumerate(best_result.params):
-            sim_params.append(best_result.params[key].value)
-            if (key_nr + 1) % 4 == 0:
-                bestfit = bestfit + voigt_profile(
-                    self.dataset.spectra[
-                        self.dataset._spectrum_number_for_prefit
-                    ].x_axis,
-                    sim_params[1],
-                    sim_params[2],
-                    sim_params[3],
-                    sim_params[0],
-                )
-                plt.plot(
-                    self.dataset.spectra[
-                        self.dataset._spectrum_number_for_prefit
-                    ].x_axis,
-                    voigt_profile(
-                        self.dataset.spectra[
-                            self.dataset._spectrum_number_for_prefit
-                        ].x_axis,
-                        sim_params[1],
-                        sim_params[2],
-                        sim_params[3],
-                        sim_params[0],
-                    ),
-                    "b",
-                )
-                sim_params = []
-        plt.plot(
-            self.dataset.spectra[
-                self.dataset._spectrum_number_for_prefit
-            ].x_axis,
-            self.dataset.spectra[
-                self.dataset._spectrum_number_for_prefit
-            ].y_axis,
-        )
-        plt.plot(
-            self.dataset.spectra[
-                self.dataset._spectrum_number_for_prefit
-            ].x_axis,
-            bestfit,
-            "r:",
-            alpha=0.6,
-        )
-        if self.dataset._print_prefit:
-            plt.savefig(self.dataset.file_name_generator.get_prefit_pdf())
-            file = self.dataset.file_name_generator.get_prefit_txt()
-            with open(file, "w") as txt_file:
-                txt_file.write(lmfit.fit_report(best_result))
-        plt.close()
-        for peak_nr, peak in enumerate(
-            self.dataset.spectra[
-                self.dataset._spectrum_number_for_prefit
-            ].peaks
-        ):
-            horst = self.dataset.spectra[-1].peaks[peak_nr].peak_label
-            self.dataset.spectra[-1].peaks[peak_nr].prefit_dict = {
-                f"{horst}_amplitude": (
-                    dict(value=200, min=0, max=1e8)
-                    if peak.sign == "+"
-                    else dict(value=-200, min=-1e8, max=0)
-                ),
-                f"{horst}_center": dict(
-                    value=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_center"
-                    ].value,
-                    min=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_center"
-                    ].value
-                    - 0.1,
-                    max=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_center"
-                    ].value
-                    + 0.1,
-                ),
-                f"{horst}_sigma": dict(
-                    value=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_sigma"
-                    ].value,
-                    min=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_sigma"
-                    ].value
-                    - best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_sigma"
-                    ].value
-                    * 0.05,
-                    max=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_sigma"
-                    ].value
-                    + best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_sigma"
-                    ].value
-                    * 0.05,
-                ),
-                f"{horst}_gamma": dict(
-                    value=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_gamma"
-                    ].value,
-                    min=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_gamma"
-                    ].value
-                    - best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_gamma"
-                    ].value
-                    * 0.05,
-                    max=best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_gamma"
-                    ].value
-                    + best_result.params[
-                        f"{peak.peak_label.replace('.', '_')}_gamma"
-                    ].value
-                    * 0.05,
-                ),
-            }
-        self.lineshapes = defaultdict(list)
 
-    def set_model(self):
+    def _set_param_expr(self, params):
+        """
+        Modifies parameter expressions if needed. Default implementation returns parameters unchanged.
+
+        Args:
+            params (lmfit.Parameters): The parameters to be modified.
+
+        Returns:
+            lmfit.Parameters: The modified parameters.
+        """
+        return params
+
+    def _generate_axis_list(self):
+        """
+        Generates lists of x-axis and y-axis values for all spectra in the dataset.
+
+        Returns:
+            tuple: Two lists containing x-axis and y-axis values for each spectrum.
+        """
+        x_axis, y_axis = [], []
         for spectrum in self.dataset.spectra:
-            for peak in spectrum.peaks:
-                if peak.fitting_model == "voigt":
-                    tmp_lineshape = Voigt(spectrum, peak)
-                elif peak.fitting_model == "gauss":
-                    tmp_lineshape = Gauss(spectrum, peak)
-                elif peak.fitting_model == "lorentz":
-                    tmp_lineshape = Lorentz(spectrum, peak)
-                if peak.prefit_dict == None:
-                    tmp_lineshape.set_init_params()
-                else:
-                    tmp_lineshape.params = peak.prefit_dict
-                self.lineshapes[peak.fitting_group].append(tmp_lineshape)
+            x_axis.append(spectrum.x_axis)
+            y_axis.append(spectrum.y_axis)
+        return x_axis, y_axis
 
-    def fit(self):
-        for keys in self.lineshapes:
-            params = lmfit.Parameters()
-            for fit_peak in self.lineshapes[keys]:
-                for param_name, param_attrs in fit_peak.params.items():
-                    param_name = param_name.replace(".", "_")
-                    params.add(param_name, **param_attrs)
-            result = ""
-            for nr, irgendwas in enumerate(
-                reversed(params)
-            ):  # TODO Make Nicer
-                if nr == 0:
-                    parts = irgendwas.split("_")
-                    result = "_".join(parts[3:7])
-                elif result not in irgendwas:
-                    pass
-                    if "sigma" in irgendwas:
-                        tmp1 = irgendwas.split("_")
-                        tmp2 = "_".join(tmp1[0:3])
-                        tmp = f"{tmp2}_{result}_sigma"
-                        params[irgendwas].expr = tmp
-                    elif "gamma" in irgendwas:
-                        tmp1 = irgendwas.split("_")
-                        tmp2 = "_".join(tmp1[0:3])
-                        tmp = f"{tmp2}_{result}_gamma"
-                        params[irgendwas].expr = tmp
-                    elif "center" in irgendwas:
-                        tmp1 = irgendwas.split("_")
-                        tmp2 = "_".join(tmp1[0:3])
-                        tmp = f"{tmp2}_{result}_center"
-                        params[irgendwas].expr = tmp
-            self.result = lmfit.minimize(
-                peak_objective, params, args=(self.lineshapes[keys],)
+    def _generate_params_list(self):
+        """
+        Generates initial fitting parameters based on peak information in the dataset.
+
+        Returns:
+            lmfit.Parameters: The initialized parameters for fitting.
+        """
+        params = lmfit.Parameters()
+        spectra = self._get_spectra_list()
+        lw_types = {
+            "voigt": ["sigma", "gamma"],
+            "gauss": ["sigma"],
+            "lorentz": ["gamma"],
+        }
+        for spectrum_nr, _ in enumerate(spectra):
+            for peak in self.dataset.peak_list:
+                params.add(**self._get_amplitude_dict(peak, spectrum_nr))
+                params.add(**self._get_center_dict(peak, spectrum_nr))
+
+                for lw_type in lw_types.get(peak.fitting_type, []):
+                    params.add(
+                        **self._get_lw_dict(peak, spectrum_nr, lw_type)
+                    )
+        return params
+
+    def _get_spectra_list(self):
+        """
+        Retrieves the appropriate spectra for fitting.
+
+        Returns:
+            list: A list of spectra to be fitted.
+        """
+        return (
+            [self.dataset.spectra[self.dataset.props.spectrum_for_prefit]]
+            if isinstance(self, Prefitter)
+            else self.dataset.spectra
+        )
+
+    def _get_amplitude_dict(self, peak, nr):
+        """
+        Generates an amplitude parameter dictionary for a given peak.
+
+        Args:
+            peak: A peak object containing fitting information.
+            nr (int): The spectrum index.
+
+        Returns:
+            dict: A dictionary defining the amplitude parameter.
+        """
+        return {
+            "name": f"{peak.peak_label}_amp_{nr}",
+            "value": 200 if peak.peak_sign == "+" else -200,
+            "min": 0 if peak.peak_sign == "+" else -np.inf,
+            "max": np.inf if peak.peak_sign == "+" else 0,
+        }
+
+    def _get_center_dict(self, peak, nr):
+        """
+        Generates a center parameter dictionary for a given peak.
+
+        Args:
+            peak: A peak object containing fitting information.
+            nr (int): The spectrum index.
+
+        Returns:
+            dict: A dictionary defining the center parameter.
+        """
+        return {
+            "name": f"{peak.peak_label}_cen_{nr}",
+            "value": peak.peak_center,
+            "min": peak.peak_center - 1,
+            "max": peak.peak_center + 1,
+        }
+
+    def _get_lw_dict(self, peak, nr, lw):
+        """
+        Generates a linewidth parameter dictionary for a given peak.
+
+        Args:
+            peak: A peak object containing fitting information.
+            nr (int): The spectrum index.
+            lw (str): The linewidth type (e.g., 'sigma', 'gamma').
+
+        Returns:
+            dict: A dictionary defining the linewidth parameter.
+        """
+        return {
+            "name": f"{peak.peak_label}_{lw}_{nr}",
+            "value": (
+                peak.line_broadening[lw]["min"]
+                + peak.line_broadening[lw]["max"]
             )
-            for voigt in self.lineshapes[keys]:
-                voigt.sim_spectrum(self.result, "global")
+            / 2,
+            "min": peak.line_broadening[lw]["min"],
+            "max": peak.line_broadening[lw]["max"],
+        }
+
+    def _spectral_fitting(self, params, x_axis, y_axis):
+        """
+        Computes the residual between the fitted and experimental spectra.
+
+        Args:
+            params (lmfit.Parameters): The fitting parameters.
+            x_axis (list): List of x-axis values.
+            y_axis (list): List of y-axis values.
+
+        Returns:
+            np.ndarray: The residual between the fitted and experimental spectra.
+        """
+        residual = copy.deepcopy(y_axis)
+        params_dict_list = functions.generate_spectra_param_dict(params)
+        for key, val_list in params_dict_list.items():
+            for val in val_list:
+                simspec = [0 for _ in range(len(x_axis[key]))]
+                simspec = functions.calc_peak(x_axis[key], simspec, val)
+                residual[key] -= simspec
+        return np.concatenate(residual)
 
 
-# TODO add rest of module to docu
-"""
-utils.py
-=================
+class Prefitter(Fitter):
+    """Fitter for a single preselected spectrum."""
 
-This module provides tools for fitting buildup curves from spectral data using
-various models including exponential, biexponential, and their variants with offsets.
+    def _generate_axis_list(self):
+        """
+        Generate the x and y axes for prefit spectrum.
 
-Classes
--------
-BuildupFitter
-BiexpFitter
-BiexpFitterWithOffset
-ExpFitter
-ExpFitterWithOffset
+        This function retrieves the x and y axes from the spectrum
+        specified in the dataset properties for prefit.
 
-"""
+        :return: Tuple containing lists of x and y axes.
+        """
+        spectrum_for_prefit = self.dataset.props.spectrum_for_prefit
+        x_axis, y_axis = [], []
+        x_axis.append(self.dataset.spectra[spectrum_for_prefit].x_axis)
+        y_axis.append(self.dataset.spectra[spectrum_for_prefit].y_axis)
+        return x_axis, y_axis
 
-import numpy as np
-import lmfit
+    def _start_minimize(self, x_axis, y_axis, params):
+        n_samples = int(len(params) / 2)
+
+        lhs_samples = lhs(int(len(params) / 2), samples=n_samples)
+        best_result = None
+        best_chisqr = np.inf
+        for sample_nr, sample in enumerate(lhs_samples):
+            print(f"{sample_nr+1}/{len(lhs_samples)}")
+            i = 0
+            for param in params:
+                if "sigma_0" in param or "gamma_0" in param:
+                    params[param].value = sample[i] * (
+                        params[param].max - params[param].min
+                    )
+                    i += 1
+            result = lmfit.minimize(
+                self._spectral_fitting, params, args=(x_axis, y_axis)
+            )
+            if best_chisqr > result.chisqr:
+                best_chisqr = result.chisqr
+
+                best_result = result
+
+        return best_result
+
+
+class SingleFitter(Fitter):
+    pass
+
+
+class GlobalFitter(Fitter):
+    """Fitter with global parameter constraints across spectra."""
+
+    def _set_param_expr(self, params):
+        """
+        Set parameter expressions to enforce global constraints.
+
+        This function modifies parameters such that all parameters
+        except for amplitudes ("amp") share the same global parameter
+        value across multiple spectra by setting their expressions.
+
+        :param params: lmfit Parameters object containing the parameters to be modified.
+        :return: Modified lmfit Parameters object with parameter expressions set.
+        """
+        for keys in params.keys():
+            splitted_keys = keys.split("_")
+            if splitted_keys[-1] != "0" and splitted_keys[-2] != "amp":
+                splitted_keys[-1] = "0"
+                params[keys].expr = "_".join(splitted_keys)
+        return params
 
 
 class BuildupFitter:
     """
-    Base class for fitting buildup curves from spectral data.
-
-    Attributes
-    ----------
-    dataset : object
-        The dataset containing spectral data to be fitted.
-    x_val : numpy.ndarray or None
-        The time values used for fitting.
-    y_val : numpy.ndarray or None
-        The intensity values used for fitting.
-    peak_label : str or None
-        Label of the current peak being fitted.
-    fitting_type : str or None
-        Type of fitting performed.
-    fit_results : dict
-        Dictionary containing results of the fitting process.
-
-    Methods
-    -------
-    perform_fit():
-        Performs fitting for all peaks in the dataset.
-    fit_buildup():
-        Fits the buildup model to the current x and y values.
-    get_expression_model():
-        Returns the mathematical expression of the model. Must be implemented by subclasses.
-    get_param_dict():
-        Returns the initial parameter dictionary for the model. Must be implemented by subclasses.
+    Base class for fitting buildup data using optimization techniques.
     """
 
     def __init__(self, dataset):
         """
         Initialize the BuildupFitter with a dataset.
 
-        Parameters
-        ----------
-        dataset : object
-            Dataset containing the spectral data to be fitted.
+        :param dataset: The dataset containing peak list information.
         """
         self.dataset = dataset
-        self.x_val = None
-        self.y_val = None
-        self.peak_label = None
-        self.fitting_type = None
-        self.fit_results = dict()
 
     def perform_fit(self):
         """
-        Perform fitting for all peaks in the dataset.
-        """
-        for peak_nr, peak in enumerate(self.dataset.spectra[0].peaks):
-            for buildup_type in self.dataset.spectrum_fitting_type:
-                time_values = []
-                intensity_values = []
-                for spectrum in self.dataset.spectra:
-                    if buildup_type == "global":
-                        intensity_values.append(
-                            spectrum.peaks[peak_nr].area_under_peak["global"]
-                        )
-                        # intensity_values.append(spectrum.peaks[
-                        # peak_nr].hight['y_val'])
-                    time_values.append(spectrum.tbup)
-                self.y_val = np.array(intensity_values)
-                self.x_val = np.array(time_values)
-                self.peak_label = peak.peak_label
-                self.fit_buildup()
-            self.dataset._exp_fit.update(
-                {self.fitting_type: self.fit_results}
-            )
+        Perform the fitting procedure on the dataset's peak list.
 
-    def fit_buildup(self):
+        :return: List of best fit results for each peak.
         """
-        Fit the buildup model to the current x and y values.
-        """
-
-        model = lmfit.models.ExpressionModel(self.get_expression_model())
-        param_dict = self.get_param_dict()
-        num_samples = 50 * len(param_dict)
-        params = model.make_params(**param_dict)
-        param_names = list(param_dict.keys())
-        bounds = np.array(
-            [
-                [param_dict[key]["min"], param_dict[key]["max"]]
-                for key in param_names
-            ]
-        )
-
-        lhs_samples = lhs(len(param_names), samples=num_samples)
-        sampled_params = (
-            lhs_samples * (bounds[:, 1] - bounds[:, 0]) + bounds[:, 0]
-        )
-        best_result = None
-        best_chisq = np.inf
-        skipped_fits = 0
-        for sample_idx, sample in enumerate(sampled_params):
-            try:
-                params = model.make_params()
-                for i, param_name in enumerate(param_names):
-                    params[param_name].set(
-                        value=sample[i],
-                        min=param_dict[param_name]["min"],
-                        max=param_dict[param_name]["max"],
+        result_list = []
+        for peak in self.dataset.peak_list:
+            default_param_dict = self._get_default_param_dict(peak)
+            lhs_init_params = self._get_lhs_init_params(default_param_dict)
+            best_result = None
+            best_chisqr = np.inf
+            for init_params in lhs_init_params:
+                params = self._set_params(default_param_dict, init_params)
+                try:
+                    result = self._start_minimize(params, peak.buildup_vals)
+                    best_result, best_chisqr = self._check_result_quality(
+                        best_result, best_chisqr, result
                     )
-                result = model.fit(self.y_val, params, x=self.x_val)
+                except Exception as e:
+                    pass
+            result_list.append(best_result)
+        return result_list
 
-                if not np.isfinite(result.chisqr):
-                    raise ValueError("Chi-squared value is NaN or Inf.")
-                if result.chisqr < best_chisq:
-                    best_chisq = result.chisqr
-                    best_result = result
-            except Exception as e:
-                skipped_fits += 1
-                print(f"Skipping sample {sample_idx} due to error: {e}")
-        print(f"Total skipped fits: {skipped_fits}/{num_samples}")
+    def _get_lhs_init_params(self, default_param_dict, n_samples=1):
+        """
+        Generate Latin Hypercube Sampling (LHS) initial parameters.
 
-        result_dict = {
-            "x_axis": self.x_val,
-            "y_axis": self.y_val,
-            "fit_report": best_result.fit_report(),
-            "params": result.params,
-            "result": best_result,
-        }
-        print(best_result.rsquared)
-        self.fit_results.update(
-            {"_".join(self.peak_label.split("_")[0:4]): result_dict}
+        :param default_param_dict: Dictionary of default parameter values and bounds.
+        :param n_samples: Number of LHS samples to generate.
+        :return: List of sampled parameters.
+        """
+        param_bounds = [
+            self._get_param_bounds(default_param_dict[key])
+            for key in default_param_dict
+        ]
+        if n_samples == 1:
+            n_samples = len(default_param_dict.keys()) * 100
+        lhs_samples = lhs(len(default_param_dict.keys()), samples=n_samples)
+        return self._set_sample_params(lhs_samples, param_bounds)
+
+    def _start_minimize(self, params, args):
+        """
+        Start the minimization process using lmfit.
+
+        :param params: Parameters for fitting.
+        :param args: Arguments containing time delays and intensities.
+        :return: Minimization result.
+        """
+        return lmfit.minimize(
+            self._fitting_function,
+            params,
+            args=(args.tdel, args.intensity),
         )
 
-    def get_expression_model(self):
+    def _check_result_quality(self, best_result, best_chisqr, result):
         """
-        Return the mathematical expression for the model.
+        Check if the new result is better than the current best result.
 
-        Must be implemented by subclasses.
+        :param best_result: The current best fitting result.
+        :param best_chisqr: The chi-squared value of the best result.
+        :param result: The new fitting result.
+        :return: The best result and its chi-squared value.
         """
-        raise NotImplementedError("Subclasses must implement this method.")
 
-    def get_param_dict(self):
-        """
-        Return the initial parameter dictionary for the model.
+        if result.chisqr < best_chisqr:
+            return result, result.chisqr
+        return best_result, best_chisqr
 
-        Must be implemented by subclasses.
+    def _get_param_bounds(self, params):
         """
-        raise NotImplementedError("Subclasses must implement this method.")
+        Retrieve parameter bounds.
+
+        :param params: Dictionary containing parameter min and max values.
+        :return: Tuple containing (min, max) bounds.
+        """
+        return (params["min"], params["max"])
+
+    def _set_sample_params(self, lhs_samples, param_bounds):
+        """
+        Scale LHS samples according to parameter bounds.
+
+        :param lhs_samples: LHS-generated samples.
+        :param param_bounds: List of parameter bounds.
+        :return: List of sampled parameters.
+        """
+        sampled_params = []
+        for sample in lhs_samples:
+            scaled_sample = [
+                low + sample[i] * (high - low)
+                for i, (low, high) in enumerate(param_bounds)
+            ]
+            sampled_params.append(scaled_sample)
+        return sampled_params
+
+    def _set_params(self, default_param_dict, init_params):
+        """
+        Set up lmfit Parameters object using initial parameters.
+
+        :param default_param_dict: Default parameter dictionary.
+        :param init_params: Initial parameter values.
+        :return: lmfit Parameters object.
+        """
+        params = lmfit.Parameters()
+        for key_nr, key in enumerate(default_param_dict.keys()):
+            default_param_dict[key]["value"] = init_params[key_nr]
+            params.add(key, **default_param_dict[key])
+        return params
+
+    def _fitting_function(self, params, tdel, intensity):
+        """
+        Define the residual function for fitting.
+
+        :param params: Parameters for fitting.
+        :param tdel: Time delays.
+        :param intensity: Measured intensities.
+        :return: Residuals between observed and simulated intensities.
+        """
+        residual = copy.deepcopy(intensity)
+        param_list = self._generate_param_list(params)
+        intensity_sim = self._calc_intensity(tdel, param_list)
+        return [a - b for a, b in zip(residual, intensity_sim)]
+
+    def _generate_param_list(self, params):
+        """
+        Generate a list of parameter values from lmfit Parameters.
+
+        :param params: lmfit Parameters object.
+        :return: List of parameter values.
+        """
+        return [params[key].value for key in params]
+
+    def _get_intensity_dict(self, peak):
+        """
+        Generate intensity parameter dictionary.
+
+        :param peak: Peak object containing buildup values.
+        :return: Dictionary with default intensity parameter values.
+        """
+        return (
+            {
+                "value": 10,
+                "min": 0,
+                "max": max(peak.buildup_vals.intensity) * 3,
+            }
+            if peak.peak_sign == "+"
+            else {
+                "value": 10,
+                "max": 0,
+                "min": min(peak.buildup_vals.intensity) * 3,
+            }
+        )
+
+    def _get_time_dict(self, peak):
+        """
+        Generate time delay parameter dictionary.
+
+        :param peak: Peak object containing buildup values.
+        :return: Dictionary with default time parameter values.
+        """
+        return {"value": 5, "min": 0, "max": max(peak.buildup_vals.tdel) * 3}
+
+    def _get_beta_dict(self, peak):
+        return {"value": 0, "min": 0, "max": 1}
 
 
 class BiexpFitter(BuildupFitter):
@@ -440,37 +455,29 @@ class BiexpFitter(BuildupFitter):
     Class for fitting biexponential models to buildup data.
     """
 
-    def __init__(self, dataset):
+    def _get_default_param_dict(self, peak):
         """
-        Initialize the BiexpFitter with a dataset.
-        """
-        super().__init__(dataset)
-        self.fitting_type = "biexponential"
+        Define default parameters for biexponential fitting.
 
-    def get_expression_model(self):
-        """
-        Return the mathematical expression for the biexponential model.
-        """
-        return "A1*(1-exp(-(x)/x1))+A2*(1-exp(-x/x2))"
-
-    def get_param_dict(self):
-        """
-        Return the initial parameter dictionary for the biexponential model.
+        :param peak: Peak object.
+        :return: Dictionary of parameter defaults.
         """
         return {
-            "A1": (
-                dict(value=10, min=0, max=self.y_val[-1] * 3)
-                if self.y_val[-1] > 0
-                else dict(value=10, max=0, min=self.y_val[-1] * 2)
-            ),
-            "A2": (
-                dict(value=10, min=0, max=self.y_val[-1] * 3)
-                if self.y_val[-1] > 0
-                else dict(value=10, max=0, min=self.y_val[-1] * 2)
-            ),
-            "x1": dict(value=5, min=0, max=self.x_val[-1] * 2),
-            "x2": dict(value=self.x_val[-3], min=0, max=self.x_val[-1] * 2),
+            "A1": self._get_intensity_dict(peak),
+            "A2": self._get_intensity_dict(peak),
+            "t1": self._get_time_dict(peak),
+            "t2": self._get_time_dict(peak),
         }
+
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate biexponential intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_biexponential(tdel, param)
 
 
 class BiexpFitterWithOffset(BuildupFitter):
@@ -478,39 +485,30 @@ class BiexpFitterWithOffset(BuildupFitter):
     Class for fitting biexponential models with offsets to buildup data.
     """
 
-    def __init__(self, dataset):
+    def _get_default_param_dict(self, peak):
         """
-        Initialize the BiexpFitterWithOffset with a dataset.
-        """
-        super().__init__(dataset)
-        self.fitting_type = "biexponential_with_offset"
+        Define default parameters for biexponential fitting.
 
-    def get_expression_model(self):
+        :param peak: Peak object.
+        :return: Dictionary of parameter defaults.
         """
-        Return the mathematical expression for the biexponential model with offset.
-        """
-        return "A1*(1-exp(-(x-x0)/x1))+A2*(1-exp(-(x-x0)/x2))"
-
-    def get_param_dict(self):
-        """
-        Return the initial parameter dictionary for the biexponential model with offset.
-        """
-
         return {
-            "A1": (
-                dict(value=10, min=0, max=self.y_val[-1] * 3)
-                if self.y_val[-1] > 0
-                else dict(value=10, max=0, min=self.y_val[-1] * 2)
-            ),
-            "A2": (
-                dict(value=10, min=0, max=self.y_val[-1] * 3)
-                if self.y_val[-1] > 0
-                else dict(value=10, max=0, min=self.y_val[-1] * 2)
-            ),
-            "x1": dict(value=5, min=0, max=self.x_val[-1] * 2),
-            "x2": dict(value=self.x_val[-3], min=0, max=self.x_val[-1] * 2),
-            "x0": dict(value=0, min=-1.5, max=1),
+            "A1": self._get_intensity_dict(peak),
+            "A2": self._get_intensity_dict(peak),
+            "t1": self._get_time_dict(peak),
+            "t2": self._get_time_dict(peak),
+            "x1": {"value": 0, "min": -5, "max": 5},
         }
+
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate biexponential intensity with x axis offset.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_biexponential_with_offset(tdel, param)
 
 
 class ExpFitter(BuildupFitter):
@@ -518,31 +516,27 @@ class ExpFitter(BuildupFitter):
     Class for fitting exponential models to buildup data.
     """
 
-    def __init__(self, dataset):
+    def _get_default_param_dict(self, peak):
         """
-        Initialize the ExpFitter with a dataset.
-        """
-        super().__init__(dataset)
-        self.fitting_type = "exponential"
+        Define default parameters for biexponential fitting.
 
-    def get_expression_model(self):
-        """
-        Return the mathematical expression for the exponential model.
-        """
-        return "A1*(1-exp(-(x)/x1))"
-
-    def get_param_dict(self):
-        """
-        Return the initial parameter dictionary for the exponential model.
+        :param peak: Peak object.
+        :return: Dictionary of parameter defaults.
         """
         return {
-            "A1": (
-                dict(value=10, min=0, max=self.y_val[-1] * 10)
-                if self.y_val[-1] > 0
-                else dict(value=10, max=0, min=self.y_val[-1] * 10)
-            ),
-            "x1": dict(value=5, min=0, max=self.x_val[-1] * 2),
+            "A1": self._get_intensity_dict(peak),
+            "t1": self._get_time_dict(peak),
         }
+
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate exponential intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_exponential(tdel, param)
 
 
 class ExpFitterWithOffset(BuildupFitter):
@@ -550,286 +544,54 @@ class ExpFitterWithOffset(BuildupFitter):
     Class for fitting exponential models with offsets to buildup data.
     """
 
-    def __init__(self, dataset):
+    def _get_default_param_dict(self, peak):
         """
-        Initialize the ExpFitterWithOffset with a dataset.
-        """
-        super().__init__(dataset)
-        self.fitting_type = "exponential_with_offset"
+        Define default parameters for biexponential fitting.
 
-    def get_expression_model(self):
-        """
-        Return the mathematical expression for the exponential model with offset.
-        """
-        return "A1*(1-exp(-(x-x0)/x1))"
-
-    def get_param_dict(self):
-        """
-        Return the initial parameter dictionary for the exponential model with offset.
+        :param peak: Peak object.
+        :return: Dictionary of parameter defaults.
         """
         return {
-            "A1": (
-                dict(value=10, min=0, max=self.y_val[-1] * 10)
-                if self.y_val[-1] > 0
-                else dict(value=10, max=0, min=self.y_val[-1] * 10)
-            ),
-            "x1": dict(value=5, min=0, max=self.x_val[-1] * 2),
-            "x0": dict(value=0, min=-1.5, max=1),
+            "A1": self._get_intensity_dict(peak),
+            "t1": self._get_time_dict(peak),
+            "x1": {"value": 0, "min": -5, "max": 5},
         }
 
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate exponential intensity with x axis offset.
 
-class Lineshape:
-    def __init__(self, spectrum, peak):
-        self.x_axis = spectrum.x_axis
-        self.y_axis = spectrum.y_axis
-        self.peak = peak
-        self.params = None
-        pass
-
-    def set_init_params(self):
-        pass
-
-    def peak_calculator(self, params, x_data):
-        pass
-
-    def sim_spectrum(self, result, fitting_type):
-        pass
-
-    def get_correct_param_set(self, params, peak_label):
-        pass
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_exponential_with_offset(tdel, param)
 
 
-class Voigt(Lineshape):
-    def __init__(self, spectrum, peak):
-        super().__init__(spectrum, peak)
+class StrechedExponentialFitter(BuildupFitter):
+    """
+    Class for fitting streched exponential models to buildup data.
+    """
 
-    def set_init_params(self):
-        self.params = {
-            f"{self.peak.peak_label}_amplitude": (
-                dict(value=200, min=0, max=1e8)
-                if self.peak.sign == "+"
-                else dict(value=-200, min=-1e8, max=0)
-            ),
-            f"{self.peak.peak_label}_center": dict(
-                value=self.peak.hight["x_val"],
-                min=self.peak.hight["x_val"] - 1,
-                max=self.peak.hight["x_val"] + 1,
-            ),
-            f"{self.peak.peak_label}_sigma": dict(value=1, min=1e-12, max=3),
-            f"{self.peak.peak_label}_gamma": dict(value=1, min=1e-12, max=3),
+    def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for streched exponential fitting.
+
+        :param peak: Peak object.
+        :return: Dictionary of parameter defaults.
+        """
+        return {
+            "A1": self._get_intensity_dict(peak),
+            "t1": self._get_time_dict(peak),
+            "beta": self._get_beta_dict(peak),
         }
 
-    def peak_calculator(self, params, x_data):
-        amp, cen, gam, sig = self.get_correct_param_set(
-            params, self.peak.peak_label
-        )
-        return voigt_profile(x_data, cen, sig, gam, amp)
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate biexponential intensity.
 
-    def sim_spectrum(self, result, fitting_type):
-        amp, cen, gam, sig = self.get_correct_param_set(
-            result.params, self.peak.peak_label.replace(".", "_")
-        )
-        simulated_spectrum = voigt_profile(self.x_axis, cen, sig, gam, amp)
-        parameter = {"amp": amp, "cen": cen, "sig": sig, "gam": gam}
-        self.peak.fitting_parameter.update({fitting_type: parameter})
-        self.peak.simulated_peak.update({fitting_type: simulated_spectrum})
-        self.peak.area_under_peak.update(
-            {fitting_type: np.trapz(simulated_spectrum)}
-        )
-        self.peak.fitting_report.update(
-            {fitting_type: lmfit.fit_report(result)}
-        )
-
-    def get_correct_param_set(self, params, peak_label):
-        label_key = peak_label.replace(".", "_")
-        amp = cen = gam = sig = None
-        for key, value in params.items():
-            if label_key in key:
-                if "amplitude" in key:
-                    amp = value
-                elif "center" in key:
-                    cen = value
-                elif "sigma" in key:
-                    sig = value
-                elif "gamma" in key:
-                    gam = value
-        return amp, cen, gam, sig
-
-
-class Gauss(Lineshape):
-    def __init__(self, spectrum, peak):
-        super().__init__(spectrum, peak)
-
-    def set_init_params(self):
-        self.params = {
-            f"{self.peak.peak_label}_amplitude": (
-                dict(value=200, min=0)
-                if self.peak.sign == "+"
-                else dict(value=-200, max=0)
-            ),
-            f"{self.peak.peak_label}_center": dict(
-                value=self.peak.hight["x_val"],
-                min=self.peak.hight["x_val"] - 0.1,
-                max=self.peak.hight["x_val"] + 0.1,
-            ),
-            f"{self.peak.peak_label}_sigma": dict(value=1.5, min=1, max=2),
-        }
-
-        pass
-
-    def peak_calculator(self, params, x_data):
-        amp, cen, sig = self.get_correct_param_set(
-            params, self.peak.peak_label
-        )
-        return gauss_profile(x_data, cen, sig, amp)
-
-    def sim_spectrum(self, result, fitting_type):
-        amp, cen, sig = self.get_correct_param_set(
-            result.params, self.peak.peak_label.replace(".", "_")
-        )
-        sim_spectrum = gauss_profile(self.x_axis, cen, sig, amp)
-        param = {"amp": amp, "cen": cen, "sig": sig}
-        self.peak.fitting_parameter |= {fitting_type: param}
-        self.peak.simulated_peak |= {fitting_type: sim_spectrum}
-        self.peak.area_under_peak |= {fitting_type: np.trapz(sim_spectrum)}
-
-    def get_correct_param_set(self, params, peak_label):
-        amp = cen = sig = None
-        for key, value in params.items():
-            if peak_label.replace(".", "_") in key:
-                if "amplitude" in key:
-                    amp = value
-                if "center" in key:
-                    cen = value
-                if "sigma" in key:
-                    sig = value
-        return amp, cen, sig
-
-
-class Lorentz(Lineshape):
-    def __init__(self, spectrum, peak):
-        super().__init__(spectrum, peak)
-
-    def set_init_params(self):
-        self.params = {
-            f"{self.peak.peak_label}_amplitude": (
-                dict(value=200, min=0)
-                if self.peak.sign == "+"
-                else dict(value=-200, max=0)
-            ),
-            f"{self.peak.peak_label}_center": dict(
-                value=self.peak.hight["x_val"],
-                min=self.peak.hight["x_val"] - 0.5,
-                max=self.peak.hight["x_val"] + 0.5,
-            ),
-            f"{self.peak.peak_label}_sigma": dict(value=1.5, min=1, max=2),
-            f"{self.peak.peak_label}_gamma": dict(value=0.3, min=0, max=1),
-        }
-
-        pass
-
-    def peak_calculator(self, params, x_data):
-        amp, cen, gam, sig = self.get_correct_param_set(
-            params, self.peak.peak_label
-        )
-        return lorentz_profile(x_data, cen, gam, amp)
-
-    def sim_spectrum(self, result, fitting_type):
-        amp, cen, gam = self.get_correct_param_set(
-            result.params, self.peak.peak_label.replace(".", "_")
-        )
-        simulated_spectrum = lorentz_profile(self.x_axis, cen, gam, amp)
-        parameter = {"amp": amp, "cen": cen, "gam": gam}
-        self.peak.fitting_parameter = self.peak.fitting_parameter | {
-            fitting_type: parameter
-        }
-        self.peak.simulated_peak = self.peak.simulated_peak | {
-            fitting_type: simulated_spectrum
-        }
-        self.peak.area_under_peak = self.peak.area_under_peak | {
-            fitting_type: np.trapz(simulated_spectrum)
-        }
-
-    def get_correct_param_set(self, params, peak_label):
-        amp = cen = gam = None
-        for key, value in params.items():
-            if peak_label.replace(".", "_") in key:
-                if "amplitude" in key:
-                    amp = value
-                if "center" in key:
-                    cen = value
-                if "gamma" in key:
-                    gam = value
-        return amp, cen, gam
-
-
-def prefit_objective(params, lineshapes):
-    residual = lineshapes[0].y_axis
-    for i, voigt in enumerate(lineshapes):
-        residual = residual - voigt.peak_calculator(params, voigt.x_axis)
-    return residual
-
-
-def peak_objective(params, lineshapes):
-    peak_names = {"_".join(param.split("_")[:4]) for param in params}
-    number_of_peaks = len(peak_names)
-    residual = []
-    for i, voigt in enumerate(lineshapes):
-        calc = voigt.peak_calculator(params, voigt.x_axis)
-        if i % number_of_peaks == 0:
-            residual.append(voigt.y_axis - calc)
-        else:
-            residual[-1] -= calc
-    return np.concatenate(residual)
-
-
-def voigt_profile(x, center, sigma, gamma, amplitude):
-    z = ((x - center) + 1j * gamma) / (sigma * np.sqrt(2))
-    return amplitude * np.real(wofz(z)) / (sigma * np.sqrt(2 * np.pi))
-
-
-def gauss_profile(x, center, sigma, amplitude):
-    return (
-        amplitude
-        * np.exp(-0.5 * ((x - center) / sigma) ** 2)
-        / (sigma * np.sqrt(2 * np.pi))
-    )
-
-
-def lorentz_profile(x, center, gamma, amplitude):
-    return (
-        amplitude
-        * (gamma**2 / ((x - center) ** 2 + gamma**2))
-        / (np.pi * gamma)
-    )
-
-
-def generate_subspectrum(experiment, peak_center, offset):
-    closest_index = (
-        np.abs(experiment.x_axis - (int(peak_center) - offset)).argmin(),
-        np.abs(experiment.x_axis - (int(peak_center) + offset)).argmin(),
-    )
-    return experiment.y_axis[closest_index[1] : closest_index[0]]
-
-
-def generate_subspectrum_2(x_axis, return_axis, max, min, offset):
-    x_axis = np.array(x_axis)
-    closest_index = (
-        np.abs(x_axis - (int(min) - offset)).argmin(),
-        np.abs(x_axis - (int(max) + offset)).argmin(),
-    )
-    return return_axis[closest_index[1] : closest_index[0]]
-
-
-def fwhm_gaussian(sigma):
-    return 2 * np.sqrt(2 * np.log(2)) * sigma
-
-
-def fwhm_lorentzian(gamma):
-    return 2 * gamma
-
-
-def fwhm_voigt(sigma, gamma):
-    return 0.5346 * (2 * gamma) + np.sqrt(
-        0.2166 * (2 * gamma) ** 2 + 4 * np.log(2) * sigma**2
-    )
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_stretched_exponential(tdel, param)

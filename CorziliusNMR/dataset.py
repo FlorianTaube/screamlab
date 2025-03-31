@@ -1,300 +1,575 @@
-from CorziliusNMR import io, utils, settings
+import lmfit
+from CorziliusNMR import io, utils, settings, functions
 import numpy as np
-import sys
-import os
+from datetime import datetime
 
 
 class Dataset:
+    """
+    Represents a dataset containing NMR spectra, peak fitting, and buildup fitting.
 
-    def __init__(self):
-        self.file_name_generator = FileNameHandler()
+    Attributes:
+        importer: Handles data import.
+        props (settings.Properties): Experiment properties.
+        spectra (list): List of spectra in the dataset.
+        fitter: Fitting handler.
+        peak_list (list): List of peaks.
+        lmfit_result_handler (io.LmfitResultHandler): Handles lmfit results.
+    """
+
+    def __init__(self, props=settings.Properties()):
+        """
+        Initializes the Dataset with default or specified properties.
+
+        Args:
+            props (settings.Properties, optional): Experiment properties. Defaults to settings.Properties().
+        """
         self.importer = None
+        self.props = props
         self.spectra = []
-        self.props = settings.Properties()
-        self.peak_dict = dict()
-        self.spectrum_fitting_type = ["global"]
         self.fitter = None
-        self.buildup_type = [
-            "biexponential",
-            "biexponential_with_offset",
-            "exponential",
-            "exponential_with_offset",
-        ]
-        self._exp_fit = dict()
-        self._print_each_peak_fit_seperate = False
-        self._print_complete_fit_report = False
-        self._print_prefit = True
-        self._spectrum_number_for_prefit = -1
+        self.peak_list = []
+        self.lmfit_result_handler = io.LmfitResultHandler()
 
-    @property
-    def path_to_topspin_experiment(self):
-        return self.file_name_generator.path_to_topspin_experiment
+    def __str__(self):
+        """Returns a string representation of the dataset."""
+        return (
+            f"[[Dataset]]\n"
+            f"Fitted {len(self.peak_list)} peaks per spectrum in {len(self.spectra)} spectra."
+        )
 
-    @path_to_topspin_experiment.setter
-    def path_to_topspin_experiment(self, path):
-        self.file_name_generator.path_to_topspin_experiment = path
+    def start_buildup_fit_from_topspin(self):
+        """
+        Initiates buildup fitting using data imported from TopSpin.
+        """
 
-    @property
-    def output_file_name(self):
-        return self.file_name_generator.output_file_name
-
-    @output_file_name.setter
-    def output_file_name(self, file):
-        self.file_name_generator.output_file_name = file
-
-    @property
-    def procno_of_topspin_experiment(self):
-        return self.file_name_generator.procno_of_topspin_experiment
-
-    @procno_of_topspin_experiment.setter
-    def procno_of_topspin_experiment(self, procno):
-        self.file_name_generator.procno_of_topspin_experiment = str(procno)
-
-    @property
-    def expno_of_topspin_experiment(self):
-        return self.file_name_generator.expno_of_topspin_experiment
-
-    @expno_of_topspin_experiment.setter
-    def expno_of_topspin_experiment(self, expno):
-        if type(expno) != list:
-            sys.exit("Wrong format. List expected.")
-        if len(expno) == 2:
-            self.file_name_generator.expno_of_topspin_experiment = np.arange(
-                expno[0], expno[1] + 1
-            )
-        else:
-            self.file_name_generator.expno_of_topspin_experiment = expno
-
-    def start_buildup_fit_from_topspin_export(self):
         print(
-            f"Start loading data from topspin: {self.path_to_topspin_experiment}"
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start loading data from topspin: {self.props.path_to_experiment}"
         )
         self._read_in_data_from_topspin()
-        print("Start peak fitting.")
+        print(
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start fitting."
+        )
         self._calculate_peak_intensities()
-        print("Start buildup fit.")
-        self._buidup_fit_global()
-        self._print()
+        print(
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start buildup fit."
+        )
+        self._start_buildup_fit()
+        print(
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start generating result files."
+        )
+        self._print_all()
 
     def start_buildup_fit_from_spectra(self):
-        self._read_in_data_from_csv()
-        self._calculate_peak_intensities()
-        self._buidup_fit_global()
+        """
+        Starts buildup fitting using data imported from spectra CSV files.
+        """
+        pass
 
     def start_buildup_from_intensitys(self):
-        return
+        """
+        Placeholder for starting buildup fitting from intensity values.
+        """
+        pass
+
+    def add_peak(
+        self,
+        center_of_peak,
+        peak_label="",
+        fitting_type="voigt",
+        peak_sign="+",
+        line_broadening=None,
+    ):
+        """
+        Adds a peak to the dataset.
+
+        Args:
+            center_of_peak (float): Center of the peak.
+            peak_label (str, optional): Label for the peak. Defaults to "".
+            fitting_type (str, optional): Type of fitting (e.g., "voigt"). Defaults to "voigt".
+            peak_sign (str, optional): Sign of the peak ("+" or "-"). Defaults to "+".
+            line_broadening (dict, optional): Line broadening parameters. Defaults to None.
+        """
+        if line_broadening is None:
+            line_broadening = {}
+        self.peak_list.append(Peak())
+        peak = self.peak_list[-1]
+        peak.peak_center = center_of_peak
+        peak.peak_label = peak_label
+        peak.fitting_type = fitting_type
+        peak.peak_sign = peak_sign
+        peak.line_broadening = line_broadening
+
+    def _read_in_data_from_topspin(self):
+        """Reads and imports data from TopSpin."""
+        self._setup_correct_topspin_importer()
+        self.importer.import_topspin_data()
 
     def _setup_correct_topspin_importer(self):
-        if len(self.expno_of_topspin_experiment) == 1:
+        """Sets up the appropriate TopSpin importer based on experiment properties."""
+        if len(self.props.expno) == 1:
             self.importer = io.Pseudo2DImporter(self)
         else:
             self.importer = io.ScreamImporter(self)
 
-    def _read_in_data_from_topspin(self):
-        self._setup_correct_topspin_importer()
-        self.importer.import_topspin_data()
-
-    def _print(self):
+    def _print_all(self):
+        """Prints all results using an exporter."""
         exporter = io.Exporter(self)
-        exporter.print_all()
-        pass
+        exporter.print()
 
     def _read_in_data_from_csv(self):
-        # TODO
+        """Placeholder function for reading data from CSV files."""
         pass
 
     def _calculate_peak_intensities(self):
-        self._add_peaks_to_all_exp()
-        if "fit" in self.spectrum_fitting_type:
-            self._perform_spectrum_fit()
-        if "global" in self.spectrum_fitting_type:
-            self._perform_global_spectrum_fit()
+        """Calculates peak intensities based on fitting methods."""
+        if self.props.prefit:
+            print(
+                f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start prefit."
+            )
+            self._set_prefitter()
+            result = self.fitter.fit()
+            self.lmfit_result_handler.prefit = result
+            self._update_line_broadening(result)
+        if "individual" in self.props.spectrum_fit_type:
+            self._set_single_fitter()
+            result = self.fitter.fit()
+            self.lmfit_result_handler.single_fit = result
+            self._get_intensities(result)
+        if "global" in self.props.spectrum_fit_type:
+            print(
+                f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start global fit."
+            )
+            self._set_global_fitter()
+            result = self.fitter.fit()
+            self.lmfit_result_handler.global_fit = result
+            self._get_intensities(result)
 
-    def _buidup_fit_global(self):
-        for type in self.buildup_type:
+    def _start_buildup_fit(self):
+        """Performs buildup fitting using the appropriate fitter classes."""
+        fitter_classes = {
+            "biexponential": utils.BiexpFitter,
+            "biexponential_with_offset": utils.BiexpFitterWithOffset,
+            "exponential": utils.ExpFitter,
+            "exponential_with_offset": utils.ExpFitterWithOffset,
+            "streched_exponential": utils.StrechedExponentialFitter,
+        }
 
-            if type == "biexponential":
-                buildup_fitter = utils.BiexpFitter(self)
-                buildup_fitter.perform_fit()
-            elif type == "biexponential_with_offset":
-                buildup_fitter = utils.BiexpFitterWithOffset(self)
-                buildup_fitter.perform_fit()
-            elif type == "exponential":
-                buildup_fitter = utils.ExpFitter(self)
-                buildup_fitter.perform_fit()
-            elif type == "exponential_with_offset":
-                buildup_fitter = utils.ExpFitterWithOffset(self)
-                buildup_fitter.perform_fit()
+        for b_type in self.props.buildup_types:
+            fitter_class = fitter_classes.get(b_type)
+            if fitter_class:
+                fitter = fitter_class(self)
+                self.lmfit_result_handler.buildup_fit[b_type] = (
+                    fitter.perform_fit()
+                )
 
-    def _add_peaks_to_all_exp(self):
-        for spectrum in self.spectra:
-            spectrum.add_peak(self.peak_dict)
-            for peak in spectrum.peaks:
-                peak.assign_values_from_dict()
+    def _set_prefitter(self):
+        """Sets up a pre-fitter."""
+        self.fitter = utils.Prefitter(self)
 
-    def _perform_spectrum_fit(self):
-        pass
+    def _set_single_fitter(self):
+        """Sets up a single-spectrum fitter."""
+        self.fitter = utils.SingleFitter(self)
 
-    def _perform_global_spectrum_fit(self):
-        self.fitter = utils.GlobalSpectrumFitter(self)
-        self.fitter.start_prefit()
-        self.fitter.set_model()
-        self.fitter.fit()
+    def _set_global_fitter(self):
+        """Sets up a global fitter for all spectra."""
+        self.fitter = utils.GlobalFitter(self)
 
-    def _get_intensities(self):
-        pass
+    def _get_intensities(self, result):
+        """Extracts intensity values from the fitting results."""
+        if isinstance(self.fitter, (utils.SingleFitter, utils.GlobalFitter)):
+            for peak in self.peak_list:
+                peak.buildup_vals = (result, self.spectra)
+
+    def _update_line_broadening(self, result):
+        """Updates line broadening values based on fitting results."""
+        for peak in self.peak_list:
+            peak.line_broadening = {
+                lw: {
+                    "min": result.params.get(
+                        f"{peak.peak_label}_{lw}_0"
+                    ).value
+                    * 0.9,
+                    "max": result.params.get(
+                        f"{peak.peak_label}_{lw}_0"
+                    ).value
+                    * 1.1,
+                }
+                for lw in ["sigma", "gamma"]
+                if f"{peak.peak_label}_{lw}_0" in result.params
+            }
 
 
 class Spectra:
+    """
+    Represents spectral data for NMR experiments.
+    """
 
-    def __init__(self, file):
-        self.file = file
-        self.NS = ""
-        self.tbup = ""
+    def __init__(self):
+        """Initializes Spectra attributes."""
+        self.number_of_scans = None
+        self.tdel = None
         self.x_axis = None
-        self.y_axis = []
-        self.peaks = []
-
-    def add_peak(self, peak_dict):
-        try:
-            for peak in sorted(
-                peak_dict.keys(), key=lambda x: int(x), reverse=True
-            ):
-                self.peaks.append(Peak(self, peak, peak_dict))
-        except:
-            print(
-                "ERROR: No peaks given. Try dataset.peak_dict = dict()"
-            )  # TODO
-            pass
+        self.y_axis = None
 
 
 class Peak:
-
-    def __init__(self, spectrum, peak, peak_dict):
-        self.peak_center_rounded = int(peak)
-        self.spectrum = spectrum
-        self.peak_dict = peak_dict[peak]
-        self.sign = None
-        self.peak_label = None
-        self.hight = None
-        self.fwhm = None
-        self.area_under_peak = dict()
-        self.simulated_peak = dict()
-        self.fitting_parameter = dict()
-        self.fitting_report = dict()
-        self.fitting_group = None
-        self.fitting_model = None
-        self.prefit_dict = None
-
-    def assign_values_from_dict(self):
-        self._set_sign()
-        self._set_peak_label()
-        self._set_fitting_group()
-        self._set_fitting_model()
-        self._set_hight()
-
-    def _set_sign(self):
-        try:
-            if self.peak_dict["sign"] in ["+", "-"]:
-                self.sign = self.peak_dict["sign"]
-            else:
-                print(
-                    'ERROR: Wrong input for peak sign. Must be "+" or '
-                    '"-". Set peak sign to default value.'
-                )
-                self.sign = "+"
-        except:
-            self.sign = "+"
-
-    def _set_peak_label(self):
-        try:
-            self.peak_label = self.peak_dict["label"]
-        except:
-            self.peak_label = (
-                f"Peak_at_{self.peak_center_rounded}_ppm_"
-                f"{self.spectrum.tbup}_s"
-            )
-            self.peak_label = self.peak_label.replace("-", "m")
-
-    def _set_fitting_group(self):
-        try:
-            self.fitting_group = int(self.peak_dict["fitting_group"])
-        except:
-            self.fitting_group = 999
-
-    def _set_fitting_model(self):
-        try:
-            if self.peak_dict["fitting_model"] in [
-                "voigt",
-                "gauss",
-                "lorentz",
-            ]:
-                self.fitting_model = self.peak_dict["fitting_model"]
-            else:
-                print(
-                    f"ERROR: Unknown fitting model: "
-                    f"{self.peak_dict['fitting_model']}. 'voigt',"
-                    f"'gauss' or 'lorentz' expected. Set fitting_model "
-                    f"to "
-                    f"default."
-                )
-                self.fitting_model = "voigt"
-        except:
-            self.fitting_model = "voigt"
-
-    def _set_hight(self):
-        subspectrum = utils.generate_subspectrum(
-            self.spectrum, self.peak_center_rounded, 2
-        )
-
-        if np.trapz(subspectrum) < 0:
-            y_val = min(subspectrum)
-        else:
-            y_val = max(subspectrum)
-        index = np.where(self.spectrum.y_axis == y_val)[0]
-        x_val = self.spectrum.x_axis[index]
-        self.hight = {"index": index[0], "x_val": x_val[0], "y_val": y_val}
-
-
-class FileNameHandler:
+    """
+    Represents a peak with properties such as peak center, peak label,
+    fitting group, fitting type, peak sign, line broadening, and buildup values.
+    """
 
     def __init__(self):
-        self.path_to_topspin_experiment = None
-        self.procno_of_topspin_experiment = None
-        self.expno_of_topspin_experiment = None
-        self.output_file_name = None
+        """
+        Initializes a Peak object with default values set to None.
+        """
+        self._peak_center = None
+        self._peak_label = None
+        self._fitting_type = None
+        self._peak_sign = None
+        self._line_broadening = None
+        self._buildup_vals = None
 
-    def generate_output_csv_file_name(self):
-        return self.output_file_name + "_as_exported.csv"
+    def __str__(self):
+        """
+        Returns a formatted string representation of the peak.
 
-    def generate_txt_fitting_report(self, peak_label, fitting_type):
-        return f"{self.output_file_name}_{peak_label}_{fitting_type}.txt"
-
-    def generate_spectrum_fit_pdf(self, fitting_type, tbup):
-        output_folder = f"{self.output_file_name}_fit_per_spectrum/"
-        os.makedirs(output_folder, exist_ok=True)
-        return f"{output_folder}Delay_time_{tbup}" f"_{fitting_type}.pdf"
-
-    def generate_all_spectrum_fit_pdf(self, fitting_type):
+        :return: A string describing the peak's attributes.
+        """
         return (
-            f"{self.output_file_name}_all_spectra_simulated"
-            f"_{fitting_type}.pdf"
+            f"Peak center: {self.peak_center}\n"
+            f"Peak label: {self.peak_label}\n"
+            f"Peak shape: {self.fitting_type}\n"
+            f"Peak sign: {self.peak_sign}\n"
+            f"Start global fit with: {self.line_broadening}\n"
+            f"{self.buildup_vals}"
         )
 
-    def generate_output_pdf_file_name(self):
-        return f"{self.output_file_name}_as_exported.pdf"
+    @property
+    def buildup_vals(self) -> list:
+        """
+        Gets the buildup values.
 
-    def get_prefit_pdf(self):
-        return f"{self.output_file_name}_prefit.pdf"
+        :return: A list of buildup values.
+        """
+        return self._buildup_vals
 
-    def get_prefit_txt(self):
-        return f"{self.output_file_name}_prefit.txt"
+    @buildup_vals.setter
+    def buildup_vals(self, args):
+        """
+        Sets the buildup values.
 
-    def generate_buildup_pdf(self, fitting_type):
-        return f"{self.output_file_name}_buildup_{fitting_type}.pdf"
+        :param args: Tuple containing result and spectra.
+        """
+        result, spectra = args
+        self._buildup_vals = BuildupList()
+        self._buildup_vals.set_vals(result, spectra, self.peak_label)
 
-    def generate_buildup_txt(self, fitting_type):
-        return f"{self.output_file_name}_buildup_{fitting_type}.txt"
+    @property
+    def line_broadening(self) -> str:
+        """
+        Gets the line broadening parameters.
 
-    def generate_summary_txt(self):
-        return f"{self.output_file_name}_summary.csv"
+        :return: A dictionary representing line broadening values.
+        """
+        return self._line_broadening
+
+    @line_broadening.setter
+    def line_broadening(self, value):
+        """
+        Sets the line broadening parameters after validation.
+
+        :param value: Dictionary containing line broadening parameters.
+        """
+        allowed_values = ["sigma", "gamma"]
+        inner_allowed_values = ["min", "max"]
+        self._check_if_value_is_dict(value)
+        self._check_for_invalid_keys(value, allowed_values)
+        self._check_for_invalid_dict(value)
+        self._check_for_invalid_inner_keys(value, inner_allowed_values)
+        params = self._set_init_params()
+        self._overwrite_init_params(
+            value, allowed_values, inner_allowed_values, params
+        )
+
+        self._line_broadening = params
+
+    @property
+    def peak_sign(self) -> str:
+        """
+        Gets the peak sign.
+
+        :return: The peak sign ('+' or '-').
+        """
+        return self._peak_sign
+
+    @peak_sign.setter
+    def peak_sign(self, value):
+        """
+        Sets the peak sign after validation.
+
+        :param value: A string representing the peak sign ('+' or '-').
+        """
+        allowed_values = {"+", "-"}
+        if not isinstance(value, str):
+            raise TypeError(
+                f"'peak_sign' must be of type 'str', but got {type(value)}."
+            )
+        if value not in allowed_values:
+            raise ValueError(
+                f"'peak_sign' must be one of {sorted(allowed_values)}."
+            )
+        self._peak_sign = value
+
+    @property
+    def fitting_type(self) -> str:
+        """
+        Gets the peak fitting type.
+
+        :return: The fitting type as a string.
+        """
+        return self._fitting_type
+
+    @fitting_type.setter
+    def fitting_type(self, value):
+        """
+        Sets the peak fitting type after validation.
+
+        :param value: A string representing the fitting type.
+        """
+        allowed_values = {"voigt", "lorentz", "gauss"}
+        if not isinstance(value, str):
+            raise TypeError(
+                f"'fitting_type' must be of type 'str', but got {type(value)}."
+            )
+        if value not in allowed_values:
+            raise ValueError(
+                f"'fitting_type' must be one of {sorted(allowed_values)}."
+            )
+        self._fitting_type = value
+
+    @property
+    def peak_center(self) -> (int, float):
+        """
+        Gets the peak center.
+
+        :return: The peak center as an integer or float.
+        """
+        return self._peak_center
+
+    @peak_center.setter
+    def peak_center(self, value):
+        """
+        Sets the peak center after validation.
+
+        :param value: An integer or float representing the peak center.
+        """
+        if not isinstance(value, (int, float)):
+            raise TypeError(
+                f"'peak_center' must be of type 'int' or 'float', but got {type(value)}."
+            )
+        self._peak_center = float(value)
+
+    @property
+    def peak_label(self) -> str:
+        return self._peak_label
+
+    @peak_label.setter
+    def peak_label(self, value):
+        if not isinstance(value, str):
+            raise TypeError(
+                f"'peak_label' must be of type 'str', but got {type(value)}."
+            )
+        if value == "":
+            name = str(int(self.peak_center)).replace("-", "m")
+            value = f"Peak_at_{name}_ppm"
+        self._peak_label = value
+
+    def _return_default_dict(self):
+        """
+        Returns the default dictionary for line broadening values.
+
+        :return: A dictionary with default values for 'sigma' and 'gamma'.
+        """
+        return {
+            "sigma": {"min": 0, "max": 3},
+            "gamma": {"min": 0, "max": 3},
+        }
+
+    def _check_if_value_is_dict(self, value):
+        """
+        Checks if the given value is a dictionary.
+
+        :param value: The value to check.
+        """
+        if not isinstance(value, dict):
+            raise TypeError(
+                f"'line_broadening' must be a 'dict', but got {type(value)}."
+            )
+
+    def _check_for_invalid_keys(self, value, allowed_values):
+        invalid_keys = [
+            key for key in value.keys() if key not in allowed_values
+        ]
+        if invalid_keys:
+            raise ValueError(
+                f"Invalid keys found in the dictionary: {invalid_keys}. Allowed keys are: {allowed_values}."
+            )
+
+    def _check_for_invalid_dict(self, value):
+        if not all(isinstance(v, dict) for v in value.values()):
+            raise TypeError(
+                "Each value in the 'line_broadening' dictionary must be of type 'dict'."
+            )
+
+    def _check_for_invalid_inner_keys(self, value, inner_allowed_values):
+        for key, inner_dict in value.items():
+            invalid_inner_keys = [
+                inner_key
+                for inner_key in inner_dict.keys()
+                if inner_key not in inner_allowed_values
+            ]
+            if invalid_inner_keys:
+                raise ValueError(
+                    f"Invalid inner keys for '{key}': {invalid_inner_keys}. Allowed inner keys are: {inner_allowed_values}."
+                )
+
+    def _set_init_params(self):
+        """
+        Sets initial parameters based on fitting type.
+
+        :return: A dictionary of initial parameters.
+        """
+        params = self._return_default_dict()
+        if self.fitting_type == "gauss":
+            params = {"sigma": params["sigma"]}
+        elif self.fitting_type == "lorentz":
+            params = {"gamma": params["gamma"]}
+        return params
+
+    def _overwrite_init_params(
+        self, value, allowed_values, inner_allowed_values, params
+    ):
+        """
+        Overwrites initial parameters with provided values.
+
+        :param value: Dictionary containing new parameter values.
+        :param allowed_values: List of allowed outer dictionary keys.
+        :param inner_allowed_values: List of allowed inner dictionary keys.
+        :param params: Dictionary of existing parameters to be updated.
+        """
+        for key in allowed_values:
+            if key in value:
+                for inner_key in inner_allowed_values:
+                    inner_value = value[key].get(inner_key)
+                    if inner_value is not None:
+                        if not isinstance(inner_value, (int, float)):
+                            raise TypeError(
+                                f"'{inner_key}' value must be an 'int' or 'float', but got {type(inner_value)}."
+                            )
+                        params[key][inner_key] = float(inner_value)
+        return params
+
+
+class BuildupList:
+    """
+    Represents a list of buildup values used for fitting delay times and intensities.
+
+    Attributes:
+        tdel (list): List of delay times.
+        intensity (list): List of intensity values.
+    """
+
+    def __init__(self):
+        """Initializes an empty BuildupList with None values for attributes."""
+        self.tdel = None
+        self.intensity = None
+
+    def __str__(self):
+        """
+        Returns a formatted string representation of the buildup values.
+
+        Returns:
+            str: A formatted string listing delay times and intensities.
+        """
+        return (
+            "Parameters for buildup fitting:\nDelay times:\t"
+            + "\t\t\t".join(str(x) for x in self.tdel)
+            + "\nIntegral:\t"
+            + "\t".join(str(x) for x in self.intensity)
+        )
+
+    def set_vals(self, result, spectra, label):
+        """
+        Sets the buildup values by processing the result parameters and spectra.
+
+        Args:
+            result (object): Result object containing parameter values.
+            spectra (list): List of spectrum objects.
+            label (str): Peak label to filter parameters.
+        """
+        self._set_tdel(spectra)
+        self._set_intensity(result, label, spectra)
+        self._sort_lists()
+
+    def _set_tdel(self, spectra):
+        """
+        Extracts delay times from the spectra and assigns them to tdel.
+
+        Args:
+            spectra (list): List of spectrum objects containing delay times.
+        """
+        self.tdel = [s.tdel for s in spectra]
+
+    def _set_intensity(self, result, label, spectra):
+        """
+        Computes and assigns intensity values based on the result parameters.
+
+        Args:
+            result (object): Result object containing parameter values.
+            label (str): Peak label used to filter parameters.
+            spectra (list): List of spectrum objects for intensity calculations.
+        """
+        last_digid = None
+        self.intensity = []
+        val_list = []
+        for param in result.params:
+            if label in param:
+                if last_digid != param.split("_")[-1]:
+                    if val_list:
+                        self.intensity.append(
+                            self._calc_integral(
+                                val_list, spectra[int(last_digid)]
+                            )
+                        )
+                    last_digid = param.split("_")[-1]
+                    val_list = []
+                val_list.append(float(result.params[param].value))
+                if param.split("_")[-2] == "gamma":
+                    val_list.append("gamma")
+        self.intensity.append(
+            self._calc_integral(val_list, spectra[int(last_digid)])
+        )
+
+    def _calc_integral(self, val_list, spectrum):
+        """
+        Computes the numerical integral of the simulated spectrum.
+
+        Args:
+            val_list (list): List of values used for peak calculation.
+            spectrum (object): Spectrum object containing x-axis data.
+
+        Returns:
+            float: The computed integral of the spectrum.
+        """
+        simspec = [0 for _ in range(len(spectrum.x_axis))]
+        simspec = functions.calc_peak(spectrum.x_axis, simspec, val_list)
+        return np.trapz(simspec)
+
+    def _sort_lists(self):
+        """
+        Sorts the delay times and corresponding intensity values in ascending order of delay times.
+        """
+        self.tdel, self.intensity = map(
+            list, zip(*sorted(zip(self.tdel, self.intensity)))
+        )

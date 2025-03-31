@@ -97,7 +97,7 @@ class TestProperties(unittest.TestCase):
 
     def test_spectrum_for_prefit_default_value(self):
         props = Properties()
-        self.assertEqual(props.spectrum_for_prefit, 0)
+        self.assertEqual(props.spectrum_for_prefit, -1)
 
     def test_spectrum_for_prefit_initial_value(self):
         props = Properties(spectrum_for_prefit=1)
@@ -264,16 +264,18 @@ class TestProperties(unittest.TestCase):
 
     def test_expno_default_value(self):
         props = Properties()
-        self.assertListEqual(props.expno, [])
+        self.assertListEqual(props.expno, ["1"])
 
     def test_expno_initial_value(self):
-        props = Properties(expno=[200, 50])
-        self.assertListEqual(props.expno, [200, 50])
+        props = Properties(expno=[23, 50])
+        self.assertListEqual(
+            props.expno, [str(item) for item in list(range(23, 51))]
+        )
 
     def test_expno_set_valid_value(self):
         props = Properties()
         props.expno = [111]
-        self.assertListEqual(props.expno, [111])
+        self.assertListEqual(props.expno, ["111"])
 
     def test_expno_set_invalid_value(self):
         props = Properties()
@@ -284,11 +286,44 @@ class TestProperties(unittest.TestCase):
             "Expected 'expno' to be of type 'list', got str.",
         )
 
+    def test_expno_set_not_int_value(self):
+        props = Properties()
+        with self.assertRaises(ValueError) as context:
+            props.expno = [1, "12"]
+        self.assertEqual(
+            str(context.exception),
+            "All elements in the 'expno' list must be of type 'int'.",
+        )
+
     def test_expno_change_value(self):
         props = Properties(expno=[111])
         props.expno = [111, 112]
-        self.assertListEqual(props.expno, [111, 112])
+        self.assertListEqual(props.expno, ["111", "112"])
 
     def test_expno_private_variable(self):
         props = Properties(expno=[2])
-        self.assertListEqual(props._expno, [2])
+        self.assertListEqual(props._expno, ["2"])
+
+    def test_output_folder_init_default(self):
+        props = Properties()
+        self.assertEqual(
+            props.output_folder,
+            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR",
+        )
+
+    def test_output_folder_init(self):
+        props = Properties(output_folder="Hallo")
+        self.assertEqual(props.output_folder, "Hallo")
+
+    def test_output_folder_init_wrong_input_type(self):
+        props = Properties()
+        self.assertEqual(
+            props.output_folder,
+            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR",
+        )
+        with self.assertRaises(TypeError) as context:
+            props.output_folder = [1, "12"]
+        self.assertEqual(
+            str(context.exception),
+            "Expected 'output_folder' to be of type 'str', got list.",
+        )

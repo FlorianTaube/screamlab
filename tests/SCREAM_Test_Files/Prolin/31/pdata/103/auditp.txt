@@ -1,0 +1,24 @@
+##TITLE= Audit trail, TopSpin 4.1.4
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Florian Taube
+$$ F:/ssNMR/20250121_S48F_100K/31/pdata/103/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2025-01-22 12:49:22.045 +0100>,<Florian Taube>,<Siavash>,<mvrow>,<TopSpin 4.1.4>,
+      <rsr 1 from
+       1 31 "20250121_S48F_100K" "F:/ssNMR"
+       data hash MD5: 16K
+       46 30 85 9C D8 F1 16 AF B9 7D 82 25 5C 2E A9 08>)
+(   2,<2025-01-22 12:49:22.941 +0100>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <Unknown data manipulation detected
+       abs ABSG = 5 
+       data hash MD5: 16K
+       47 FE 84 76 EE 48 53 71 CB 83 A7 8C 72 71 31 A4>)
+(   3,<2025-01-22 12:49:34.846 +0100>,<Florian Taube>,<Siavash>,<proc1d>,<TopSpin 4.1.4>,
+      <apks 
+       data hash MD5: 16K
+       9F B7 D7 9A 71 B5 CC 1C 42 C8 0E A7 D8 17 03 A3>)
+##END=
+
+$$ hash MD5
+$$ F8 95 44 1F 66 34 85 28 30 C0 EB 75 D4 1E D2 8F

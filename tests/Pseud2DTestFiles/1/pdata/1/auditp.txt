@@ -1,0 +1,65 @@
+##TITLE= Audit trail, TopSpin 3.5 pl 6
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= nmr
+$$ C:\Users\nmr\TopSpin_Data_Corzilius\Max/20220706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP/1/pdata/1/auditp.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2023-06-13 17:12:38.275 +0200>,<nmr>,<Solid-NMR>,<go4>,<TopSpin 3.5.6>,
+      <created by zg
+	started at 2023-06-13 16:10:50.752 +0200,
+	POWCHK enabled, PULCHK disabled,
+       configuration hash MD5:
+       D3 51 2D 1A 13 32 EF 35 40 DE 9C 54 1F 5A 6E CA
+       data hash MD5: 4K * 16
+       07 AC 7F 03 BF A0 8C 0B 6F 42 60 ED 10 38 24 34>)
+(   2,<2023-06-13 20:32:44.435 +0200>,<nmr>,<Solid-NMR>,<proc2d>,<TopSpin 3.5.6>,
+      <Start of raw data processing
+       xf2 F2: SI = 8K WDW = 1 LB = 50 FT_mod = 6 PKNL = 1 PHC0 = -145.5599 PHC1 = -276.9002 F1: SI = 16 MC2 = 0
+       data hash MD5: 8K * 16
+       57 31 0B 37 92 FC A9 A6 96 44 B1 11 5E 85 FA 95>)
+(   3,<2023-07-05 12:58:19.191 +0200>,<nmr>,<Solid-NMR>,<dirdata>,<TopSpin 3.5.6>,
+      <wrpa from 1 12 "20230613_15%_EtOH_D3_KBr_in_1p3mm_with_5mM_ASYMPol_POK_85K" "C:/Users/nmr/TopSpin_Data_Corzilius/Thomas"
+       data hash MD5: 8K * 16
+       57 31 0B 37 92 FC A9 A6 96 44 B1 11 5E 85 FA 95>)
+(   4,<2023-07-07 11:40:10.522 +0200>,<nmr>,<Solid-NMR>,<dirdata>,<TopSpin 3.5.6>,
+      <wrpa from 1 65 "20220620_100mM_H2N-PG-OH_10mM_AMUPOL_1p3mm_18kHz_DNP" "C:/Users/nmr/TopSpin_Data_Corzilius/Max"
+       data hash MD5: 8K * 16
+       57 31 0B 37 92 FC A9 A6 96 44 B1 11 5E 85 FA 95>)
+$$ F:/NMR/Max/20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K/1/pdata/1/auditp.txt
+(   5,<2023-08-25 08:54:43.646 +0200>,<Florian Taube>,<Siavash>,<proc2d>,<TopSpin 4.1.4>,
+      <Start of raw data processing
+       xf2 F2: SI = 8K WDW = 1 LB = 50 FT_mod = 6 PKNL = 1 PHC0 = -145.5599 PHC1 = -276.9002 F1: SI = 16 MC2 = 0
+       data hash MD5: 8K * 16
+       47 4A 5F A6 15 B6 AF 66 C4 89 CB CE 12 18 84 2C>)
+(   6,<2023-08-25 08:55:42.779 +0200>,<Florian Taube>,<Siavash>,<proc2d>,<TopSpin 4.1.4>,
+      <pk2 fgphup F2: PHC0 = 34.57441 PHC1 = 222.4
+       data hash MD5: 8K * 16
+       61 A7 5F 3B A8 EA 09 59 01 C1 AD 34 78 D6 09 89>)
+(   7,<2023-08-25 08:56:45.202 +0200>,<Florian Taube>,<Siavash>,<proc2d>,<TopSpin 4.1.4>,
+      <pk2 fgphup F2: PHC0 = -32.01162 PHC1 = 76
+       data hash MD5: 8K * 16
+       86 16 43 DF F2 7E 4D 4C 75 A1 95 67 57 CF 5D 19>)
+(   8,<2023-08-25 08:59:20.280 +0200>,<Florian Taube>,<Siavash>,<proc2d>,<TopSpin 4.1.4>,
+      <Start of raw data processing
+       xf2 F2: SI = 8K WDW = 1 LB = 50 FT_mod = 6 PKNL = 1 PHC0 = -142.9971 PHC1 = 21.49979 F1: SI = 16 MC2 = 0
+       data hash MD5: 8K * 16
+       22 54 28 38 77 D4 B9 7B C6 15 D3 2D 8E 15 DE EB>)
+(   9,<2023-08-25 08:59:43.190 +0200>,<Florian Taube>,<Siavash>,<proc2d>,<TopSpin 4.1.4>,
+      <pk2 fgphup F2: PHC0 = 0 PHC1 = 0
+       data hash MD5: 8K * 16
+       22 54 28 38 77 D4 B9 7B C6 15 D3 2D 8E 15 DE EB>)
+(  10,<2023-08-25 09:02:35.054 +0200>,<Florian Taube>,<Siavash>,<cprserver>,<TopSpin 4.1.4>,
+      <changed parameter F2 SR to 0>)
+(  11,<2023-08-25 09:02:42.811 +0200>,<Florian Taube>,<Siavash>,<proc2d>,<TopSpin 4.1.4>,
+      <Start of raw data processing
+       xf2 F2: SI = 8K WDW = 1 LB = 50 FT_mod = 6 PKNL = 1 PHC0 = -142.9971 PHC1 = 21.49979 F1: SI = 16 MC2 = 0
+       data hash MD5: 8K * 16
+       22 54 28 38 77 D4 B9 7B C6 15 D3 2D 8E 15 DE EB>)
+(  12,<2023-08-25 09:03:04.805 +0200>,<Florian Taube>,<Siavash>,<proc2d>,<TopSpin 4.1.4>,
+      <pk2 fgphup F2: PHC0 = 0 PHC1 = 0
+       data hash MD5: 8K * 16
+       22 54 28 38 77 D4 B9 7B C6 15 D3 2D 8E 15 DE EB>)
+##END=
+
+$$ hash MD5
+$$ B5 7A 36 F8 2A D6 D8 F3 57 5E 31 4C 48 61 C8 F6

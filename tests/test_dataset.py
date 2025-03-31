@@ -1,316 +1,635 @@
-import os
-
-import CorziliusNMR
-from CorziliusNMR.dataset import Dataset, Spectra
+import CorziliusNMR.settings
+import lmfit
+from CorziliusNMR import dataset, settings, functions
 import unittest
-import numpy as np
 import matplotlib.pyplot as plt
-from scipy.special import wofz
+import numpy as np
+
 
 class TestDataset(unittest.TestCase):
 
     def setUp(self):
-        self.dataset = Dataset()
-        self.dataset.output_file_name = "SCREAM_Test_Files/test_file"
+        self.ds = dataset.Dataset()
+        self.peak = dataset.Peak()
 
-    def fake_spectrum(self):
-        # Define your spectrum
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].x_axis = np.linspace(0, 300, num=301)
-        self.dataset.spectra[0].y_axis = \
-            200000 * np.exp(-((self.dataset.spectra[0].x_axis - 150) ** 2) / (
-                2 * 3 ** 2))
-        self.dataset.peak_dict = {
-            '149': dict(sign="+")
-        }
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_hight()
+    def add_n_spectra(self, number_of_spectra, type=["voigt"]):
+        for spec in range(0, number_of_spectra):
+            self.ds.spectra.append(CorziliusNMR.dataset.Spectra())
+        self.add_x_axis()
+        self.add_y_axix(type)
 
-    def voigt_profile(self,x, center, sigma, gamma, amplitude):
-        z = ((x - center) + 1j * gamma) / (sigma * np.sqrt(2))
-        return amplitude * np.real(wofz(z)) / (sigma * np.sqrt(2 * np.pi))
+    def add_x_axis(self):
+        for spec in self.ds.spectra:
+            spec.x_axis = np.linspace(100, 350, 1000)
 
-    def fake_spectrum_for_fitting(self):
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].tbup = 0.25
-        self.dataset.spectra[1].tbup = 0.5
-        self.dataset.spectra[0].x_axis = np.linspace(0, 300, num=3001)
-        self.dataset.spectra[0].y_axis = self.voigt_profile(
-            self.dataset.spectra[0].x_axis,150,3,2,200000)+self.voigt_profile(
-            self.dataset.spectra[0].x_axis,50,3,2,150000)+\
-             np.random.normal(0, 500, size=len(self.dataset.spectra[0].x_axis))
-        self.dataset.peak_dict = {
-            '149': dict(sign="+"),
-            '50':dict(sign="+")
-        }
-        self.dataset.spectra[1].x_axis = np.linspace(0, 300, num=3001)
-        self.dataset.spectra[1].y_axis = self.voigt_profile(
-            self.dataset.spectra[1].x_axis,150,3,2,300000)+self.voigt_profile(
-            self.dataset.spectra[1].x_axis,50,3,2,250000)+\
-             np.random.normal(0, 500, size=len(self.dataset.spectra[1].x_axis))
-        self.dataset.peak_dict = {
-            '149': dict(sign="+"),
-            '50':dict(sign="+")
-        }
-        plt.plot(self.dataset.spectra[0].x_axis,self.dataset.spectra[
-            0].y_axis)
-        plt.plot(self.dataset.spectra[1].x_axis, self.dataset.spectra[
-            1].y_axis)
-        #plt.show()
-        plt.close()
+    def add_y_axix(self, type_list):
+        for spec_nr, spec in enumerate(self.ds.spectra):
+            y_axis = np.zeros(len(spec.x_axis))
+            for type in type_list:
+                if type == "voigt":
+                    y_axis = y_axis + functions.voigt_profile(
+                        spec.x_axis, 250, 2, 2, (spec_nr + 1) * 200
+                    )
+                if type == "gauss":
+                    y_axis = y_axis + functions.gauss_profile(
+                        spec.x_axis, 150, 3, (spec_nr + 1) * 200
+                    )
+                if type == "lorentz":
+                    y_axis = y_axis + functions.lorentz_profile(
+                        spec.x_axis, 200, 4, (spec_nr + 1) * 200
+                    )
+            spec.y_axis = y_axis
 
-        self.dataset._add_peaks_to_all_exp()
+    def start_buildup_fitting(self, fitting_type):
+        self.ds.props.buildup_types = [fitting_type]
+        self.ds.peak_list.append(dataset.Peak())
+        self.ds.peak_list[0].peak_sign = "+"
+        buidlup_list = dataset.BuildupList()
+        buidlup_list.tdel = [1, 2, 4, 8, 16, 32, 64, 128, 256]
+        buidlup_list.intensity = list(
+            400 * (1 - np.exp(-np.asarray(buidlup_list.tdel) / 30))
+        )
+        buidlup_list.intensity = buidlup_list.intensity + np.random.normal(
+            0, 10, size=len(buidlup_list.intensity)
+        )
+        self.ds.peak_list[0]._buildup_vals = buidlup_list
+        self.ds._start_buildup_fit()
 
+    def test_dataset_init_has_none_type_importer(self):
+        self.assertIsNone(self.ds.importer)
 
-    def test_set_path_to_experiment(self):
-        self.dataset.path_to_topspin_experiment = "SCREAM_Test_Files/"
-        self.assertEqual(self.dataset.path_to_topspin_experiment,
-                         "SCREAM_Test_Files/")
+    def test_dataset_init_properties(self):
+        self.assertEqual(
+            type(self.ds.props), CorziliusNMR.settings.Properties
+        )
 
-    def test_set_path_to_output_folder(self):
-        self.dataset.output_file_name = "SCREAM_Test_Files/tmp"
-        self.assertEqual(self.dataset.output_file_name,
-                         "SCREAM_Test_Files/tmp")
+    def test_dataset_init_has_none_type_spectra(self):
+        self.assertListEqual(self.ds.spectra, [])
 
-    def test_procno_of_topspin_experiment(self):
-        self.dataset.procno_of_topspin_experiment = '103'
-        self.assertEqual(self.dataset.procno_of_topspin_experiment,'103')
+    def test_dataset_init_has_none_type_fitter(self):
+        self.assertIsNone(self.ds.fitter)
 
-    def test_set_expno_of_topspin_experiment_1(self):
-        self.dataset.expno_of_topspin_experiment = [22]
-        self.assertEqual(self.dataset.expno_of_topspin_experiment, [22])
+    def test_setup_correct_topspin_importer_default_properties(self):
+        self.ds._setup_correct_topspin_importer()
+        self.assertEqual(
+            type(self.ds.importer), CorziliusNMR.io.Pseudo2DImporter
+        )
 
-    def test_set_expno_of_topspin_experiment_2(self):
-        self.dataset.expno_of_topspin_experiment = [22,24]
-        self.assertTrue(np.array_equal(
-            self.dataset.expno_of_topspin_experiment,np.array([22,23,24])))
+    def test_setup_correct_topspin_importer_set_properties_pseudo2D(self):
+        self.ds.props.expno = [2]
+        self.ds._setup_correct_topspin_importer()
+        self.assertEqual(
+            type(self.ds.importer), CorziliusNMR.io.Pseudo2DImporter
+        )
 
-    def test_set_expno_of_topspin_experiment_2(self):
-        self.dataset.expno_of_topspin_experiment = [22,24,26]
-        self.assertTrue(np.array_equal(
-            self.dataset.expno_of_topspin_experiment,np.array([22,24,26])))
+    def test_setup_correct_topspin_importer_set_properties_SCREAM(self):
+        self.ds.props.expno = [2, 3, 4, 5, 6]
+        self.ds._setup_correct_topspin_importer()
+        self.assertEqual(
+            type(self.ds.importer), CorziliusNMR.io.ScreamImporter
+        )
 
-    def test_generate_output_csv_file_name(self):
-        csv = self.dataset.file_name_generator.generate_output_csv_file_name()
-        self.assertEqual(csv,"SCREAM_Test_Files/test_file.csv")
+    def test_read_in_data_from_topspin_pseudo2D(self):
+        # TODO add some real parameters or fake spectrum
+        self.ds._read_in_data_from_topspin
+        self.assertIsNotNone(self.ds.spectra)
 
-    def test_generate_output_pdf_file_name(self):
-        csv = self.dataset.file_name_generator.generate_output_pdf_file_name()
-        self.assertEqual(csv,"SCREAM_Test_Files/test_file.pdf")
+    def test_spectra_init_number_of_scans_is_None(self):
+        spectrum = CorziliusNMR.dataset.Spectra()
+        self.assertIsNone(spectrum.number_of_scans)
 
-    def test_setting_up_correct_topspin_importer_pseudo_2D(self):
-        self.dataset.expno_of_topspin_experiment = [22]
-        self.dataset._setup_correct_topspin_importer()
-        self.assertEqual(type(self.dataset.importer),
-                         CorziliusNMR.io.Pseudo2DImporter)
+    def test_spectra_init_tdel_None(self):
+        spectrum = CorziliusNMR.dataset.Spectra()
+        self.assertIsNone(spectrum.tdel)
 
-    def test_setting_up_correct_topspin_importer_scream(self):
-        self.dataset.expno_of_topspin_experiment = [22,25]
-        self.dataset._setup_correct_topspin_importer()
-        self.assertEqual(type(self.dataset.importer),
-                         CorziliusNMR.io.ScreamImporter)
+    def test_spectra_init_x_axis_is_None(self):
+        spectrum = CorziliusNMR.dataset.Spectra()
+        self.assertIsNone(spectrum.x_axis)
 
-    def test_setting_up_dataset_in_topspin_importer(self):
-        self.dataset.expno_of_topspin_experiment = [22,25]
-        self.dataset._setup_correct_topspin_importer()
-        self.assertEqual(self.dataset,self.dataset.importer._dataset)
+    def test_spectra_init_y_axis_is_None(self):
+        spectrum = CorziliusNMR.dataset.Spectra()
+        self.assertIsNone(spectrum.y_axis)
 
+    def test_ds_init_peak_list_is_empty_list(self):
+        self.assertListEqual(self.ds.peak_list, [])
 
-    def test_add_peak_2_peaks(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="+"),
-            '50': dict(sign="-")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.assertEqual(len(self.dataset.spectra[0].peaks),2)
+    def test_peak_init_center_is_none(self):
+        self.assertIsNone(self.peak._peak_center)
 
-    def test_add_peak_set_sign_plus(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="+")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_sign()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].sign,"+")
+    def test_peak_init_label_is_none(self):
+        self.assertIsNone(self.peak._peak_label)
 
-    def test_add_peak_set_sign_minus(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="-")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_sign()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].sign,"-")
+    def test_peak_init_fitting_type_is_none(self):
+        self.assertIsNone(self.peak._fitting_type)
 
-    def test_add_peak_set_sign_default(self):
-        self.dataset.peak_dict = {
-            '172': dict()
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_sign()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].sign,"+")
-    def test_add_peak_set_sign_not_plusminus(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_sign()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].sign,"+")
+    def test_peak_init_fitting_type_is_none(self):
+        self.assertIsNone(self.peak._fitting_type)
 
-    def test_add_peak_set_peak_label(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo",label="Test")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_peak_label()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].peak_label,"Test")
+    def test_peak_init_peak_sing_is_none(self):
+        self.assertIsNone(self.peak._peak_sign)
 
-    def test_add_peak_set_peak_label_default(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].tbup=2
-        self.dataset.spectra[0].peaks[0]._set_peak_label()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].peak_label,"Peak_at_172_ppm_2_s")
+    def test_peak_init_line_broadening_is_none(self):
+        self.assertIsNone(self.peak._line_broadening)
 
-    def test_add_peak_set_peak_default(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_fitting_group()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].fitting_group,999)
+    def test_peak_center_set_to_int(self):
+        self.peak.peak_center = 1
+        self.assertEqual(self.peak.peak_center, 1.0)
 
-    def test_add_peak_set_peak_value(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo",fitting_group=1)
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_fitting_group()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].fitting_group,1)
+    def test_peak_center_set_to_float(self):
+        self.peak.peak_center = 1.0
+        self.assertEqual(self.peak.peak_center, 1.0)
 
-    def test_add_peak_set_peak_not_int(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo",fitting_group="hal")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_fitting_group()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].fitting_group,999)
+    def test_peak_center_set_to_invalid_type(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.peak_center = "str"
+        self.assertEqual(
+            str(context.exception),
+            "'peak_center' must be of type 'int' or 'float', but got <class 'str'>.",
+        )
 
+    def test_peak_center_private_variable(self):
+        self.peak.peak_center = 1
+        self.assertEqual(self.peak._peak_center, 1.0)
 
-    def test_add_peak_set_fitting_model_wrong_input(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo",fitting_model="hal")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_fitting_model()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].fitting_model,"voigt")
+    def test_dataset_add_one_peak(self):
+        self.ds.add_peak(12)
+        self.assertEqual(len(self.ds.peak_list), 1)
 
-    def test_add_peak_set_fitting_model_voigt(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo",fitting_model="voigt")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_fitting_model()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].fitting_model,"voigt")
+    def test_dataset_add_two_peaks(self):
+        self.ds.add_peak(12)
+        self.ds.add_peak(13)
+        self.assertEqual(len(self.ds.peak_list), 2)
 
-    def test_add_peak_set_fitting_model_gauss(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo",fitting_model="gauss")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_fitting_model()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].fitting_model,"gauss")
+    def test_dataset_add_one_peak_check_correct_peak_center(self):
+        self.ds.add_peak(12)
+        self.assertEqual(self.ds.peak_list[0].peak_center, 12.0)
 
-    def test_add_peak_set_fitting_model_lorentz(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo",fitting_model="lorentz")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_fitting_model()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].fitting_model,"lorentz")
-    def test_add_peak_set_fitting_model_nan(self):
-        self.dataset.peak_dict = {
-            '172': dict(sign="hallo")
-        }
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].add_peak(self.dataset.peak_dict)
-        self.dataset.spectra[0].peaks[0]._set_fitting_model()
-        self.assertEqual(self.dataset.spectra[0].peaks[
-                              0].fitting_model,"voigt")
+    def test_dataset_add_two_peaks_check_correct_peak_center(self):
+        self.ds.add_peak(12)
+        self.ds.add_peak(14.1)
+        peaks = []
+        for peak_center in self.ds.peak_list:
+            peaks.append(peak_center.peak_center)
+        self.assertListEqual(peaks, [12.0, 14.1])
 
-    def test_set_hight_x_val(self):
-        self.fake_spectrum()
-        self.assertEqual(self.dataset.spectra[0].peaks[0].hight['x_val'],150)
+    def test_peak_label_default(self):
+        self.peak.peak_center = 1
+        self.peak.peak_label = ""
+        self.assertEqual(self.peak.peak_label, "Peak_at_1_ppm")
 
-    def test_set_hight_y_val(self):
-        self.fake_spectrum()
-        self.assertEqual(self.dataset.spectra[0].peaks[0].hight['y_val'],200000)
+    def test_peak_label_own_label(self):
+        self.peak.peak_label = "C_alpha"
+        self.assertEqual(self.peak.peak_label, "C_alpha")
 
-    def test_set_hight_index(self):
-        self.fake_spectrum()
-        self.assertEqual(self.dataset.spectra[0].peaks[0].hight['index'],150)
+    def test_peak_label_set_to_invalid_type(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.peak_label = ["invalid"]
+        self.assertEqual(
+            str(context.exception),
+            "'peak_label' must be of type 'str', but got <class 'list'>.",
+        )
 
-    def test_set_hight_index(self):
-        self.fake_spectrum()
-        self.dataset.spectra[0].peaks[0].assign_values_from_dict()
-        self.assertEqual(self.dataset.spectra[0].peaks[0].hight['index'],150)
+    def test_peak_label_private_variable(self):
+        self.peak.peak_label = "C_alpha"
+        self.assertEqual(self.peak._peak_label, "C_alpha")
 
-    def test_add_peaks_to_all_exp(self):
-        self.dataset.spectra.append(Spectra(self.dataset))
-        self.dataset.spectra[0].x_axis = np.linspace(0, 300, num=301)
-        self.dataset.spectra[0].y_axis = \
-            200000 * np.exp(-((self.dataset.spectra[0].x_axis - 150) ** 2) / (
-                2 * 3 ** 2))
-        self.dataset.peak_dict = {
-            '149': dict(sign="+"),
-            '50':dict(sign="+")
-        }
-        self.dataset._add_peaks_to_all_exp()
-        self.assertEqual(self.dataset.spectra[0].peaks[0].hight['index'],150)
+    def test_dataset_add_two_peaks_check_correct_peak_labels(self):
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(14.1, peak_label="C_alpha")
+        peaks = []
+        for peak_label in self.ds.peak_list:
+            peaks.append(peak_label.peak_label)
+        self.assertListEqual(peaks, ["Peak_at_12_ppm", "C_alpha"])
 
-    def test_setup_spectrum_fitter(self):
-        self.fake_spectrum_for_fitting()
-        self.dataset.fitter = CorziliusNMR.utils.GlobalSpectrumFitter(self.dataset)
-        self.dataset.fitter.set_model()
-        self.dataset.fitter.fit()
-        self.assertAlmostEqual(self.dataset.spectra[0].
-                               peaks[0].area_under_peak['global'],
-                               1983017,delta=200000)
+    def test_fitting_type_default(self):
+        self.peak.fitting_type = "voigt"
+        self.assertEqual(self.peak.fitting_type, "voigt")
 
-    def test_setup_buildup_fitter(self):
-        self.fake_spectrum_for_fitting()
-        self.dataset.fitter = CorziliusNMR.utils.GlobalSpectrumFitter(self.dataset)
-        self.dataset.fitter.set_model()
-        self.dataset.fitter.fit()
-        self.dataset._buidup_fit_global()
-        self.assertAlmostEqual(self.dataset.spectra[0].
-                               peaks[0].area_under_peak['global'],
-                               1983017,delta=200000)
+    def test_fitting_type_gauss(self):
+        self.peak.fitting_type = "gauss"
+        self.assertEqual(self.peak.fitting_type, "gauss")
+
+    def test_fitting_type(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.fitting_type = 12
+        self.assertEqual(
+            str(context.exception),
+            "'fitting_type' must be of type 'str', but got <class 'int'>.",
+        )
+
+    def test_fitting_type_isinstance_of_gauss_lorentz_voigt(self):
+        with self.assertRaises(ValueError) as context:
+            self.peak.fitting_type = "weibull"
+        self.assertEqual(
+            str(context.exception),
+            "'fitting_type' must be one of ['gauss', 'lorentz', 'voigt'].",
+        )
+
+    def test_fitting_type_private_variable(self):
+        self.peak.fitting_type = "gauss"
+        self.assertEqual(self.peak._fitting_type, "gauss")
+
+    def test_dataset_add_two_peaks_check_correct_fitting_types(self):
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(14.1, fitting_type="gauss")
+        peaks = []
+        for fitting_type in self.ds.peak_list:
+            peaks.append(fitting_type.fitting_type)
+        self.assertListEqual(peaks, ["voigt", "gauss"])
+
+    def test_peak_sign_plus(self):
+        self.peak.peak_sign = "+"
+        self.assertEqual(self.peak.peak_sign, "+")
+
+    def test_peak_sign_minus(self):
+        self.peak.peak_sign = "-"
+        self.assertEqual(self.peak.peak_sign, "-")
+
+    def test_peak_sign_invalid_type(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.peak_sign = 12
+        self.assertEqual(
+            str(context.exception),
+            "'peak_sign' must be of type 'str', but got <class 'int'>.",
+        )
+
+    def test_peak_sign_invalid_value(self):
+        with self.assertRaises(ValueError) as context:
+            self.peak.peak_sign = "12"
+        self.assertEqual(
+            str(context.exception),
+            "'peak_sign' must be one of ['+', '-'].",
+        )
+
+    def test_peak_sign_private_variable(self):
+        self.peak.peak_sign = "-"
+        self.assertEqual(self.peak._peak_sign, "-")
+
+    def test_dataset_add_two_peaks_check_correct_signs(self):
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(14.1, peak_sign="-")
+        peaks = []
+        for peak_sign in self.ds.peak_list:
+            peaks.append(peak_sign.peak_sign)
+        self.assertListEqual(peaks, ["+", "-"])
+
+    def test_line_broadening_default_gauss(self):
+        self.peak.fitting_type = "gauss"
+        self.peak.line_broadening = dict()
+        self.assertDictEqual(
+            self.peak.line_broadening, {"sigma": {"min": 0, "max": 3}}
+        )
+
+    def test_line_broadening_default_lorentz(self):
+        self.peak.fitting_type = "lorentz"
+        self.peak.line_broadening = dict()
+        self.assertDictEqual(
+            self.peak.line_broadening, {"gamma": {"min": 0, "max": 3}}
+        )
+
+    def test_line_broadening_default_lorentz(self):
+        self.peak.fitting_type = "voigt"
+        self.peak.line_broadening = dict()
+        self.assertDictEqual(
+            self.peak.line_broadening,
+            {"sigma": {"min": 0, "max": 3}, "gamma": {"min": 0, "max": 3}},
+        )
+
+    def test_line_broadening_invalid_type(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.line_broadening = "12"
+        self.assertEqual(
+            str(context.exception),
+            "'line_broadening' must be a 'dict', but got <class 'str'>.",
+        )
+
+    def test_line_broadening_allowed_keys(self):
+        with self.assertRaises(ValueError) as context:
+            self.peak.line_broadening = {"test": {"min": 0, "max": 20}}
+        self.assertEqual(
+            str(context.exception),
+            "Invalid keys found in the dictionary: ['test']. Allowed keys are: ['sigma', 'gamma'].",
+        )
+
+    def test_line_broadening_dict_of_dicts(self):
+        with self.assertRaises(TypeError) as context:
+            self.peak.line_broadening = {"sigma": "min"}
+        self.assertEqual(
+            str(context.exception),
+            "Each value in the 'line_broadening' dictionary must be of type 'dict'.",
+        )
+
+    def test_line_broadening_allowed_keys_of_dict_of_dicts(self):
+        with self.assertRaises(ValueError) as context:
+            self.peak.line_broadening = {"sigma": {"min": 20, "invalid": 30}}
+        self.assertEqual(
+            str(context.exception),
+            "Invalid inner keys for 'sigma': ['invalid']. Allowed inner keys are: ['min', 'max'].",
+        )
+
+    def test_line_broadening_with_new_params_gauss(self):
+        self.peak.fitting_type = "gauss"
+        self.peak.line_broadening = {"sigma": {"min": 20, "max": 30}}
+        self.assertDictEqual(
+            self.peak.line_broadening, {"sigma": {"min": 20, "max": 30}}
+        )
+
+    def test_line_broadening_with_new_params_gauss(self):
+        self.peak.fitting_type = "lorentz"
+        self.peak.line_broadening = {"gamma": {"min": 20, "max": 30}}
+        self.assertDictEqual(
+            self.peak.line_broadening, {"gamma": {"min": 20, "max": 30}}
+        )
+
+    def test_line_broadening_with_new_params_voigt(self):
+        self.peak.fitting_type = "voigt"
+        self.peak.line_broadening = {"gamma": {"min": 20, "max": 30}}
+        self.assertDictEqual(
+            self.peak.line_broadening,
+            {"gamma": {"min": 20, "max": 30}, "sigma": {"max": 3, "min": 0}},
+        )
+
+    def test_line_broadening_with_new_params_and_wrong_input(self):
+        self.peak.fitting_type = "voigt"
+        with self.assertRaises(TypeError) as context:
+            self.peak.line_broadening = {"gamma": {"min": 20, "max": "20"}}
+        self.assertEqual(
+            str(context.exception),
+            "'max' value must be an 'int' or 'float', but got <class 'str'>.",
+        )
+
+    def test_line_broadening_with_new_params_voigt_private_variable(self):
+        self.peak.fitting_type = "voigt"
+        self.peak.line_broadening = {"gamma": {"min": 20, "max": 30}}
+        self.assertDictEqual(
+            self.peak._line_broadening,
+            {"gamma": {"min": 20, "max": 30}, "sigma": {"max": 3, "min": 0}},
+        )
+
+    def test_dataset_add_two_peaks_check_correct_signs(self):
+        # Next Test
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(
+            14.1,
+            line_broadening={
+                "gamma": {"min": 20, "max": 30},
+                "sigma": {"max": 20, "min": 0},
+            },
+        )
+        peaks = []
+        for line_broadening in self.ds.peak_list:
+            peaks.append(line_broadening.line_broadening)
+        self.assertListEqual(
+            peaks,
+            [
+                {
+                    "gamma": {"max": 3, "min": 0},
+                    "sigma": {"max": 3, "min": 0},
+                },
+                {
+                    "gamma": {"max": 30.0, "min": 20.0},
+                    "sigma": {"max": 20.0, "min": 0.0},
+                },
+            ],
+        )
+
+    def test_dataset_correct_peak_list_length(self):
+        # Next Test
+        self.ds.add_peak(12.3)
+        self.ds.add_peak(
+            14.1,
+            line_broadening={
+                "gamma": {"min": 20, "max": 30},
+                "sigma": {"max": 20, "min": 0},
+            },
+        )
+        self.assertEqual(len(self.ds.peak_list), 2)
+
+    def test_return_default_dict(self):
+        self.assertDictEqual(
+            self.peak._return_default_dict(),
+            {"sigma": {"min": 0, "max": 3}, "gamma": {"min": 0, "max": 3}},
+        )
+
+    def test_dataset_perform_global_spectrum_fit_set_correct_fitter(self):
+        self.ds._set_global_fitter()
+        self.assertEqual(
+            type(self.ds.fitter), CorziliusNMR.utils.GlobalFitter
+        )
+
+    def test_dataset_perform_single_spectrum_fit_set_correct_fitter(self):
+        self.ds._set_single_fitter()
+        self.assertEqual(
+            type(self.ds.fitter), CorziliusNMR.utils.SingleFitter
+        )
+
+    def test_dataset_perform_single_spectrum_fit_set_correct_fitter(self):
+        self.ds._set_prefitter()
+        self.assertEqual(type(self.ds.fitter), CorziliusNMR.utils.Prefitter)
+
+    def test_init_dataset_lmfit_result_handler(self):
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler),
+            CorziliusNMR.io.LmfitResultHandler,
+        )
+
+    def test_calculate_peak_intensities_prefit_result_setter(self):
+        self.ds.props.prefit = True
+        self.add_n_spectra(1)
+        self.ds.add_peak(250)
+        self.ds._calculate_peak_intensities()
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.prefit),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_update_line_broadening(self):
+        self.ds.props.prefit = True
+        self.add_n_spectra(1)
+        self.ds.add_peak(250)
+        self.ds._set_prefitter()
+        result = self.ds.fitter.fit()
+        self.ds._update_line_broadening(result)
+        self.ds.peak_list[-1].line_broadening["gamma"]["max"] = round(
+            self.ds.peak_list[-1].line_broadening["gamma"]["max"], 3
+        )
+        self.ds.peak_list[-1].line_broadening["gamma"]["min"] = round(
+            self.ds.peak_list[-1].line_broadening["gamma"]["min"], 3
+        )
+        self.ds.peak_list[-1].line_broadening["sigma"]["max"] = round(
+            self.ds.peak_list[-1].line_broadening["sigma"]["max"], 3
+        )
+        self.ds.peak_list[-1].line_broadening["sigma"]["min"] = round(
+            self.ds.peak_list[-1].line_broadening["sigma"]["min"], 3
+        )
+        self.assertDictEqual(
+            self.ds.peak_list[-1].line_broadening,
+            {
+                "sigma": {"min": 1.8, "max": 2.2},
+                "gamma": {"min": 1.8, "max": 2.2},
+            },
+        )
+
+    def test_update_line_broadening_gauss(self):
+        self.ds.props.prefit = True
+        self.add_n_spectra(1, type=["gauss"])
+        self.ds.add_peak(150)
+        self.ds.peak_list[0].fitting_type = "gauss"
+        self.ds._set_prefitter()
+        result = self.ds.fitter.fit()
+        self.ds._update_line_broadening(result)
+        self.ds.peak_list[-1].line_broadening["sigma"]["max"] = round(
+            self.ds.peak_list[-1].line_broadening["sigma"]["max"], 3
+        )
+        self.ds.peak_list[-1].line_broadening["sigma"]["min"] = round(
+            self.ds.peak_list[-1].line_broadening["sigma"]["min"], 3
+        )
+        self.assertDictEqual(
+            self.ds.peak_list[-1].line_broadening,
+            {"sigma": {"min": 2.7, "max": 3.3}},
+        )
+
+    def test_update_line_broadening_lorentz(self):
+        self.ds.props.prefit = True
+        self.add_n_spectra(1, type=["lorentz"])
+        self.ds.add_peak(200)
+        self.ds.peak_list[0].fitting_type = "lorentz"
+        self.ds._set_prefitter()
+        result = self.ds.fitter.fit()
+        self.ds._update_line_broadening(result)
+        self.ds.peak_list[-1].line_broadening["gamma"]["max"] = round(
+            self.ds.peak_list[-1].line_broadening["gamma"]["max"], 3
+        )
+        self.ds.peak_list[-1].line_broadening["gamma"]["min"] = round(
+            self.ds.peak_list[-1].line_broadening["gamma"]["min"], 3
+        )
+        self.assertDictEqual(
+            self.ds.peak_list[-1].line_broadening,
+            {"gamma": {"min": 2.7, "max": 3.3}},
+        )
+
+    def test_calculate_peak_intensities_single_fit_result_setter_without_prefit(
+        self,
+    ):
+        self.ds.props.spectrum_fit_type = ["individual"]
+        self.add_n_spectra(3)
+        self.ds.add_peak(250)
+        self.ds._calculate_peak_intensities()
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.single_fit),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_calculate_peak_intensities_single_fit_result_setter_with_prefit(
+        self,
+    ):
+        self.ds.props.prefit = True
+        self.ds.props.spectrum_fit_type = ["individual"]
+        self.add_n_spectra(3)
+        self.ds.add_peak(250)
+        self.ds._calculate_peak_intensities()
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.single_fit),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_calculate_peak_intensities_global_fit_result_setter_without_prefit(
+        self,
+    ):
+        self.add_n_spectra(3)
+        self.ds.add_peak(250)
+        self.ds._calculate_peak_intensities()
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.global_fit),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_calculate_peak_intensities_global_fit_result_setter_with_prefit(
+        self,
+    ):
+        self.ds.props.prefit = True
+        self.add_n_spectra(3)
+        self.ds.add_peak(250)
+        self.ds._calculate_peak_intensities()
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.global_fit),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_buildup_list_init_tdel(self):
+        tbup = dataset.BuildupList()
+        self.assertEqual(tbup.tdel, None)
+
+    def test_buildup_list_init_intensity(self):
+        tbup = dataset.BuildupList()
+        self.assertEqual(tbup.intensity, None)
+
+    def test_buidlup_list_set_tdel(self):
+        self.add_n_spectra(5)
+        for nr, spectrum in enumerate(self.ds.spectra):
+            spectrum.tdel = nr * 2
+        b_list = CorziliusNMR.dataset.BuildupList()
+        b_list._set_tdel(self.ds.spectra)
+        self.assertListEqual(b_list.tdel, [0, 2, 4, 6, 8])
+
+    def test_buildup_list_set_intensity_one_peak_voigt(self):
+        self.add_n_spectra(5)
+        self.ds.add_peak(250)
+        b_list = CorziliusNMR.dataset.BuildupList()
+        b_list._set_tdel(self.ds.spectra)
+        self.ds._set_single_fitter()
+        result = self.ds.fitter.fit()
+        b_list._set_intensity(
+            result, self.ds.peak_list[0].peak_label, self.ds.spectra
+        )
+        for val_nr, val in enumerate(b_list.intensity):
+            b_list.intensity[val_nr] = round(val)
+
+        result_list = [
+            791,
+            1581,
+            2372,
+            3163,
+            3954,
+        ]
+        self.assertListEqual(b_list.intensity, result_list)
+
+    def test_sort_lists(self):
+        b_list = CorziliusNMR.dataset.BuildupList()
+        b_list.tdel = [1, 2, 4, 8, 16, 128, 256, 32, 64]
+        b_list.intensity = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        b_list._sort_lists()
+        result_list = [2**i for i in range(9)] + [1, 2, 3, 4, 5, 8, 9, 6, 7]
+        self.assertListEqual(b_list.tdel + b_list.intensity, result_list)
+
+    def test_monoexp_fitting(self):
+        fitting_type = "exponential"
+        self.start_buildup_fitting(fitting_type)
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.buildup_fit[fitting_type][0]),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_biexp_fitting(self):
+        fitting_type = "biexponential"
+        self.start_buildup_fitting(fitting_type)
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.buildup_fit[fitting_type][0]),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_biexp_offset_fitting(self):
+        fitting_type = "biexponential_with_offset"
+        self.start_buildup_fitting(fitting_type)
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.buildup_fit[fitting_type][0]),
+            lmfit.minimizer.MinimizerResult,
+        )
+
+    def test_exp_offset_fitting(self):
+        fitting_type = "exponential_with_offset"
+        self.start_buildup_fitting(fitting_type)
+        self.assertEqual(
+            type(self.ds.lmfit_result_handler.buildup_fit[fitting_type][0]),
+            lmfit.minimizer.MinimizerResult,
+        )

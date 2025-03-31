@@ -1,0 +1,12 @@
+~2 uL 30% EtOH-d3 with 10mM AMUPol in 50% glycerol, 20% H2O, and ~0.5 mg KBr (powder, separated with FKM spacer)
+
+T = 97.4 K
+w_rot = 15 kHz
+
+MWon
+16.7 kV, 132 mA, 0.34 V
+
+1H pulse 140 kHz at 19 W
+2H pulse 62.5 kHz at 18 W
+
+1H CP contact pulse 98.81 kHz at 8 W
