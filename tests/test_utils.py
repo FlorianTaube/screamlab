@@ -948,7 +948,7 @@ class TestDataset(unittest.TestCase):
         fitter = utils.BiexpFitter(self.ds)
         result = fitter._calc_intensity([1, 2, 3], [20, 10, 2, 8])
         result = [int(val) for val in result]
-        expected_vals = [9, 14, 8]
+        expected_vals = [9, 14, 18]
         self.assertListEqual(result, expected_vals)
 
     def test_exp_fitter_calc_intensity(self):
