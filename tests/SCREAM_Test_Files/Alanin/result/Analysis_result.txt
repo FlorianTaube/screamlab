@@ -5,7 +5,7 @@ Procno: 103
 Prefit: True
 Spectrum for prefit: -2
 Spectrum fitting type: ['global']
-Buildup evaluation: ['exponential', 'exponential_with_offset']
+Buildup evaluation: ['exponential', 'exponential_with_offset', 'biexponential']
 Calculated polarization time from L 20 and D 20 if SCREAM data given.
 Wrote output files to: ..\tests\SCREAM_Test_Files\Alanin\result
 [[Dataset]]
@@ -16,27 +16,30 @@ Peak center: -16.0
 Peak label: Peak_at_m16_ppm
 Peak shape: voigt
 Peak sign: +
-Start global fit with: {'sigma': {'min': 0.5098097027487842, 'max': 0.6231007478040697}, 'gamma': {'min': 1.7999999805341687, 'max': 2.1999999762084284}}
+Start global fit with: {'sigma': {'min': 0.4575475875077808, 'max': 0.5592248291761766}, 'gamma': {'min': 1.8313856859395345, 'max': 2.2383602828149867}}
 Parameters for buildup fitting:
 Delay times:	0.25			0.5			1.0			2.0			4.0			8.0			16.0			32.0
-Integral:	15541.295539217583	23345.325644395165	60342.56492285331	140434.7681765492	322091.3327812336	665250.5039483255	1123503.3316052896	1607617.411799784
+Integral:	15575.363570078931	23402.5390568854	60478.26806102604	140754.73848984914	322843.9591735653	666808.3670378386	1126174.145162942	1611508.6709577197
 [[Prefit]]
 Label			Center				Amplitude			Sigma				Gamma
-Peak_at_m16_ppm	-15.817	27858.84	0.566	2.0
+Peak_at_m16_ppm	-15.818	27993.835	0.508	2.035
 [[Global fit results]]
 Label                    Time / sCenter / ppmAmplitude / a.u.Sigma / ppmGamma / ppmFWHM Lorentz / ppmFWHM Gauss / ppmFWHM Voigt / ppmIntegral / a.u.
-Peak_at_m16_ppm          0.25  -15.688   395.081        0.51      2.127     4.255          1.201          4.429          15541.296 
-                         0.5   -15.688   593.512        0.51      2.127     4.255          1.201          4.429          23345.326 
-                         1.0   -15.688   1534.098       0.51      2.127     4.255          1.201          4.429          60342.565 
-                         2.0   -15.688   3570.293       0.51      2.127     4.255          1.201          4.429          140434.768
-                         4.0   -15.688   8188.574       0.51      2.127     4.255          1.201          4.429          322091.333
-                         8.0   -15.688   16912.76       0.51      2.127     4.255          1.201          4.429          665250.504
-                         16.0  -15.688   28562.987      0.51      2.127     4.255          1.201          4.429          1123503.332
-                         32.0  -15.688   40870.69       0.51      2.127     4.255          1.201          4.429          1607617.412
+Peak_at_m16_ppm          0.25  -15.689   395.974        0.458     2.149     4.299          1.077          4.439          15575.364 
+                         0.5   -15.689   595.007        0.458     2.149     4.299          1.077          4.439          23402.539 
+                         1.0   -15.689   1537.654       0.458     2.149     4.299          1.077          4.439          60478.268 
+                         2.0   -15.689   3578.675       0.458     2.149     4.299          1.077          4.439          140754.738
+                         4.0   -15.689   8208.274       0.458     2.149     4.299          1.077          4.439          322843.959
+                         8.0   -15.689   16953.534      0.458     2.149     4.299          1.077          4.439          666808.367
+                         16.0  -15.689   28632.861      0.458     2.149     4.299          1.077          4.439          1126174.145
+                         32.0  -15.689   40972.441      0.458     2.149     4.299          1.077          4.439          1611508.671
 [[Buildup fit results]]
 [exponential]
 Label               A1 / a.u.      t1 / s    A2 / a.u.      t2 / s    t_off / s      R1 / 1/s       R2 / 1/s       Sensitivity1 (A1/sqrt(t1))         Sensitivity2 (A2/sqrt(t2))         
-Peak_at_m16_ppm     2100715.168    21.72     ---            ---       ---            0.04604        ---            450751.583                         ---                                
+Peak_at_m16_ppm     2105967.847    21.724    ---            ---       ---            0.04603        ---            451837.05                          ---                                
 [exponential_with_offset]
 Label               A1 / a.u.      t1 / s    A2 / a.u.      t2 / s    t_off / s      R1 / 1/s       R2 / 1/s       Sensitivity1 (A1/sqrt(t1))         Sensitivity2 (A2/sqrt(t2))         
-Peak_at_m16_ppm     2002502.915    19.332    ---            ---       0.35           0.05173        ---            455443.768                         ---                                
+Peak_at_m16_ppm     2007484.315    19.335    ---            ---       0.35           0.05172        ---            456541.301                         ---                                
+[biexponential]
+Label               A1 / a.u.      t1 / s    A2 / a.u.      t2 / s    t_off / s      R1 / 1/s       R2 / 1/s       Sensitivity1 (A1/sqrt(t1))         Sensitivity2 (A2/sqrt(t2))         
+Peak_at_m16_ppm     1874836.957    21.724    231130.771     21.724    ---            0.04603        0.04603        402247.736                         49589.288                          

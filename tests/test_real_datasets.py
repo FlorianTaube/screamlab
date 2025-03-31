@@ -10,7 +10,11 @@ class TestDataset(unittest.TestCase):
         props = settings.Properties()
         props.prefit = True
         props.spectrum_for_prefit = -2
-        props.buildup_types = ["exponential", "exponential_with_offset"]
+        props.buildup_types = [
+            "exponential",
+            "exponential_with_offset",
+            "biexponential",
+        ]
         props.expno = [1, 8]
         props.procno = 103
         props.path_to_experiment = r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Alanin"
