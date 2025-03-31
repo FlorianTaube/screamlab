@@ -213,6 +213,7 @@ class Prefitter(Fitter):
 
         :return: Tuple containing lists of x and y axes.
         """
+
         spectrum_for_prefit = self.dataset.props.spectrum_for_prefit
         x_axis, y_axis = [], []
         x_axis.append(self.dataset.spectra[spectrum_for_prefit].x_axis)
