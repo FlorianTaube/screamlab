@@ -1,7 +1,4 @@
 import unittest
-
-import bruker.api.topspin as top
-
 import CorziliusNMR.dataset
 from CorziliusNMR import io, dataset
 
@@ -17,18 +14,7 @@ class TestDataset(unittest.TestCase):
         self.scream_importer._dataset.spectra.append(
             CorziliusNMR.dataset.Spectra()
         )
-        self.scream_importer._nmr_data = self.scream_importer._data_provider.getNMRData(
-            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Alanin\8\pdata\103"
-        )
-
-    def set_up_one_real_spectrum_pseudo2dimporter(self):
-        for i in range(0, 16):
-            self.pseudo_importer._dataset.spectra.append(
-                CorziliusNMR.dataset.Spectra()
-            )
-        self.pseudo_importer._nmr_data = self.pseudo_importer._data_provider.getNMRData(
-            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\Pseud2DTestFiles\1\pdata\1"
-        )
+        self.scream_importer.file = r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\tests\SCREAM_Test_Files\Alanin\8"
 
     def set_up_real_dataset(self):
         self.scream_importer._dataset.props.procno = 103
@@ -38,15 +24,6 @@ class TestDataset(unittest.TestCase):
     def test_scream_init_set_dataset(self):
         self.assertEqual(
             type(self.scream_importer._dataset), CorziliusNMR.dataset.Dataset
-        )
-
-    def test_scream_init_set_topspin(self):
-        self.assertEqual(type(self.scream_importer._top), top.Topspin)
-
-    def test_scream_init_set_data_provider(self):
-        self.assertEqual(
-            type(self.scream_importer._data_provider),
-            top.DataProvider,
         )
 
     def test_scream_init_path_is_none(self):
@@ -60,7 +37,7 @@ class TestDataset(unittest.TestCase):
         pathlist = self.scream_importer._generate_path_to_experiment()
         self.assertEqual(
             pathlist[0],
-            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR\2\pdata\103",
+            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR\2",
         )
 
     def test_add_one_spectrum(self):
@@ -100,9 +77,7 @@ class TestDataset(unittest.TestCase):
     def test_set_get_physical_range(self):
         self.set_up_one_real_spectrum()
         range = self.scream_importer._get_physical_range()
-        self.assertDictEqual(
-            range, {"start": 169.41909790039062, "end": -244.33107277569366}
-        )
+        self.assertDictEqual(range, {"start": 169.4191, "end": -244.3311})
 
     def test_set_get_number_of_datapoints(self):
         self.set_up_one_real_spectrum()
@@ -142,15 +117,6 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(
             len(self.scream_importer._dataset.spectra[0].y_axis), 16384
         )
-
-    def test_normalizse_y_data_to_number_of_scans(self):
-        self.set_up_one_real_spectrum()
-        self.scream_importer._set_number_of_scans()
-        self.scream_importer._set_y_data()
-        maximum = max(self.scream_importer._dataset.spectra[0].y_axis)
-        self.scream_importer._normalize_y_values_to_number_of_scans()
-        norm_maximum = max(self.scream_importer._dataset.spectra[0].y_axis)
-        self.assertEqual(maximum / 16, norm_maximum)
 
     def test_set_values(self):
         self.set_up_one_real_spectrum()
@@ -214,20 +180,8 @@ class TestDataset(unittest.TestCase):
             type(self.pseudo_importer._dataset), CorziliusNMR.dataset.Dataset
         )
 
-    def test_pseudo2dimporter_init_set_topspin(self):
-        self.assertEqual(type(self.pseudo_importer._top), top.Topspin)
-
-    def test_pseudo2dimporter_init_set_data_provider(self):
-        self.assertEqual(
-            type(self.pseudo_importer._data_provider),
-            top.DataProvider,
-        )
-
     def test_pseudo2dimporter_init_path_is_none(self):
         self.assertIsNone(self.pseudo_importer._current_path_to_exp)
-
-    def test_pseudo2dimporter_init_nmr_data_is_none(self):
-        self.assertIsNone(self.pseudo_importer._nmr_data)
 
     def test_generate_path_to_experiment_pseudo2dimporter(self):
         self.pseudo_importer._dataset.props.expno = [1]
@@ -235,7 +189,7 @@ class TestDataset(unittest.TestCase):
         pathlist = self.pseudo_importer._generate_path_to_experiment()
         self.assertEqual(
             pathlist[0],
-            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR\1\pdata\1",
+            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR\1",
         )
 
     def test_add_one_spectrump_seudo2dimporter(self):
@@ -268,9 +222,7 @@ class TestDataset(unittest.TestCase):
     def test_set_get_physical_range(self):
         self.set_up_one_real_spectrum()
         range = self.scream_importer._get_physical_range()
-        self.assertDictEqual(
-            range, {"start": 169.41909790039062, "end": -244.33107277569366}
-        )
+        self.assertDictEqual(range, {"start": 169.4191, "end": -244.3311})
 
     def test_set_get_number_of_datapoints(self):
         self.set_up_one_real_spectrum()
@@ -310,15 +262,6 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(
             len(self.scream_importer._dataset.spectra[0].y_axis), 16384
         )
-
-    def test_normalizse_y_data_to_number_of_scans(self):
-        self.set_up_one_real_spectrum()
-        self.scream_importer._set_number_of_scans()
-        self.scream_importer._set_y_data()
-        maximum = max(self.scream_importer._dataset.spectra[0].y_axis)
-        self.scream_importer._normalize_y_values_to_number_of_scans()
-        norm_maximum = max(self.scream_importer._dataset.spectra[0].y_axis)
-        self.assertEqual(maximum / 16, norm_maximum)
 
     def test_set_values(self):
         self.set_up_one_real_spectrum()

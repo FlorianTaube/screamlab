@@ -49,6 +49,7 @@ setuptools.setup(
         "lmfit",
         "scipy",
         "pyDOE2",
+        "nmrglue",
     ],
     extras_require={
         "dev": [

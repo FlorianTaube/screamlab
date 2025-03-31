@@ -5,13 +5,13 @@ io module of the CorziliusNMR package.
 import lmfit
 from CorziliusNMR import dataset, functions
 import numpy as np
-import bruker.api.topspin as top
 import os
 import matplotlib.pyplot as plt
 import copy
 import csv
 import math
 import sys
+import nmrglue as ng
 
 
 class TopspinImporter:
@@ -30,8 +30,7 @@ class TopspinImporter:
         :type dataset: CorziliusNMR.dataset.Dataset
         """
         self._dataset = dataset
-        self._top = top.Topspin()
-        self._data_provider = self._top.getDataProvider()
+        self.file = None
         self._current_path_to_exp = None
         self._nmr_data = None
 
@@ -46,7 +45,6 @@ class TopspinImporter:
         self._normalize_y_values_to_number_of_scans()
         if len(self._dataset.props.subspec) == 2:
             self._gen_subspectrum()
-        self._close()
 
     def _add_spectrum(self):
         """
@@ -61,7 +59,18 @@ class TopspinImporter:
         :return: The physical range of the spectrum.
         :rtype: dict
         """
-        return self._nmr_data.getSpecDataPoints()["physicalRanges"][0]
+        ranges = {}
+        with open(
+            f"{self.file}\\pdata\\{self._dataset.props.procno}\\procs",
+            "r",
+            encoding="utf-8",
+        ) as procs_file:
+            for procs_line in procs_file:
+                if "##$ABSF1=" in procs_line:
+                    ranges["start"] = float(procs_line.strip().split(" ")[-1])
+                if "##$ABSF2=" in procs_line:
+                    ranges["end"] = float(procs_line.strip().split(" ")[-1])
+        return ranges
 
     def _get_num_of_datapoints(self):
         """
@@ -70,7 +79,16 @@ class TopspinImporter:
         :return: Number of data points.
         :rtype: int
         """
-        return len(self._nmr_data.getSpecDataPoints()["dataPoints"])
+        datapoints = None
+        with open(
+            f"{self.file}\\pdata\\{self._dataset.props.procno}\\procs",
+            "r",
+            encoding="utf-8",
+        ) as procs_file:
+            for procs_line in procs_file:
+                if "##$FTSIZE=" in procs_line:
+                    datapoints = int(procs_line.strip().split(" ")[-1])
+        return datapoints
 
     def _calc_x_axis(self, physical_range, number_of_datapoints):
         """
@@ -89,12 +107,6 @@ class TopspinImporter:
             number_of_datapoints,
         )
 
-    def _close(self):
-        """
-        Close the TopSpin API connection.
-        """
-        self._top.apiClient.pool.close()
-
     def _generate_path_to_experiment(self):
         """
         Generate file paths for all experiment numbers.
@@ -105,7 +117,7 @@ class TopspinImporter:
         base_path = self._dataset.props.path_to_experiment
         procno = self._dataset.props.procno
         path_list = [
-            os.path.join(base_path, str(expno), "pdata", str(procno))
+            os.path.join(base_path, str(expno))
             for expno in self._dataset.props.expno
         ]
         return path_list
@@ -120,9 +132,12 @@ class ScreamImporter(TopspinImporter):
         """
         Set the number of scans for the last spectrum in the dataset.
         """
-        self._dataset.spectra[-1].number_of_scans = int(
-            self._nmr_data.getPar("NS")
-        )
+        with open(f"{self.file}\\acqu", "r", encoding="utf-8") as acqu_file:
+            for acqu_line in acqu_file:
+                if "##$NS=" in acqu_line:
+                    self._dataset.spectra[-1].number_of_scans = int(
+                        acqu_line.strip().split(" ")[-1]
+                    )
 
     def import_topspin_data(self):
         """
@@ -130,17 +145,56 @@ class ScreamImporter(TopspinImporter):
         """
         files = self._generate_path_to_experiment()
         for file in files:
+            self.file = file
             self._add_spectrum()
-            self._nmr_data = self._data_provider.getNMRData(file)
             self._set_values()
 
     def _set_buildup_time(self):
         """
         Set the buildup time for the last spectrum in the dataset.
         """
-        loop = float(self._nmr_data.getPar(self._dataset.props.loop20))
-        delay = float(self._nmr_data.getPar(self._dataset.props.delay20))
+        delay = self._extract_params_from_acqus("##$D= (0..63)", 64)
+        loop = self._extract_params_from_acqus("##$L= (0..31)", 32)
         self._dataset.spectra[-1].tdel = loop * delay
+
+    def _extract_params_from_acqus(self, param_list_name, param_count):
+        flag = False
+        param_line = ""
+        param = None
+        with open(f"{self.file}\\acqus", "r", encoding="utf-8") as acqus_file:
+            for acqus_line in acqus_file:
+                if "##" in acqus_line:
+                    flag = False
+                if flag:
+                    param_line = param_line + " " + acqus_line.strip()
+                    if (
+                        len(
+                            [
+                                element
+                                for element in param_line.split(" ")
+                                if element != ""
+                            ]
+                        )
+                        == param_count
+                    ):
+                        param_line = [
+                            float(delay_time)
+                            for delay_time in param_line.split(" ")
+                            if delay_time != ""
+                        ]
+                        if param_list_name == "##$D= (0..63)":
+                            param = param_line[
+                                int(
+                                    self._dataset.props.delay20.split(" ")[-1]
+                                )
+                            ]
+                        elif param_list_name == "##$L= (0..31)":
+                            param = param_line[
+                                int(self._dataset.props.loop20.split(" ")[-1])
+                            ]
+                if param_list_name in acqus_line:
+                    flag = True
+        return param
 
     def _set_x_data(self):
         """
@@ -156,9 +210,10 @@ class ScreamImporter(TopspinImporter):
         """
         Set the y-axis data for the last spectrum in the dataset.
         """
-        self._dataset.spectra[-1].y_axis = self._nmr_data.getSpecDataPoints()[
-            "dataPoints"
-        ]
+        _, y_data = ng.bruker.read_pdata(
+            f"{self.file}\\pdata\\" f"{self._dataset.props.procno}"
+        )
+        self._dataset.spectra[-1].y_axis = y_data
 
     def _normalize_y_values_to_number_of_scans(self):
         """
@@ -179,69 +234,6 @@ class ScreamImporter(TopspinImporter):
 
 class Pseudo2DImporter(TopspinImporter):
     pass
-
-    def import_topspin_data(self):
-        """
-        Import NMR data from TopSpin and process it.
-        """
-        files = self._generate_path_to_experiment()
-        vdlist = os.path.join(
-            self._dataset.props.path_to_experiment,
-            str(self._dataset.props.expno[0]),
-            "vdlist",
-        )
-        vdfile = open(vdlist, "r")
-        for tdel in vdfile:
-            self._add_spectrum()
-            if "u" in tdel:
-                tdel = tdel.replace("u", "")
-                tdel = float(tdel) * 10**-6
-            elif "m" in tdel:
-                tdel = tdel.replace("m", "")
-                tdel = float(tdel) * 10**-3
-            self._dataset.spectra[-1].tdel = float(tdel)
-
-        vdfile.close()
-
-        self._nmr_data = self._data_provider.getNMRData(files[0])
-
-        for spectrum_nr in range(
-            0,
-            self._nmr_data.getSpecDataPoints()["indexRanges"][1][
-                "numberOfPoints"
-            ],
-        ):
-
-            physical_range = self._nmr_data.getSpecDataPoints()[
-                "physicalRanges"
-            ][0]
-
-            number_of_datapoints = self._nmr_data.getSpecDataPoints()[
-                "indexRanges"
-            ][0]["numberOfPoints"]
-            self._dataset.spectra[spectrum_nr].x_axis = self._calc_x_axis(
-                physical_range, number_of_datapoints
-            )
-
-            start = 0 + spectrum_nr * number_of_datapoints
-            stop = number_of_datapoints + spectrum_nr * number_of_datapoints
-            self._dataset.spectra[spectrum_nr].number_of_scans = (
-                self._nmr_data.getPar("NS")
-            )
-            self._dataset.spectra[
-                spectrum_nr
-            ].y_axis = self._nmr_data.getSpecDataPoints()["dataPoints"][
-                start:stop
-            ]
-            if len(self._dataset.props.subspec) == 2:
-                (
-                    self._dataset.spectra[spectrum_nr].x_axis,
-                    self._dataset.spectra[spectrum_nr].y_axis,
-                ) = functions.generate_subspec(
-                    self._dataset.spectra[spectrum_nr],
-                    self._dataset.props.subspec,
-                )
-        self._close()
 
 
 class Exporter:
