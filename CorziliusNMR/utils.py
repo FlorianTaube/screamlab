@@ -227,7 +227,6 @@ class Prefitter(Fitter):
         best_result = None
         best_chisqr = np.inf
         for sample_nr, sample in enumerate(lhs_samples):
-            print(f"{sample_nr+1}/{len(lhs_samples)}")
             i = 0
             for param in params:
                 if "sigma_0" in param or "gamma_0" in param:
