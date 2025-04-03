@@ -12,5 +12,3 @@ Not yet released
 
 * First public release
 
-* ...
-
