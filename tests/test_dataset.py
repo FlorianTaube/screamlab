@@ -100,7 +100,7 @@ class TestDataset(unittest.TestCase):
 
     def test_spectra_init_tdel_None(self):
         spectrum = CorziliusNMR.dataset.Spectra()
-        self.assertIsNone(spectrum.tdel)
+        self.assertIsNone(spectrum.tpol)
 
     def test_spectra_init_x_axis_is_None(self):
         spectrum = CorziliusNMR.dataset.Spectra()
@@ -567,7 +567,7 @@ class TestDataset(unittest.TestCase):
     def test_buidlup_list_set_tdel(self):
         self.add_n_spectra(5)
         for nr, spectrum in enumerate(self.ds.spectra):
-            spectrum.tdel = nr * 2
+            spectrum.tpol = nr * 2
         b_list = CorziliusNMR.dataset.BuildupList()
         b_list._set_tdel(self.ds.spectra)
         self.assertListEqual(b_list.tdel, [0, 2, 4, 6, 8])

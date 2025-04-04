@@ -156,7 +156,7 @@ class ScreamImporter(TopspinImporter):
         """
         delay = self._extract_params_from_acqus("##$D= (0..63)", 64)
         loop = self._extract_params_from_acqus("##$L= (0..31)", 32)
-        self._dataset.spectra[-1].tdel = loop * delay
+        self._dataset.spectra[-1].tpol = loop * delay
 
     def _extract_params_from_acqus(self, param_list_name, param_count):
         flag = False
@@ -300,7 +300,7 @@ class Exporter:
             plt.plot(
                 spectrum.x_axis,
                 spectrum.y_axis,
-                label=f"t_pol = {spectrum.tdel} s",
+                label=f"t_pol = {spectrum.tpol} s",
                 color=colors[idx],
             )
         plt.gca().invert_xaxis()
@@ -429,13 +429,13 @@ class Exporter:
             ][peak_nr]
             color = colors(norm(peak_nr))
             plt.plot(
-                peak.buildup_vals.tdel,
+                peak.buildup_vals.tpol,
                 peak.buildup_vals.intensity,
                 "o",
                 color=color,
                 label=f"{peak.peak_label}",
             )
-            sim_tdel = np.linspace(0, peak.buildup_vals.tdel[-1], 1024)
+            sim_tdel = np.linspace(0, peak.buildup_vals.tpol[-1], 1024)
             val_list = [param.value for param in peak_result.params.values()]
             plt.plot(
                 sim_tdel,
@@ -503,7 +503,7 @@ class Exporter:
 
             plt.tight_layout()
             plot_filename = os.path.join(
-                output_dir, f"Spectrum_at_{spectrum.tdel}_s.pdf"
+                output_dir, f"Spectrum_at_{spectrum.tpol}_s.pdf"
             )
             plt.savefig(plot_filename, dpi=500, bbox_inches="tight")
 
@@ -571,7 +571,7 @@ class Exporter:
             ax_spectrum.text(
                 0.05,
                 0.85,
-                f"$t_{{pol}} = {spectrum.tdel:.2f} \, \mathrm{{s}}$",
+                f"$t_{{pol}} = {spectrum.tpol:.2f} \, \mathrm{{s}}$",
                 transform=ax_spectrum.transAxes,
                 fontsize=7,
                 bbox=dict(facecolor="white", alpha=0.5),
@@ -828,7 +828,7 @@ class Exporter:
                     if val_nr == 0
                     else ""
                 ),
-                self.dataset.spectra[val_nr].tdel,
+                self.dataset.spectra[val_nr].tpol,
                 round(values[delay_time][1], 3),
                 round(values[delay_time][0], 3),
                 round(values[delay_time][2], 3),

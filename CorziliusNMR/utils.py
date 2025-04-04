@@ -217,11 +217,11 @@ class Fitter:
 
 class Prefitter(Fitter):
     """
-    The Prefitter class is a specialized subclass of the Fitter class that performs a preliminary fit on a single preselected spectrum to reduce the parameter search space for the subsequent global fit. By fitting the spectrum first, it estimates optimal parameters, particularly for linewidths, and narrows down the parameter intervals. The pre-fit parameters define bounds (±10%) for the linewidths. These refined intervals are then used in the global fit, significantly reducing computational time by limiting the parameter range.
-
-    Inherits from:
-        Fitter - Provides general fitting routines for buildup data.
-
+    The Prefitter class is a specialized subclass of the Fitter class that performs a preliminary fit on a single
+    preselected spectrum to reduce the parameter search space for the subsequent global fit. By fitting the spectrum
+    first, it estimates optimal parameters, particularly for linewidths, and narrows down the parameter intervals.
+    The pre-fit parameters define bounds (±10%) for the linewidths. These refined intervals are then used in the global
+    fit, significantly reducing computational time by limiting the parameter range.
     """
 
     def _generate_axis_list(self):
@@ -267,9 +267,14 @@ class Prefitter(Fitter):
 
 class GlobalFitter(Fitter):
     """
-    Global fit over all spectra at different polarization times: For SCREAM-DNP data it can be assumed that the line broadening did not vary over all polarization times in cases where a homogeneous polarization buildup on protons exists. Sames goes for the center of each peak since the chemical shift is not depending on the polarization time. For this it is recommended to carefully reference all spectra during post-processing. With this the number of fitting parameters can drastically be reduced yielding to a shorter calculation time. In this case all spectra from a SCREAM-DNP buildup series can be described by two lineshape parameters (sigma and gamma), one variable for the peak center (µ), and n amplitude variables per resonance, where n stands for the number of spectra within one series.
-    Inherits from:
-        Fitter - Provides general fitting routines for buildup data.
+    Global fit over all spectra at different polarization times: For SCREAM-DNP data it can be assumed that the line
+    broadening did not vary over all polarization times in cases where a homogeneous polarization buildup on protons
+    exists. Same goes for the center of each peak since the chemical shift is not depending on the polarization time.
+
+    For this it is recommended to carefully reference all spectra during post-processing. With this, the number of
+    fitting parameters can drastically be reduced, yielding a shorter calculation time. In this case, all spectra from
+    a SCREAM-DNP buildup series can be described by two lineshape parameters (sigma and gamma), one variable for the
+    peak center (µ), and n amplitude variables per resonance, where n stands for the number of spectra within one series.
     """
 
     def _set_param_expr(self, params):
@@ -293,10 +298,13 @@ class GlobalFitter(Fitter):
 
 class IndependentFitter(Fitter):
     """
-    Fit of each spectrum with individual parameter set: In some cases it might be necessary to simulate each spectrum from one series with his own parameter set. This option is also provided. Each resonance in each spectrum will be fitted to two lineshape parameters, an amplitude and a globally determined peak center. Note that this yields in higher run times. A prefit can be combined with this case to save time. However, it must be ensured that all spectra can be fitted by conditions given in point two.
+    Fit of each spectrum with individual parameter set: In some cases it might be necessary to simulate each
+    spectrum from one series with his own parameter set. This option is also provided. Each resonance in each spectrum
+    will be fitted to two lineshape parameters, an amplitude and a globally determined peak center. Note that this
+    yields in higher run times. A prefit can be combined with this case to save time. However, it must be ensured
+    that all spectra can be fitted by conditions given in point two.
 
-    Inherits from:
-        Fitter - Provides general fitting routines for buildup data.
+
     """
 
     pass
@@ -375,7 +383,7 @@ class BuildupFitter:
         return lmfit.minimize(
             self._fitting_function,
             params,
-            args=(args.tdel, args.intensity),
+            args=(args.tpol, args.intensity),
         )
 
     def _check_result_quality(self, best_result, best_chisqr, result):
@@ -483,7 +491,7 @@ class BuildupFitter:
         :param peak: Peak object containing buildup values.
         :return: Dictionary with default time parameter values.
         """
-        return {"value": 5, "min": 0, "max": max(peak.buildup_vals.tdel) * 3}
+        return {"value": 5, "min": 0, "max": max(peak.buildup_vals.tpol) * 3}
 
     def _get_beta_dict(self, peak):
         return {"value": 0, "min": 0, "max": 1}
@@ -492,9 +500,6 @@ class BuildupFitter:
 class BiexpFitter(BuildupFitter):
     """
     Class for fitting biexponential models to buildup data.
-
-    Inherits from:
-        BuildupFitter - Provides general fitting routines for buildup data.
 
     The biexponential model fits buildup curves using two exponential terms
     characterized by amplitudes (A1, A2) and time constants (t1, t2).
@@ -537,9 +542,6 @@ class BiexpFitter(BuildupFitter):
 class BiexpFitterWithOffset(BuildupFitter):
     """
     Class for fitting biexponential models with offset to buildup data.
-
-    Inherits from:
-        BuildupFitter - Provides general fitting routines for buildup data.
 
     This fits buildup curves using two exponential terms
     characterized by amplitudes (A1, A2), time constants (t1, t2) and offset (x1).
@@ -585,9 +587,6 @@ class ExpFitter(BuildupFitter):
     """
     Class for fitting exponential models to buildup data.
 
-    Inherits from:
-        BuildupFitter - Provides general fitting routines for buildup data.
-
     This fits buildup curves using an exponential term
     characterized by amplitude (A1) and time constant (t1).
 
@@ -627,9 +626,6 @@ class ExpFitter(BuildupFitter):
 class ExpFitterWithOffset(BuildupFitter):
     """
     Class for fitting exponential models with offset to buildup data.
-
-    Inherits from:
-        BuildupFitter - Provides general fitting routines for buildup data.
 
     This fits buildup curves using an exponential term
     characterized by amplitude (A1), time constant (t1) and offset (x1).
@@ -672,9 +668,6 @@ class ExpFitterWithOffset(BuildupFitter):
 class StrechedExponentialFitter(BuildupFitter):
     """
     Class for fitting streched exponential models to buildup data.
-
-    Inherits from:
-        BuildupFitter - Provides general fitting routines for buildup data.
 
     This fits buildup curves using an streched exponential term
     characterized by amplitude (A1), time constant (t1), and stretching factor (beta)..

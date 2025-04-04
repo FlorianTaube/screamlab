@@ -204,13 +204,24 @@ class Dataset:
 
 class Spectra:
     """
-    Represents spectral data for NMR experiments.
+    Represents spectral data for NMR (Nuclear Magnetic Resonance) experiments.
+
+    Attributes
+    ----------
+    number_of_scans : list of int or None
+        The number of scans performed in the NMR experiment.
+    tpol : float or None
+        The polarization time used in the experiment.
+    x_axis : array-like or None
+        The x-axis values representing frequency domain data data.
+    y_axis : array-like or None
+        The y-axis values representing intensity or amplitude data.
     """
 
     def __init__(self):
         """Initializes Spectra attributes."""
         self.number_of_scans = None
-        self.tdel = None
+        self.tpol = None
         self.x_axis = None
         self.y_axis = None
 
@@ -516,12 +527,12 @@ class BuildupList:
 
     def _set_tdel(self, spectra):
         """
-        Extracts delay times from the spectra and assigns them to tdel.
+        Extracts delay times from the spectra and assigns them to tpol.
 
         Args:
             spectra (list): List of spectrum objects containing delay times.
         """
-        self.tdel = [s.tdel for s in spectra]
+        self.tdel = [s.tpol for s in spectra]
 
     def _set_intensity(self, result, label, spectra):
         """

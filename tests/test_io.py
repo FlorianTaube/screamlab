@@ -77,7 +77,7 @@ class TestDataset(unittest.TestCase):
     def test_set_buildup_time(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_buildup_time()
-        self.assertEqual(self.scream_importer._dataset.spectra[-1].tdel, 32)
+        self.assertEqual(self.scream_importer._dataset.spectra[-1].tpol, 32)
 
     @unittest.skipIf(
         os.getenv("CI") == "true", "Skipping test in CI/CD environment"
@@ -86,7 +86,7 @@ class TestDataset(unittest.TestCase):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_buildup_time()
         self.assertEqual(
-            type(self.scream_importer._dataset.spectra[-1].tdel), float
+            type(self.scream_importer._dataset.spectra[-1].tpol), float
         )
 
     def test_set_get_physical_range(self):
@@ -161,7 +161,7 @@ class TestDataset(unittest.TestCase):
         self.scream_importer.import_topspin_data()
         delay_times = []
         for spectrum in self.scream_importer._dataset.spectra:
-            delay_times.append(spectrum.tdel)
+            delay_times.append(spectrum.tpol)
         self.assertListEqual(
             delay_times, [0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0]
         )
@@ -246,7 +246,7 @@ class TestDataset(unittest.TestCase):
     def test_set_buildup_time_2(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_buildup_time()
-        self.assertEqual(self.scream_importer._dataset.spectra[-1].tdel, 32)
+        self.assertEqual(self.scream_importer._dataset.spectra[-1].tpol, 32)
 
     @unittest.skipIf(
         os.getenv("CI") == "true", "Skipping test in CI/CD environment"
@@ -255,7 +255,7 @@ class TestDataset(unittest.TestCase):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_buildup_time()
         self.assertEqual(
-            type(self.scream_importer._dataset.spectra[-1].tdel), float
+            type(self.scream_importer._dataset.spectra[-1].tpol), float
         )
 
     @unittest.skipIf(
@@ -339,7 +339,7 @@ class TestDataset(unittest.TestCase):
         self.scream_importer.import_topspin_data()
         delay_times = []
         for spectrum in self.scream_importer._dataset.spectra:
-            delay_times.append(spectrum.tdel)
+            delay_times.append(spectrum.tpol)
         self.assertListEqual(
             delay_times, [0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0]
         )

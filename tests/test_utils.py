@@ -35,7 +35,7 @@ class TestDataset(unittest.TestCase):
     def add_one_peak(self):
         self.ds.peak_list.append(dataset.Peak())
         self.ds.peak_list[0]._buildup_vals = dataset.BuildupList()
-        self.ds.peak_list[0]._buildup_vals.tdel = [2**i for i in range(7)]
+        self.ds.peak_list[0]._buildup_vals.tpol = [2**i for i in range(7)]
         self.ds.peak_list[0]._buildup_vals.intensity = [
             12000 * (1 + np.exp(-3 / (2**i))) for i in range(7)
         ]
