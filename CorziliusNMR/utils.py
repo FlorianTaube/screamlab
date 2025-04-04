@@ -10,7 +10,7 @@ Classes:
         - Fitter: The base class for fitting spectral data.
         - Prefitter: A specialized fitter that fits a preselected spectrum.
         - GlobalFitter: A fitter that applies parameter constraints across multiple spectra.
-        - SingleFitter: A simple extension of `Fitter` with no additional functionality.
+        - IndependentFitter: A simple extension of `Fitter` with no additional functionality.
 
     DNP Buildup Kinetic Fitting Classes:
         - BuildupFitter: The parent class for fitting DNP buildup kinetics.
@@ -220,7 +220,7 @@ class Prefitter(Fitter):
     The Prefitter class is a specialized subclass of the Fitter class that performs a preliminary fit on a single preselected spectrum to reduce the parameter search space for the subsequent global fit. By fitting the spectrum first, it estimates optimal parameters, particularly for linewidths, and narrows down the parameter intervals. The pre-fit parameters define bounds (±10%) for the linewidths. These refined intervals are then used in the global fit, significantly reducing computational time by limiting the parameter range.
 
     Inherits from:
-        BuildupFitter - Provides general fitting routines for buildup data.
+        Fitter - Provides general fitting routines for buildup data.
 
     """
 
@@ -265,12 +265,12 @@ class Prefitter(Fitter):
         return best_result
 
 
-class SingleFitter(Fitter):
-    pass
-
-
 class GlobalFitter(Fitter):
-    """Fitter with global parameter constraints across spectra."""
+    """
+    Global fit over all spectra at different polarization times: For SCREAM-DNP data it can be assumed that the line broadening did not vary over all polarization times in cases where a homogeneous polarization buildup on protons exists. Sames goes for the center of each peak since the chemical shift is not depending on the polarization time. For this it is recommended to carefully reference all spectra during post-processing. With this the number of fitting parameters can drastically be reduced yielding to a shorter calculation time. In this case all spectra from a SCREAM-DNP buildup series can be described by two lineshape parameters (sigma and gamma), one variable for the peak center (µ), and n amplitude variables per resonance, where n stands for the number of spectra within one series.
+    Inherits from:
+        Fitter - Provides general fitting routines for buildup data.
+    """
 
     def _set_param_expr(self, params):
         """
@@ -289,6 +289,17 @@ class GlobalFitter(Fitter):
                 splitted_keys[-1] = "0"
                 params[keys].expr = "_".join(splitted_keys)
         return params
+
+
+class IndependentFitter(Fitter):
+    """
+    Fit of each spectrum with individual parameter set: In some cases it might be necessary to simulate each spectrum from one series with his own parameter set. This option is also provided. Each resonance in each spectrum will be fitted to two lineshape parameters, an amplitude and a globally determined peak center. Note that this yields in higher run times. A prefit can be combined with this case to save time. However, it must be ensured that all spectra can be fitted by conditions given in point two.
+
+    Inherits from:
+        Fitter - Provides general fitting routines for buildup data.
+    """
+
+    pass
 
 
 class BuildupFitter:

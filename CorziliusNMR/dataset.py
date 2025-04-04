@@ -169,7 +169,7 @@ class Dataset:
 
     def _set_single_fitter(self):
         """Sets up a single-spectrum fitter."""
-        self.fitter = utils.SingleFitter(self)
+        self.fitter = utils.IndependentFitter(self)
 
     def _set_global_fitter(self):
         """Sets up a global fitter for all spectra."""
@@ -177,7 +177,9 @@ class Dataset:
 
     def _get_intensities(self, result):
         """Extracts intensity values from the fitting results."""
-        if isinstance(self.fitter, (utils.SingleFitter, utils.GlobalFitter)):
+        if isinstance(
+            self.fitter, (utils.IndependentFitter, utils.GlobalFitter)
+        ):
             for peak in self.peak_list:
                 peak.buildup_vals = (result, self.spectra)
 

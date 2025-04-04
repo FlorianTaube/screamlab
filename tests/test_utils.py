@@ -13,7 +13,7 @@ class TestDataset(unittest.TestCase):
         self.fitter = utils.Fitter(self.ds)
         self.prefitter = utils.Prefitter(self.ds)
         self.globalfitter = utils.GlobalFitter(self.ds)
-        self.singlefitter = utils.SingleFitter(self.ds)
+        self.singlefitter = utils.IndependentFitter(self.ds)
 
     def assertListAlmostEqual(self, list1, list2, delta=1e-6):
         self.assertEqual(

@@ -420,7 +420,7 @@ class TestDataset(unittest.TestCase):
     def test_dataset_perform_single_spectrum_fit_set_correct_fitter(self):
         self.ds._set_single_fitter()
         self.assertEqual(
-            type(self.ds.fitter), CorziliusNMR.utils.SingleFitter
+            type(self.ds.fitter), CorziliusNMR.utils.IndependentFitter
         )
 
     def test_dataset_perform_single_spectrum_fit_set_correct_fitter(self):
