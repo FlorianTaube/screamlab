@@ -45,9 +45,9 @@ class TestDataset(unittest.TestCase):
         self.ds.peak_list.append(dataset.Peak())
         self.ds.peak_list[0].peak_sign = "+"
         buidlup_list = dataset.BuildupList()
-        buidlup_list.tdel = [1, 2, 4, 8, 16, 32, 64, 128, 256]
+        buidlup_list.tpol = [1, 2, 4, 8, 16, 32, 64, 128, 256]
         buidlup_list.intensity = list(
-            400 * (1 - np.exp(-np.asarray(buidlup_list.tdel) / 30))
+            400 * (1 - np.exp(-np.asarray(buidlup_list.tpol) / 30))
         )
         buidlup_list.intensity = buidlup_list.intensity + np.random.normal(
             0, 10, size=len(buidlup_list.intensity)
@@ -558,7 +558,7 @@ class TestDataset(unittest.TestCase):
 
     def test_buildup_list_init_tdel(self):
         tbup = dataset.BuildupList()
-        self.assertEqual(tbup.tdel, None)
+        self.assertEqual(tbup.tpol, None)
 
     def test_buildup_list_init_intensity(self):
         tbup = dataset.BuildupList()
@@ -569,14 +569,14 @@ class TestDataset(unittest.TestCase):
         for nr, spectrum in enumerate(self.ds.spectra):
             spectrum.tpol = nr * 2
         b_list = CorziliusNMR.dataset.BuildupList()
-        b_list._set_tdel(self.ds.spectra)
-        self.assertListEqual(b_list.tdel, [0, 2, 4, 6, 8])
+        b_list._set_tpol(self.ds.spectra)
+        self.assertListEqual(b_list.tpol, [0, 2, 4, 6, 8])
 
     def test_buildup_list_set_intensity_one_peak_voigt(self):
         self.add_n_spectra(5)
         self.ds.add_peak(250)
         b_list = CorziliusNMR.dataset.BuildupList()
-        b_list._set_tdel(self.ds.spectra)
+        b_list._set_tpol(self.ds.spectra)
         self.ds._set_single_fitter()
         result = self.ds.fitter._fit()
         b_list._set_intensity(
@@ -596,11 +596,11 @@ class TestDataset(unittest.TestCase):
 
     def test_sort_lists(self):
         b_list = CorziliusNMR.dataset.BuildupList()
-        b_list.tdel = [1, 2, 4, 8, 16, 128, 256, 32, 64]
+        b_list.tpol = [1, 2, 4, 8, 16, 128, 256, 32, 64]
         b_list.intensity = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         b_list._sort_lists()
         result_list = [2**i for i in range(9)] + [1, 2, 3, 4, 5, 8, 9, 6, 7]
-        self.assertListEqual(b_list.tdel + b_list.intensity, result_list)
+        self.assertListEqual(b_list.tpol + b_list.intensity, result_list)
 
     def test_monoexp_fitting(self):
         fitting_type = "exponential"

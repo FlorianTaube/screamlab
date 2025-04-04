@@ -489,13 +489,13 @@ class BuildupList:
     Represents a list of buildup values used for fitting delay times and intensities.
 
     Attributes:
-        tdel (list): List of delay times.
+        tpol (list): List of delay times.
         intensity (list): List of intensity values.
     """
 
     def __init__(self):
         """Initializes an empty BuildupList with None values for attributes."""
-        self.tdel = None
+        self.tpol = None
         self.intensity = None
 
     def __str__(self):
@@ -507,7 +507,7 @@ class BuildupList:
         """
         return (
             "Parameters for buildup fitting:\nDelay times:\t"
-            + "\t\t\t".join(str(x) for x in self.tdel)
+            + "\t\t\t".join(str(x) for x in self.tpol)
             + "\nIntegral:\t"
             + "\t".join(str(x) for x in self.intensity)
         )
@@ -521,18 +521,18 @@ class BuildupList:
             spectra (list): List of spectrum objects.
             label (str): Peak label to filter parameters.
         """
-        self._set_tdel(spectra)
+        self._set_tpol(spectra)
         self._set_intensity(result, label, spectra)
         self._sort_lists()
 
-    def _set_tdel(self, spectra):
+    def _set_tpol(self, spectra):
         """
         Extracts delay times from the spectra and assigns them to tpol.
 
         Args:
             spectra (list): List of spectrum objects containing delay times.
         """
-        self.tdel = [s.tpol for s in spectra]
+        self.tpol = [s.tpol for s in spectra]
 
     def _set_intensity(self, result, label, spectra):
         """
@@ -583,6 +583,6 @@ class BuildupList:
         """
         Sorts the delay times and corresponding intensity values in ascending order of delay times.
         """
-        self.tdel, self.intensity = map(
-            list, zip(*sorted(zip(self.tdel, self.intensity)))
+        self.tpol, self.intensity = map(
+            list, zip(*sorted(zip(self.tpol, self.intensity)))
         )
