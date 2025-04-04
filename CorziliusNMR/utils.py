@@ -1,14 +1,28 @@
 """
-Fitting module for spectral analysis.
+Spectral Analysis Fitting Module
 
-This module provides classes for fitting spectral data using the `lmfit` package.
-It includes different types of fitters, such as `Fitter`, `Prefitter`, `GlobalFitter`, and `SingleFitter`.
+This module provides tools for fitting spectral data and analyzing buildup behaviors
+using the `lmfit` package. It includes several classes designed for spectral deconvolution
+and dynamic nuclear polarization (DNP) buildup kinetic analysis.
 
 Classes:
-    Fitter: Base class for fitting spectral data.
-    Prefitter: A specialized fitter that only fits a preselected spectrum.
-    GlobalFitter: A fitter that enforces parameter constraints across multiple spectra.
-    SingleFitter: A simple extension of `Fitter` with no additional functionality.
+    Spectral Fitting/Deconvolution Classes:
+        - Fitter: The base class for fitting spectral data.
+        - Prefitter: A specialized fitter that fits a preselected spectrum.
+        - GlobalFitter: A fitter that applies parameter constraints across multiple spectra.
+        - SingleFitter: A simple extension of `Fitter` with no additional functionality.
+
+    DNP Buildup Kinetic Fitting Classes:
+        - BuildupFitter: The parent class for fitting DNP buildup kinetics.
+            - ExpFitter: A fitter for single-exponential buildup behavior.
+            - ExpFitterWithOffset: A variant of `ExpFitter` with an additional offset parameter.
+            - BiexpFitter: A fitter for biexponential buildup behavior.
+            - BiexpFitterWithOffset: A variant of `BiexpFitter` with an additional offset parameter.
+            - StretchedExponentialFitter: A fitter for stretched exponential buildup behavior.
+
+Modules and classes provided in this module facilitate:
+    - Spectral deconvolution using different types of fitters (single, global, or preselected spectra).
+    - Analysis of kinetic data such as DNP buildup curves with various exponential models.
 """
 
 import lmfit
@@ -39,7 +53,7 @@ class Fitter:
         """
         self.dataset = dataset
 
-    def fit(self):
+    def _fit(self):
         """
         Performs spectral fitting using the `lmfit.minimize` function.
 
@@ -202,7 +216,13 @@ class Fitter:
 
 
 class Prefitter(Fitter):
-    """Fitter for a single preselected spectrum."""
+    """
+    The Prefitter class is a specialized subclass of the Fitter class that performs a preliminary fit on a single preselected spectrum to reduce the parameter search space for the subsequent global fit. By fitting the spectrum first, it estimates optimal parameters, particularly for linewidths, and narrows down the parameter intervals. The pre-fit parameters define bounds (±10%) for the linewidths. These refined intervals are then used in the global fit, significantly reducing computational time by limiting the parameter range.
+
+    Inherits from:
+        BuildupFitter - Provides general fitting routines for buildup data.
+
+    """
 
     def _generate_axis_list(self):
         """

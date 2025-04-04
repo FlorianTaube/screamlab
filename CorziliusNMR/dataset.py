@@ -128,12 +128,12 @@ class Dataset:
                 f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start prefit."
             )
             self._set_prefitter()
-            result = self.fitter.fit()
+            result = self.fitter._fit()
             self.lmfit_result_handler.prefit = result
             self._update_line_broadening(result)
         if "individual" in self.props.spectrum_fit_type:
             self._set_single_fitter()
-            result = self.fitter.fit()
+            result = self.fitter._fit()
             self.lmfit_result_handler.single_fit = result
             self._get_intensities(result)
         if "global" in self.props.spectrum_fit_type:
@@ -141,7 +141,7 @@ class Dataset:
                 f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start global fit."
             )
             self._set_global_fitter()
-            result = self.fitter.fit()
+            result = self.fitter._fit()
             self.lmfit_result_handler.global_fit = result
             self._get_intensities(result)
 

@@ -448,7 +448,7 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(1)
         self.ds.add_peak(250)
         self.ds._set_prefitter()
-        result = self.ds.fitter.fit()
+        result = self.ds.fitter._fit()
         self.ds._update_line_broadening(result)
         self.ds.peak_list[-1].line_broadening["gamma"]["max"] = round(
             self.ds.peak_list[-1].line_broadening["gamma"]["max"], 3
@@ -476,7 +476,7 @@ class TestDataset(unittest.TestCase):
         self.ds.add_peak(150)
         self.ds.peak_list[0].fitting_type = "gauss"
         self.ds._set_prefitter()
-        result = self.ds.fitter.fit()
+        result = self.ds.fitter._fit()
         self.ds._update_line_broadening(result)
         self.ds.peak_list[-1].line_broadening["sigma"]["max"] = round(
             self.ds.peak_list[-1].line_broadening["sigma"]["max"], 3
@@ -495,7 +495,7 @@ class TestDataset(unittest.TestCase):
         self.ds.add_peak(200)
         self.ds.peak_list[0].fitting_type = "lorentz"
         self.ds._set_prefitter()
-        result = self.ds.fitter.fit()
+        result = self.ds.fitter._fit()
         self.ds._update_line_broadening(result)
         self.ds.peak_list[-1].line_broadening["gamma"]["max"] = round(
             self.ds.peak_list[-1].line_broadening["gamma"]["max"], 3
@@ -578,7 +578,7 @@ class TestDataset(unittest.TestCase):
         b_list = CorziliusNMR.dataset.BuildupList()
         b_list._set_tdel(self.ds.spectra)
         self.ds._set_single_fitter()
-        result = self.ds.fitter.fit()
+        result = self.ds.fitter._fit()
         b_list._set_intensity(
             result, self.ds.peak_list[0].peak_label, self.ds.spectra
         )
