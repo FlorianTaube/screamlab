@@ -25,8 +25,8 @@ class TestDataset(unittest.TestCase):
         props.output_folder = r"..\tests\SCREAM_Test_Files\Alanin\result"
         ds = dataset.Dataset()
         ds.props = props
-        ds.add_peak(-16)
-        ds.start_buildup_fit_from_topspin()
+        ds.add_peak(-16, peak_sign="+")
+        ds.start_analysis()
 
     @unittest.skipIf(
         os.getenv("CI") == "true", "Skipping test in CI/CD environment"
@@ -58,4 +58,4 @@ class TestDataset(unittest.TestCase):
         ds.add_peak(
             8, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
         )"""
-        ds.start_buildup_fit_from_topspin()
+        ds.start_analysis()

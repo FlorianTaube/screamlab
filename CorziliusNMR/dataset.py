@@ -9,12 +9,7 @@ class Dataset:
     Represents a dataset containing NMR spectra, peak fitting, and buildup fitting.
 
     Attributes:
-        importer: Handles data import.
-        props (settings.Properties): Experiment properties.
-        spectra (list): List of spectra in the dataset.
-        fitter: Fitting handler.
-        peak_list (list): List of peaks.
-        lmfit_result_handler (io.LmfitResultHandler): Handles lmfit results.
+        - props (settings.Properties): Object that stores all variable settings needed for hole analysis process.
     """
 
     def __init__(self, props=settings.Properties()):
@@ -38,9 +33,10 @@ class Dataset:
             f"Fitted {len(self.peak_list)} peaks per spectrum in {len(self.spectra)} spectra."
         )
 
-    def start_buildup_fit_from_topspin(self):
+    def start_analysis(self):
         """
-        Initiates buildup fitting using data imported from TopSpin.
+        The analysis is carried out in three stages: first, the spectral data is imported from the Topspin file format;
+        second, spectral deconvolution is performed; and finally, a buildup fit is applied.
         """
 
         print(
@@ -60,13 +56,13 @@ class Dataset:
         )
         self._print_all()
 
-    def start_buildup_fit_from_spectra(self):
+    def _start_buildup_fit_from_spectra(self):
         """
         Starts buildup fitting using data imported from spectra CSV files.
         """
         pass
 
-    def start_buildup_from_intensitys(self):
+    def _start_buildup_from_intensitys(self):
         """
         Placeholder for starting buildup fitting from intensity values.
         """
@@ -85,10 +81,10 @@ class Dataset:
 
         Args:
             center_of_peak (float): Center of the peak.
-            peak_label (str, optional): Label for the peak. Defaults to "".
-            fitting_type (str, optional): Type of fitting (e.g., "voigt"). Defaults to "voigt".
-            peak_sign (str, optional): Sign of the peak ("+" or "-"). Defaults to "+".
-            line_broadening (dict, optional): Line broadening parameters. Defaults to None.
+            peak_label (str, optional): Label for the peak. Default: "Peak_at_xxx_ppm where xxx is the center_of_peak".
+            fitting_type (str, optional): Type of fitting ("gauss", "lorentz", "voigt"). Defaults to "voigt".
+            peak_sign (str, optional): Sign of the peak ("+" or "-"). Defaults to "-".
+            line_broadening (dict, optional): Line broadening parameters. Defaults to { "sigma": {"min": 0, "max": 3}, "gamma": {"min": 0, "max": 3}, }.
         """
         if line_broadening is None:
             line_broadening = {}

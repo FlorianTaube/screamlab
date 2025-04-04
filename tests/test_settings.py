@@ -5,9 +5,13 @@ from CorziliusNMR.settings import Properties
 
 class TestProperties(unittest.TestCase):
 
+    def setUp(self):
+        self.props = Properties()
+        self.props.path_to_experiment = r"..\tests\Pseud2DTestFiles"
+        self.props.output_folder = r"\Pseud2DTestFiles"
+
     def test_prefit_default_value(self):
-        props = Properties()
-        self.assertFalse(props.prefit)
+        self.assertFalse(self.props.prefit)
 
     def test_prefit_initial_value(self):
         props = Properties(prefit=True)
@@ -204,15 +208,6 @@ class TestProperties(unittest.TestCase):
         self.assertEqual(
             str(context.exception),
             "Expected 'path_to_experiment' to be of type 'str', got int.",
-        )
-
-    def test_path_to_experiment_empty_str(self):
-        props = Properties()
-        with self.assertRaises(ValueError) as context:
-            props.path_to_experiment = ""
-        self.assertEqual(
-            str(context.exception),
-            "'path_to_experiment' cannot be an empty str.",
         )
 
     def test_path_to_experiment_change_value(self):

@@ -1,3 +1,8 @@
+"""
+This module provides general-purpose utility functions used across various models.
+Functions here are independent and stateless, designed to be reusable throughout the codebase.
+"""
+
 import numpy as np
 import re
 from scipy.special import wofz
@@ -54,32 +59,65 @@ def lorentz_profile(x, center, gamma, amplitude):
 
 def fwhm_gaussian(sigma):
     """
-    Compute the full width at half maximum (FWHM) for a Gaussian function.
+    Compute the Full Width at Half Maximum (FWHM) of a Gaussian function.
 
-    :param sigma: Standard deviation of the Gaussian.
-    :return: FWHM value.
+    It is calculated using the formula:
+        FWHM = 2 * sqrt(2 * ln(2)) * sigma
+
+    Parameters
+    ----------
+    sigma : float
+        The standard deviation of the Gaussian function.
+
+    Returns
+    -------
+    float
+        The full width at half maximum (FWHM) of the Gaussian.
     """
     return 2 * np.sqrt(2 * np.log(2)) * sigma
 
 
 def fwhm_lorentzian(gamma):
     """
-    Compute the full width at half maximum (FWHM) for a Lorentzian function.
+    Compute the Full Width at Half Maximum (FWHM) of a Lorentzian function.
 
-    :param gamma: Half-width at half-maximum.
-    :return: FWHM value.
+    For a Lorentzian distribution, the FWHM is:
+        FWHM = 2 * gamma
+
+    Parameters
+    ----------
+    gamma : float
+        The half-width at half-maximum (HWHM) parameter of the Lorentzian function.
+
+    Returns
+    -------
+    float
+        The full width at half maximum (FWHM) of the Lorentzian.
     """
+
     return 2 * gamma
 
 
 def fwhm_voigt(sigma, gamma):
     """
-    Approximate the full width at half maximum (FWHM) for a Voigt function.
+    Compute the Full Width at Half Maximum (FWHM) of a Voigt profile.
 
-    :param sigma: Standard deviation of the Gaussian component.
-    :param gamma: HWHM of the Lorentzian component.
-    :return: Estimated FWHM value.
+    The Voigt profile is a convolution of a Gaussian and a Lorentzian function and thereby approximated by:
+        FWHM ≈ 0.5346 * FWHM_L + sqrt(0.2166 * FWHM_L^2 + FWHM_G^2)
+
+    Parameters
+    ----------
+    fwhm_g : float
+        The full width at half maximum (FWHM) of the Gaussian component.
+    fwhm_l : float
+        The full width at half maximum (FWHM) of the Lorentzian component.
+
+    Returns
+    -------
+    float
+        The approximate full width at half maximum (FWHM) of the Voigt profile.
     """
+
     return 0.5346 * (2 * gamma) + np.sqrt(
         0.2166 * (2 * gamma) ** 2 + 4 * np.log(2) * sigma**2
     )
@@ -87,22 +125,37 @@ def fwhm_voigt(sigma, gamma):
 
 def calc_exponential(time_vals, param):
     """
-    Compute an exponential decay function.
+    Compute values of an exponential growth function over time.
 
-    :param time_vals: Time values.
-    :param param: List containing amplitude and decay constant.
-    :return: List of computed exponential values.
+    The function models the equation:
+        I(t) = A * (1 - exp(-t / tf))
+
+    where:
+        - I(t)  : The output value at time t
+        - A     : Amplitude (maximum value the function approaches)
+        - tf    : Time constant (controls the rate of growth)
+
+    Returns:
+        list: Exponential profile evaluated at t.
     """
     return list(param[0] * (1 - np.exp(-np.asarray(time_vals) / param[1])))
 
 
 def calc_stretched_exponential(time_vals, param):
     """
-    Compute a stretched exponential decay function.
+    Compute values of a stretched exponential growth function over time.
 
-    :param time_vals: Time values.
-    :param param: List containing amplitude, time constant, and stretching exponent.
-    :return: List of computed stretched exponential values.
+    The function models the equation:
+        I(t) = A * (1 - exp(-t / tf)^beta)
+
+    where:
+        - I(t)  : The output value at time t
+        - A     : Amplitude (maximum value the function approaches)
+        - tf    : Time constant (controls the rate of growth)
+        - beta  : stretching exponent
+
+    Returns:
+        list: Stretched exponential profile evaluated at t.
     """
     return list(
         param[0]
@@ -112,11 +165,19 @@ def calc_stretched_exponential(time_vals, param):
 
 def calc_biexponential(time_vals, param):
     """
-    Compute a biexponential decay function.
+    Compute values of a biexponential growth function over time.
 
-    :param time_vals: Time values.
-    :param param: List containing two amplitudes and two decay constants.
-    :return: List of computed biexponential values.
+    The function models the equation:
+        I(t) = Af * (1 - exp(-t / tf)) + As * (1 - exp(-t / ts))
+
+    where:
+        - I(t)  : The output value at time t
+        - Af, As: Amplitudes (maximum value the function approaches)
+        - tf, ts: Time constants (controls the rate of growth)
+
+
+    Returns:
+        list: Biexponential profile evaluated at t.
     """
     return list(
         param[0] * (1 - np.exp(-np.asarray(time_vals) / param[2]))
@@ -126,11 +187,20 @@ def calc_biexponential(time_vals, param):
 
 def calc_exponential_with_offset(time_vals, param):
     """
-    Compute an exponential decay function with an offset.
+    Compute values of an exponential growth function with time offset over time.
 
-    :param time_vals: Time values.
-    :param param: List containing amplitude, decay constant, and offset.
-    :return: List of computed exponential values.
+    The function models the equation:
+        I(t) = Af * (1 - exp(-(t-t0) / tf))
+
+    where:
+        - I(t)  : The output value at time t
+        - Af    : Amplitudes (maximum value the function approaches)
+        - tf    : Time constants (controls the rate of growth)
+        - t0    : Time offset
+
+
+    Returns:
+        list: Exponential profile with time offset evaluated at t.
     """
     return list(
         param[0]
@@ -140,11 +210,20 @@ def calc_exponential_with_offset(time_vals, param):
 
 def calc_biexponential_with_offset(time_vals, param):
     """
-    Compute a biexponential decay function with an offset.
+    Compute values of a biexponential growth function with time offset over time.
 
-    :param time_vals: Time values.
-    :param param: List containing two amplitudes, two decay constants, and an offset.
-    :return: List of computed biexponential values.
+    The function models the equation:
+        I(t) = Af * (1 - exp(-(t - t0) / tf)) + As * (1 - exp(-(t - t0) / ts))
+
+    where:
+        - I(t)  : The output value at time t
+        - Af, As: Amplitudes (maximum value the function approaches)
+        - tf, ts: Time constants (controls the rate of growth)
+        - t0    : Time offset
+
+
+    Returns:
+        list: Biexponential profile with time offset evaluated at t.
     """
     return list(
         param[0]
@@ -189,12 +268,7 @@ def generate_spectra_param_dict(params):
 
 def calc_peak(x_axis, simspec, val):
     """
-    Compute and add spectral peaks based on given parameters.
-
-    :param x_axis: X-axis values.
-    :param simspec: Simulated spectrum array.
-    :param val: List of peak parameters.
-    :return: Updated simulated spectrum.
+    Simulates spectra based on given parameters.
     """
     if len(val) == 5:
         simspec += voigt_profile(x_axis, val[1], val[2], val[3], val[0])
@@ -208,12 +282,6 @@ def calc_peak(x_axis, simspec, val):
 def format_mapping():
     """
     Returns a dictionary mapping each buildup function type to its corresponding parameter names.
-
-    The dictionary defines the parameters required for fitting different buildup functions such as
-    'exponential', 'biexponential', etc. The parameters are returned as lists of strings.
-
-    :return: Dictionary mapping function types to parameter names.
-    :rtype: dict
     """
     return {
         "exponential": [
@@ -282,12 +350,6 @@ def format_mapping():
 def buildup_header():
     """
     Returns a list of headers for the buildup analysis table.
-
-    This header list defines the labels for the columns in the buildup fit table, which includes
-    parameters like amplitude, time constants, offsets, and sensitivities.
-
-    :return: List of headers for the buildup table.
-    :rtype: list
     """
     return [
         "Label",
@@ -306,12 +368,6 @@ def buildup_header():
 def spectrum_fit_header():
     """
     Returns a list of headers for the spectrum fitting results table.
-
-    The header includes typical fitting parameters such as time, center, amplitude, sigma,
-    gamma, and full width at half maximum (FWHM) for various line shapes.
-
-    :return: List of headers for the spectrum fit table.
-    :rtype: list
     """
     return [
         "Label",
@@ -330,12 +386,6 @@ def spectrum_fit_header():
 def return_func_map():
     """
     Returns a dictionary mapping function types to their corresponding fitting functions.
-
-    The dictionary maps buildup function types (e.g., 'exponential', 'biexponential') to
-    the respective function used for calculation (e.g., `calc_exponential`, `calc_biexponential`).
-
-    :return: Dictionary mapping function types to fitting functions.
-    :rtype: dict
     """
     return {
         "exponential": calc_exponential,
@@ -347,6 +397,15 @@ def return_func_map():
 
 
 def generate_subspec(spectrum, subspec):
+    """
+    Extract a subspectrum of a spectrum based on a given x-axis range.
+
+    Returns
+    -------
+    tuple of ndarray
+        A tuple containing two arrays:
+        The sliced x- and y-axis values specified range.
+    """
     start = np.argmax(spectrum.x_axis < max(subspec))
     stop = np.argmax(spectrum.x_axis < min(subspec))
     return spectrum.x_axis[start:stop], spectrum.y_axis[start:stop]

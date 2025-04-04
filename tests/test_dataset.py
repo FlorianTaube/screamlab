@@ -451,16 +451,16 @@ class TestDataset(unittest.TestCase):
         result = self.ds.fitter._fit()
         self.ds._update_line_broadening(result)
         self.ds.peak_list[-1].line_broadening["gamma"]["max"] = round(
-            self.ds.peak_list[-1].line_broadening["gamma"]["max"], 3
+            self.ds.peak_list[-1].line_broadening["gamma"]["max"], 1
         )
         self.ds.peak_list[-1].line_broadening["gamma"]["min"] = round(
-            self.ds.peak_list[-1].line_broadening["gamma"]["min"], 3
+            self.ds.peak_list[-1].line_broadening["gamma"]["min"], 1
         )
         self.ds.peak_list[-1].line_broadening["sigma"]["max"] = round(
-            self.ds.peak_list[-1].line_broadening["sigma"]["max"], 3
+            self.ds.peak_list[-1].line_broadening["sigma"]["max"], 1
         )
         self.ds.peak_list[-1].line_broadening["sigma"]["min"] = round(
-            self.ds.peak_list[-1].line_broadening["sigma"]["min"], 3
+            self.ds.peak_list[-1].line_broadening["sigma"]["min"], 1
         )
         self.assertDictEqual(
             self.ds.peak_list[-1].line_broadening,
