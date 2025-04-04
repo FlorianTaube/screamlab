@@ -160,7 +160,7 @@ class Dataset:
             if fitter_class:
                 fitter = fitter_class(self)
                 self.lmfit_result_handler.buildup_fit[b_type] = (
-                    fitter.perform_fit()
+                    fitter._perform_fit()
                 )
 
     def _set_prefitter(self):

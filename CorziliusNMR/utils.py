@@ -274,6 +274,14 @@ class GlobalFitter(Fitter):
 class BuildupFitter:
     """
     Base class for fitting buildup data using optimization techniques.
+
+    This class is responsible for performing a fitting procedure on a dataset
+    of peaks with time-dependent intensities.
+
+    Attributes:
+        dataset (object): The dataset containing peak information. The dataset
+                           should have a `peak_list` attribute, where each peak
+                           contains buildup data like time delays and intensities.
     """
 
     def __init__(self, dataset):
@@ -284,7 +292,7 @@ class BuildupFitter:
         """
         self.dataset = dataset
 
-    def perform_fit(self):
+    def _perform_fit(self):
         """
         Perform the fitting procedure on the dataset's peak list.
 
@@ -453,14 +461,29 @@ class BuildupFitter:
 class BiexpFitter(BuildupFitter):
     """
     Class for fitting biexponential models to buildup data.
+
+    Inherits from:
+        BuildupFitter - Provides general fitting routines for buildup data.
+
+    The biexponential model fits buildup curves using two exponential terms
+    characterized by amplitudes (A1, A2) and time constants (t1, t2).
+
+    The model function is defined as:
+        I(t) = A1 * (1 - exp(-t_pol / t1)) + A2 * (1 - exp(-t_pol / t2))
+
+    where:
+        - A1, A2   : amplitudes of the exponential components
+        - t1, t2   : time constants of the exponential components (t1, t2 > 0)
+        - t_pol    : polarization time (independent variable)
+        - I(t_pol) : peak intensity at polarization time t_pol
     """
 
     def _get_default_param_dict(self, peak):
         """
         Define default parameters for biexponential fitting.
 
-        :param peak: Peak object.
-        :return: Dictionary of parameter defaults.
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: A1, A2, t1, t2.
         """
         return {
             "A1": self._get_intensity_dict(peak),
@@ -482,15 +505,31 @@ class BiexpFitter(BuildupFitter):
 
 class BiexpFitterWithOffset(BuildupFitter):
     """
-    Class for fitting biexponential models with offsets to buildup data.
+    Class for fitting biexponential models with offset to buildup data.
+
+    Inherits from:
+        BuildupFitter - Provides general fitting routines for buildup data.
+
+    This fits buildup curves using two exponential terms
+    characterized by amplitudes (A1, A2), time constants (t1, t2) and offset (x1).
+
+    The model function is defined as:
+        I(t) = A1 * (1 - exp(-(t_pol-x1) / t1)) + A2 * (1 - exp(-(t_pol-x1) / t2))
+
+    where:
+        - A1, A2   : amplitudes of the exponential components
+        - t1, t2   : time constants of the exponential components (t1, t2 > 0)
+        - x1       : offset in polarization time
+        - t_pol    : polarization time (independent variable)
+        - I(t_pol) : peak intensity at polarization time t_pol
     """
 
     def _get_default_param_dict(self, peak):
         """
         Define default parameters for biexponential fitting.
 
-        :param peak: Peak object.
-        :return: Dictionary of parameter defaults.
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: A1, A2, t1, t2.
         """
         return {
             "A1": self._get_intensity_dict(peak),
@@ -514,14 +553,29 @@ class BiexpFitterWithOffset(BuildupFitter):
 class ExpFitter(BuildupFitter):
     """
     Class for fitting exponential models to buildup data.
+
+    Inherits from:
+        BuildupFitter - Provides general fitting routines for buildup data.
+
+    This fits buildup curves using an exponential term
+    characterized by amplitude (A1) and time constant (t1).
+
+    The model function is defined as:
+        I(t) = A1 * (1 - exp(-t_pol / t1))
+
+    where:
+        - A1       : amplitudes of the exponential components
+        - t1       : time constants of the exponential components (t1 > 0)
+        - t_pol    : polarization time (independent variable)
+        - I(t_pol) : peak intensity at polarization time t_pol
     """
 
     def _get_default_param_dict(self, peak):
         """
-        Define default parameters for biexponential fitting.
+        Define default parameters for exponential fitting.
 
-        :param peak: Peak object.
-        :return: Dictionary of parameter defaults.
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: A1, t1.
         """
         return {
             "A1": self._get_intensity_dict(peak),
@@ -541,15 +595,31 @@ class ExpFitter(BuildupFitter):
 
 class ExpFitterWithOffset(BuildupFitter):
     """
-    Class for fitting exponential models with offsets to buildup data.
+    Class for fitting exponential models with offset to buildup data.
+
+    Inherits from:
+        BuildupFitter - Provides general fitting routines for buildup data.
+
+    This fits buildup curves using an exponential term
+    characterized by amplitude (A1), time constant (t1) and offset (x1).
+
+    The model function is defined as:
+        I(t) = A1 * (1 - exp(-(t_pol-x1) / t1))
+
+    where:
+        - A1       : amplitudes of the exponential components
+        - t1       : time constants of the exponential components (t1 > 0)
+        - x1       : offset in polarization time
+        - t_pol    : polarization time (independent variable)
+        - I(t_pol) : peak intensity at polarization time t_pol
     """
 
     def _get_default_param_dict(self, peak):
         """
-        Define default parameters for biexponential fitting.
+        Define default parameters for exponential with offset in x fitting.
 
-        :param peak: Peak object.
-        :return: Dictionary of parameter defaults.
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: A1, t1, x1.
         """
         return {
             "A1": self._get_intensity_dict(peak),
@@ -571,14 +641,32 @@ class ExpFitterWithOffset(BuildupFitter):
 class StrechedExponentialFitter(BuildupFitter):
     """
     Class for fitting streched exponential models to buildup data.
+
+    Inherits from:
+        BuildupFitter - Provides general fitting routines for buildup data.
+
+    This fits buildup curves using an streched exponential term
+    characterized by amplitude (A1), time constant (t1), and stretching factor (beta)..
+
+    The model function is defined as:
+         I(t) = A1 * (1 - exp(-(t_pol / t1)^beta))
+
+    where:
+        - A1       : amplitudes of the exponential components
+        - t1       : time constants of the exponential components (t1 > 0)
+        - beta     : stretching factor (beta > 0, controls deviation from a simple exponential)
+        - t_pol    : polarization time (independent variable)
+        - I(t_pol): peak intensity at polarization time t_pol
+
+
     """
 
     def _get_default_param_dict(self, peak):
         """
-        Define default parameters for streched exponential fitting.
+        Define default parameters for strechted exponential fitting.
 
-        :param peak: Peak object.
-        :return: Dictionary of parameter defaults.
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: A1, t1, beta.
         """
         return {
             "A1": self._get_intensity_dict(peak),
@@ -588,7 +676,7 @@ class StrechedExponentialFitter(BuildupFitter):
 
     def _calc_intensity(self, tdel, param):
         """
-        Calculate biexponential intensity.
+        Calculate streched exponential intensity.
 
         :param tdel: Time delays.
         :param param: List of parameters.
