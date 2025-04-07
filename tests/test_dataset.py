@@ -72,14 +72,14 @@ class TestDataset(unittest.TestCase):
     def test_setup_correct_topspin_importer_default_properties(self):
         self.ds._setup_correct_topspin_importer()
         self.assertEqual(
-            type(self.ds.importer), CorziliusNMR.io.Pseudo2DImporter
+            type(self.ds.importer), CorziliusNMR.io._Pseudo2DImporter
         )
 
     def test_setup_correct_topspin_importer_set_properties_pseudo2D(self):
         self.ds.props.expno = [2]
         self.ds._setup_correct_topspin_importer()
         self.assertEqual(
-            type(self.ds.importer), CorziliusNMR.io.Pseudo2DImporter
+            type(self.ds.importer), CorziliusNMR.io._Pseudo2DImporter
         )
 
     def test_setup_correct_topspin_importer_set_properties_SCREAM(self):

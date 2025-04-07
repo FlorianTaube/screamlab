@@ -1,3 +1,8 @@
+"""
+
+
+"""
+
 import lmfit
 from CorziliusNMR import io, utils, settings, functions
 import numpy as np
@@ -104,7 +109,7 @@ class Dataset:
     def _setup_correct_topspin_importer(self):
         """Sets up the appropriate TopSpin importer based on experiment properties."""
         if len(self.props.expno) == 1:
-            self.importer = io.Pseudo2DImporter(self)
+            self.importer = io._Pseudo2DImporter(self)
         else:
             self.importer = io.ScreamImporter(self)
 

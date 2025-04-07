@@ -1,5 +1,5 @@
 """
-Spectral Analysis Fitting Module
+Spectral Analysis/Fitting Module
 
 This module provides tools for fitting spectral data and analyzing buildup behaviors
 using the `lmfit` package. It includes several classes designed for spectral deconvolution
@@ -8,9 +8,9 @@ and dynamic nuclear polarization (DNP) buildup kinetic analysis.
 Classes:
     Spectral Fitting/Deconvolution Classes:
         - Fitter: The base class for fitting spectral data.
-        - Prefitter: A specialized fitter that fits a preselected spectrum.
-        - GlobalFitter: A fitter that applies parameter constraints across multiple spectra.
-        - IndependentFitter: A simple extension of `Fitter` with no additional functionality.
+            - Prefitter: A specialized fitter that fits a preselected spectrum.
+            - GlobalFitter: A fitter that applies parameter constraints across multiple spectra.
+            - IndependentFitter: A simple extension of `Fitter` with no additional functionality.
 
     DNP Buildup Kinetic Fitting Classes:
         - BuildupFitter: The parent class for fitting DNP buildup kinetics.
@@ -19,10 +19,6 @@ Classes:
             - BiexpFitter: A fitter for biexponential buildup behavior.
             - BiexpFitterWithOffset: A variant of `BiexpFitter` with an additional offset parameter.
             - StretchedExponentialFitter: A fitter for stretched exponential buildup behavior.
-
-Modules and classes provided in this module facilitate:
-    - Spectral deconvolution using different types of fitters (single, global, or preselected spectra).
-    - Analysis of kinetic data such as DNP buildup curves with various exponential models.
 """
 
 import lmfit
@@ -41,7 +37,7 @@ class Fitter:
     This class handles parameter initialization and spectral fitting for a dataset.
 
     Attributes:
-        dataset: The dataset containing spectra and peak information.
+        dataset: :obj:`CorziliusNMR.dataset.Dataset` containing spectra and peak information.
     """
 
     def __init__(self, dataset):
@@ -312,15 +308,14 @@ class IndependentFitter(Fitter):
 
 class BuildupFitter:
     """
-    Base class for fitting buildup data using optimization techniques.
+    Base class for fitting buildup data using `lmfit`.
 
     This class is responsible for performing a fitting procedure on a dataset
     of peaks with time-dependent intensities.
 
     Attributes:
-        dataset (object): The dataset containing peak information. The dataset
-                           should have a `peak_list` attribute, where each peak
-                           contains buildup data like time delays and intensities.
+        dataset:  :obj:`CorziliusNMR.dataset.Dataset` containing peak
+                            intensity and polarization time information.
     """
 
     def __init__(self, dataset):

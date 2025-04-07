@@ -18,16 +18,14 @@ class TopspinImporter:
     """
     Class for importing NMR data from Bruker's TopSpin software.
 
-    :param dataset: The dataset object to store imported spectra.
-    :type dataset: CorziliusNMR.dataset.Dataset
+    Attributes:
+        dataset:  :obj:`CorziliusNMR.dataset.Dataset` to store imported spectra and necessary metadata.
     """
 
     def __init__(self, dataset):
         """
         Initialize the TopspinImporter.
 
-        :param dataset: The dataset to store imported spectra.
-        :type dataset: CorziliusNMR.dataset.Dataset
         """
         self._dataset = dataset
         self.file = None
@@ -125,7 +123,10 @@ class TopspinImporter:
 
 class ScreamImporter(TopspinImporter):
     """
-    Class for importing and processing Scream NMR data.
+    Class for importing and processing SCREAM DNP data. Automatically reads information
+    about x- and y-axis (chemical shift and intensitys),
+    polarization times (t_pol) and the number of scans used for the respective experiment.
+    Automatically normalizes the  intensitys to the number of scans.
     """
 
     def _set_number_of_scans(self):
@@ -232,7 +233,9 @@ class ScreamImporter(TopspinImporter):
         )
 
 
-class Pseudo2DImporter(TopspinImporter):
+class _Pseudo2DImporter(TopspinImporter):
+    """Not implemented"""
+
     pass
 
 
@@ -240,8 +243,8 @@ class Exporter:
     """
     A class to handle exporting and printing dataset information.
 
-    :param dataset: The dataset to be processed.
-    :type dataset: object
+    Attributes:
+        dataset:  :obj:`CorziliusNMR.dataset.Dataset` with all information aquired during fitting.
     """
 
     def __init__(self, dataset):
@@ -255,16 +258,24 @@ class Exporter:
 
     def print(self):
         """
-        Prints and exports various components of the dataset.
+        Executes the complete visualization and export pipeline for the dataset.
 
-        - Plots TopSpin data.
-        - If prefit is enabled, plots prefit and prints the lmfit prefit report.
-        - If spectrum fit type includes "global", plots global fit and individual global components.
-        - Iterates through all buildup types and plots buildup data.
-        - Prints a report.
-        - Writes global fit results to a semicolon-separated file.
-        - Writes buildup fit results to a semicolon-separated file.
-        - Outputs results in CSV format.
+        This method performs the following actions:
+
+        1. Plots TopSpin raw data after identifying sub-spectra (if the option is selected)
+           and normalizing by the number of scans. Additionally, outputs them in CSV format.
+        2. If prefit is enabled in the dataset properties:
+            - Plots prefit results.
+            - Prints the lmfit prefit report.
+        3. If the spectrum fit type includes "global" or "individual":
+            - Plots the combined fit.
+            - Plots each individual component of the global fit.
+        4. For each buildup type defined in the dataset properties:
+            - Plots the corresponding buildup data.
+        5. Prints a summary report of the fitting and analysis.
+        6. Exports results:
+            - Writes global/individual fit results to a semicolon-separated file.
+            - Writes buildup fit results to a semicolon-separated file.
         """
         self._plot_topspin_data()
         self._plot_global_all_together()
@@ -312,8 +323,6 @@ class Exporter:
             bbox_inches="tight",
         )
         plt.close()
-
-    import matplotlib.pyplot as plt
 
     def _plot_prefit(self):
         """
@@ -859,12 +868,12 @@ class LmfitResultHandler:
     A class to handle the results of fitting operations.
 
     This class stores and manages the results from different types of fits:
-    prefit, single fit, global fit, and buildup fit. It provides a container
+    prefit, individual fit, global fit, and buildup fit. It provides a container
     for the various fit results to facilitate later analysis and processing.
 
     Attributes:
         prefit (object or None): Stores the prefit result, which may be an object or None.
-        single_fit (object or None): Stores the result of a single fit operation, or None if not available.
+        individual_fit (object or None): Stores the result of a individual fit operation, or None if not available.
         global_fit (object or None): Stores the result of a global fit operation, or None if not available.
         buildup_fit (dict): A dictionary that stores results from buildup fits, keyed by fit identifiers.
     """
@@ -879,7 +888,7 @@ class LmfitResultHandler:
 
         Attributes:
             prefit (None): Default value for the prefit result.
-            single_fit (None): Default value for the single fit result.
+            individual_fit (None): Default value for the single fit result.
             global_fit (None): Default value for the global fit result.
             buildup_fit (dict): Default empty dictionary for storing buildup fit results.
         """
