@@ -19,7 +19,8 @@ class TopspinImporter:
     Class for importing NMR data from Bruker's TopSpin software.
 
     Attributes:
-        dataset:  :obj:`CorziliusNMR.dataset.Dataset` to store imported spectra and necessary metadata.
+        dataset:  :obj:`CorziliusNMR.dataset.Dataset` to store imported spectra and necessary
+        metadata.
     """
 
     def __init__(self, dataset):
@@ -294,9 +295,11 @@ class Exporter:
 
     def _plot_topspin_data(self):
         """
-        Plots the spectral data from the dataset, displaying time delays (t_del) on the x-axis and intensity values on the y-axis.
+        Plots the spectral data from the dataset, displaying time delays (t_del) on the x-axis and
+         intensity values on the y-axis.
 
-        The spectra are plotted with different colors, and the resulting plot is saved as a high-resolution PDF.
+        The spectra are plotted with different colors, and the resulting plot is saved as a
+         high-resolution PDF.
 
         :return: None
         :rtype: None
@@ -371,8 +374,9 @@ class Exporter:
         """
         Plots experimental data and simulation results for the global fit summary.
 
-        The plot shows experimental data and corresponding simulations for each spectrum. The x-axis represents
-        time delay (`t_del`), and the y-axis represents intensity (`I`). The plot is saved as a high-resolution PDF.
+        The plot shows experimental data and corresponding simulations for each spectrum.
+        The x-axis represents time delay (`t_del`), and the y-axis represents intensity (`I`).
+        The plot is saved as a high-resolution PDF.
         """
         valdict = functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
@@ -420,10 +424,11 @@ class Exporter:
         """
         Plots the buildup data and corresponding model fits for a specified buildup type.
 
-        The plot includes experimental data and simulations (exponential, biexponential, etc.) for each peak.
-        The resulting plot is saved as a high-resolution PDF.
+        The plot includes experimental data and simulations (exponential, biexponential, etc.)
+        for each peak. The resulting plot is saved as a high-resolution PDF.
 
-        :param buildup_type: The type of buildup function to fit (e.g., 'exponential', 'biexponential').
+        :param buildup_type: The type of buildup function to fit
+        (e.g., 'exponential', 'biexponential').
         :type buildup_type: str
         """
         colors = plt.get_cmap("viridis")
@@ -697,11 +702,12 @@ class Exporter:
         """
         Writes the buildup fit results to semicolon-separated text files for each buildup type.
 
-        This method iterates over the different buildup types, retrieves the corresponding buildup fit results,
-        formats them using a predefined header and value mapping, and writes the results into individual text files.
+        This method iterates over the different buildup types, retrieves the corresponding
+        buildup fit results, formats them using a predefined header and value mapping, and
+        writes the results into individual text files.
 
-        Each file is named as 'Buildup_fit_result_<buildup_type>.txt' and includes a header row followed by the
-        formatted data rows for each result.
+        Each file is named as 'Buildup_fit_result_<buildup_type>.txt' and includes
+        a header row followed by the formatted data rows for each result.
         """
         for buildup_type in self.dataset.props.buildup_types:
             output_file_path = f"{self.dataset.props.output_folder}/Buildup_fit_result_{buildup_type}.txt"
@@ -732,9 +738,10 @@ class Exporter:
         """
         Writes the global fit results to a semicolon-separated text file.
 
-        This method retrieves the global fit parameters, generates a dictionary of spectra parameters,
-        formats the data into rows, and writes the results to a file named 'Global_fit_result.txt'.
-        The file includes a header row followed by the formatted data rows for each delay time and parameter value.
+        This method retrieves the global fit parameters, generates a dictionary of spectra
+        parameters, formats the data into rows, and writes the results to a file named
+        'Global_fit_result.txt'. The file includes a header row followed by the formatted
+        data rows for each delay time and parameter value.
 
         The output file is stored in the specified output folder.
         """
@@ -760,8 +767,9 @@ class Exporter:
         Writes spectral data to a CSV file with semicolon-separated values.
 
         This method extracts the x-axis and y-axis data from each spectrum in the dataset,
-        and writes the data to a CSV file named 'Spectral_data_csv.csv' in the specified output folder.
-        The file is structured such that each row contains the corresponding values for the x-axis and y-axis.
+        and writes the data to a CSV file named 'Spectral_data_csv.csv' in the specified
+        output folder. The file is structured such that each row contains the corresponding
+        values for the x-axis and y-axis.
         """
         spectral_data = []
         output_file_path = (
@@ -815,9 +823,10 @@ class Exporter:
         """
         Generates a row of fit parameters for a given delay time and spectrum index.
 
-        This function extracts and formats the fitting parameters, including peak label, delay time,
-        center, amplitude, sigma, gamma, and full-width at half maximum (FWHM) for Lorentzian, Gaussian,
-        and Voigt line shapes. It also includes the corresponding intensity value.
+        This function extracts and formats the fitting parameters, including peak label,
+        delay time, center, amplitude, sigma, gamma, and full-width at half maximum (FWHM)
+        or Lorentzian, Gaussian, and Voigt line shapes. It also includes the corresponding
+         intensity value.
 
         :param values: Dictionary containing fitting parameters for each delay time.
         :type values: dict

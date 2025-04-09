@@ -17,17 +17,17 @@ Classes:
             - ExpFitter: A fitter for single-exponential buildup behavior.
             - ExpFitterWithOffset: A variant of `ExpFitter` with an additional offset parameter.
             - BiexpFitter: A fitter for biexponential buildup behavior.
-            - BiexpFitterWithOffset: A variant of `BiexpFitter` with an additional offset parameter.
+            - BiexpFitterWithOffset: A variant of `BiexpFitter`
+              with an additional offset parameter.
             - StretchedExponentialFitter: A fitter for stretched exponential buildup behavior.
 """
 
-import lmfit
-import numpy as np
 import copy
+import logging
+import numpy as np
+import lmfit
 from pyDOE2 import lhs
 from CorziliusNMR import functions
-import matplotlib.pyplot as plt
-import sys
 
 
 class Fitter:
@@ -36,16 +36,21 @@ class Fitter:
 
     This class handles parameter initialization and spectral fitting for a dataset.
 
-    Attributes:
-        dataset: :obj:`CorziliusNMR.dataset.Dataset` containing spectra and peak information.
+    Attributes
+    ----------
+    dataset : :obj:`CorziliusNMR.dataset.Dataset`
+        Containing spectra and peak information.
+
     """
 
     def __init__(self, dataset):
         """
         Initializes the Fitter with a dataset.
 
-        Args:
-            dataset: An object containing spectral data and peak list.
+        Args
+        ----
+        dataset : An object containing spectral data and peak list.
+
         """
         self.dataset = dataset
 
@@ -53,8 +58,11 @@ class Fitter:
         """
         Performs spectral fitting using the `lmfit.minimize` function.
 
-        Returns:
-            lmfit.MinimizerResult: The result of the fitting process.
+        Returns
+        -------
+        lmfit.MinimizerResult
+            The result of the fitting process.
+
         """
         x_axis, y_axis = self._generate_axis_list()
         params = self._generate_params_list()
@@ -69,13 +77,20 @@ class Fitter:
 
     def _set_param_expr(self, params):
         """
-        Modifies parameter expressions if needed. Default implementation returns parameters unchanged.
+        Modifies parameter expressions if needed.
 
-        Args:
-            params (lmfit.Parameters): The parameters to be modified.
+        Default implementation returns parameters unchanged.
 
-        Returns:
-            lmfit.Parameters: The modified parameters.
+        Args
+        ----
+        params : lmfit.Parameters
+            The parameters to be modified.
+
+        Returns
+        -------
+        lmfit.Parameters
+            The modified parameters.
+
         """
         return params
 
@@ -83,8 +98,11 @@ class Fitter:
         """
         Generates lists of x-axis and y-axis values for all spectra in the dataset.
 
-        Returns:
-            tuple: Two lists containing x-axis and y-axis values for each spectrum.
+        Returns
+        -------
+        tuple
+            Two lists containing x-axis and y-axis values for each spectrum.
+
         """
         x_axis, y_axis = [], []
         for spectrum in self.dataset.spectra:
@@ -96,8 +114,11 @@ class Fitter:
         """
         Generates initial fitting parameters based on peak information in the dataset.
 
-        Returns:
-            lmfit.Parameters: The initialized parameters for fitting.
+        Returns
+        -------
+        lmfit.Parameters
+            The initialized parameters for fitting.
+
         """
         params = lmfit.Parameters()
         spectra = self._get_spectra_list()
@@ -121,8 +142,11 @@ class Fitter:
         """
         Retrieves the appropriate spectra for fitting.
 
-        Returns:
-            list: A list of spectra to be fitted.
+        Returns
+        -------
+            list
+                A list of spectra to be fitted.
+
         """
         return (
             [self.dataset.spectra[self.dataset.props.spectrum_for_prefit]]
@@ -138,8 +162,11 @@ class Fitter:
             peak: A peak object containing fitting information.
             nr (int): The spectrum index.
 
-        Returns:
-            dict: A dictionary defining the amplitude parameter.
+        Returns
+        -------
+            dict
+                A dictionary defining the amplitude parameter.
+
         """
         return {
             "name": f"{peak.peak_label}_amp_{nr}",
@@ -152,12 +179,18 @@ class Fitter:
         """
         Generates a center parameter dictionary for a given peak.
 
-        Args:
-            peak: A peak object containing fitting information.
-            nr (int): The spectrum index.
+        Args
+        ----
+            peak
+                A peak object containing fitting information.
+            nr (int)
+                The spectrum index.
 
-        Returns:
-            dict: A dictionary defining the center parameter.
+        Returns
+        -------
+            dict
+                A dictionary defining the center parameter.
+
         """
         return {
             "name": f"{peak.peak_label}_cen_{nr}",
@@ -170,13 +203,16 @@ class Fitter:
         """
         Generates a linewidth parameter dictionary for a given peak.
 
-        Args:
-            peak: A peak object containing fitting information.
-            nr (int): The spectrum index.
-            lw (str): The linewidth type (e.g., 'sigma', 'gamma').
+        Args
+        ----
+        peak: A peak object containing fitting information.
+        nr (int): The spectrum index.
+        lw (str): The linewidth type (e.g., 'sigma', 'gamma').
 
-        Returns:
-            dict: A dictionary defining the linewidth parameter.
+        Returns
+        -------
+        dict: A dictionary defining the linewidth parameter.
+
         """
         return {
             "name": f"{peak.peak_label}_{lw}_{nr}",
@@ -193,13 +229,16 @@ class Fitter:
         """
         Computes the residual between the fitted and experimental spectra.
 
-        Args:
+        Args
+        ----
             params (lmfit.Parameters): The fitting parameters.
             x_axis (list): List of x-axis values.
             y_axis (list): List of y-axis values.
 
-        Returns:
+        Returns
+        -------
             np.ndarray: The residual between the fitted and experimental spectra.
+
         """
         residual = copy.deepcopy(y_axis)
         params_dict_list = functions.generate_spectra_param_dict(params)
@@ -213,11 +252,12 @@ class Fitter:
 
 class Prefitter(Fitter):
     """
-    The Prefitter class is a specialized subclass of the Fitter class that performs a preliminary fit on a single
-    preselected spectrum to reduce the parameter search space for the subsequent global fit. By fitting the spectrum
-    first, it estimates optimal parameters, particularly for linewidths, and narrows down the parameter intervals.
-    The pre-fit parameters define bounds (±10%) for the linewidths. These refined intervals are then used in the global
-    fit, significantly reducing computational time by limiting the parameter range.
+    A subclass of Fitter that performs a preliminary fit on a preselected spectrum.
+
+    By fitting the spectrum first, it estimates optimal parameters, particularly for
+    linewidths, and narrows down the parameter intervals. The pre-fit parameters define bounds
+    (±10%) for the linewidths. These refined intervals are then used in the global fit,
+    significantly reducing computational time by limiting the parameter range.
     """
 
     def _generate_axis_list(self):
@@ -229,7 +269,6 @@ class Prefitter(Fitter):
 
         :return: Tuple containing lists of x and y axes.
         """
-
         spectrum_for_prefit = self.dataset.props.spectrum_for_prefit
         x_axis, y_axis = [], []
         x_axis.append(self.dataset.spectra[spectrum_for_prefit].x_axis)
@@ -242,7 +281,7 @@ class Prefitter(Fitter):
         lhs_samples = lhs(int(len(params) / 2), samples=n_samples)
         best_result = None
         best_chisqr = np.inf
-        for sample_nr, sample in enumerate(lhs_samples):
+        for sample in lhs_samples:
             i = 0
             for param in params:
                 if "sigma_0" in param or "gamma_0" in param:
@@ -263,14 +302,18 @@ class Prefitter(Fitter):
 
 class GlobalFitter(Fitter):
     """
-    Global fit over all spectra at different polarization times: For SCREAM-DNP data it can be assumed that the line
-    broadening did not vary over all polarization times in cases where a homogeneous polarization buildup on protons
-    exists. Same goes for the center of each peak since the chemical shift is not depending on the polarization time.
+    Global fit over all spectra at different polarization times.
 
-    For this it is recommended to carefully reference all spectra during post-processing. With this, the number of
-    fitting parameters can drastically be reduced, yielding a shorter calculation time. In this case, all spectra from
-    a SCREAM-DNP buildup series can be described by two lineshape parameters (sigma and gamma), one variable for the
-    peak center (µ), and n amplitude variables per resonance, where n stands for the number of spectra within one series.
+    For SCREAM-DNP data, it can be assumed that the line broadening did not vary over all
+    polarization times in cases where a homogeneous polarization buildup on protons exists.
+
+    Same goes for the center of each peak since the chemical shift is not depending on the
+    polarization time. For this, it is recommended to carefully reference all spectra during
+    post-processing. With this, the number of fitting parameters can drastically be reduced,
+    yielding a shorter calculation time. In this case, all spectra from a SCREAM-DNP buildup
+    series can be described by two lineshape parameters (sigma and gamma), one variable for
+    the peak center (µ), and n amplitude variables per resonance, where n stands for the
+    number of spectra within one series.
     """
 
     def _set_param_expr(self, params):
@@ -294,16 +337,16 @@ class GlobalFitter(Fitter):
 
 class IndependentFitter(Fitter):
     """
-    Fit of each spectrum with individual parameter set: In some cases it might be necessary to simulate each
-    spectrum from one series with his own parameter set. This option is also provided. Each resonance in each spectrum
-    will be fitted to two lineshape parameters, an amplitude and a globally determined peak center. Note that this
-    yields in higher run times. A prefit can be combined with this case to save time. However, it must be ensured
-    that all spectra can be fitted by conditions given in point two.
+    Fit of each spectrum with individual parameter set.
 
+    In some cases it might be necessary to simulate each spectrum from one series with its own
+    parameter set.
 
+    This option is also provided. Each resonance in each spectrum will be fitted to two
+    lineshape parameters, an amplitude and a globally determined peak center. Note that this
+    yields higher run times. A prefit can be combined with this case to save time. However, it
+    must be ensured that all spectra can be fitted by conditions given in point two.
     """
-
-    pass
 
 
 class BuildupFitter:
@@ -313,9 +356,11 @@ class BuildupFitter:
     This class is responsible for performing a fitting procedure on a dataset
     of peaks with time-dependent intensities.
 
-    Attributes:
-        dataset:  :obj:`CorziliusNMR.dataset.Dataset` containing peak
-                            intensity and polarization time information.
+    Attributes
+    ----------
+    dataset:  :obj:`CorziliusNMR.dataset.Dataset` containing peak
+              intensity and polarization time information.
+
     """
 
     def __init__(self, dataset):
@@ -346,7 +391,8 @@ class BuildupFitter:
                         best_result, best_chisqr, result
                     )
                 except Exception as e:
-                    pass
+                    logging.error("Error occurred: %s", e)
+                    raise
             result_list.append(best_result)
         return result_list
 
@@ -390,7 +436,6 @@ class BuildupFitter:
         :param result: The new fitting result.
         :return: The best result and its chi-squared value.
         """
-
         if result.chisqr < best_chisqr:
             return result, result.chisqr
         return best_result, best_chisqr
@@ -488,7 +533,7 @@ class BuildupFitter:
         """
         return {"value": 5, "min": 0, "max": max(peak.buildup_vals.tpol) * 3}
 
-    def _get_beta_dict(self, peak):
+    def _get_beta_dict(self):
         return {"value": 0, "min": 0, "max": 1}
 
 
@@ -690,7 +735,7 @@ class StrechedExponentialFitter(BuildupFitter):
         return {
             "A1": self._get_intensity_dict(peak),
             "t1": self._get_time_dict(peak),
-            "beta": self._get_beta_dict(peak),
+            "beta": self._get_beta_dict(),
         }
 
     def _calc_intensity(self, tdel, param):
