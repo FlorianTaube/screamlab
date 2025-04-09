@@ -391,8 +391,9 @@ class BuildupFitter:
                         best_result, best_chisqr, result
                     )
                 except Exception as e:
-                    logging.error("Error occurred: %s", e)
-                    raise
+                    log_error = False
+                    if log_error:
+                        logging.error("Error occurred: %s", e)
             result_list.append(best_result)
         return result_list
 
