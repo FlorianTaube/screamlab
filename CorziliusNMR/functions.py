@@ -1,10 +1,11 @@
 """
-This module provides general-purpose utility functions used across various models.
-Functions here are independent and stateless, designed to be reusable throughout the codebase.
+Provides general-purpose utility functions used across various models.
+
+Functions are independent and stateless, designed to be reusable throughout the codebase.
 """
 
-import numpy as np
 import re
+import numpy as np
 from scipy.special import wofz
 
 
@@ -73,6 +74,7 @@ def fwhm_gaussian(sigma):
     -------
     float
         The full width at half maximum (FWHM) of the Gaussian.
+
     """
     return 2 * np.sqrt(2 * np.log(2)) * sigma
 
@@ -93,31 +95,31 @@ def fwhm_lorentzian(gamma):
     -------
     float
         The full width at half maximum (FWHM) of the Lorentzian.
-    """
 
+    """
     return 2 * gamma
 
 
 def fwhm_voigt(sigma, gamma):
     """
-    Compute the Full Width at Half Maximum (FWHM) of a Voigt profile.
+    Compute the full width at half maximum (FWHM) of a Voigt profile.
 
-    The Voigt profile is a convolution of a Gaussian and a Lorentzian function and thereby approximated by:
-        FWHM ≈ 0.5346 * FWHM_L + sqrt(0.2166 * FWHM_L^2 + FWHM_G^2)
+    The Voigt profile is a convolution of a Gaussian and a Lorentzian function:
+        FWHM ≈ 0.5346 * (2 * gamma) + sqrt(0.2166 * (2 * gamma)^2 + 4 * ln(2) * sigma^2)
 
     Parameters
     ----------
-    fwhm_g : float
-        The full width at half maximum (FWHM) of the Gaussian component.
-    fwhm_l : float
-        The full width at half maximum (FWHM) of the Lorentzian component.
+    sigma : float
+        Standard deviation of the Gaussian component.
+    gamma : float
+        Half-width at half-maximum (HWHM) of the Lorentzian component.
 
     Returns
     -------
     float
-        The approximate full width at half maximum (FWHM) of the Voigt profile.
-    """
+        The approximate FWHM of the Voigt profile.
 
+    """
     return 0.5346 * (2 * gamma) + np.sqrt(
         0.2166 * (2 * gamma) ** 2 + 4 * np.log(2) * sigma**2
     )
@@ -135,8 +137,10 @@ def calc_exponential(time_vals, param):
         - A     : Amplitude (maximum value the function approaches)
         - tf    : Time constant (controls the rate of growth)
 
-    Returns:
+    Returns
+    -------
         list: Exponential profile evaluated at t.
+
     """
     return list(param[0] * (1 - np.exp(-np.asarray(time_vals) / param[1])))
 
@@ -154,8 +158,10 @@ def calc_stretched_exponential(time_vals, param):
         - tf    : Time constant (controls the rate of growth)
         - beta  : stretching exponent
 
-    Returns:
+    Returns
+    -------
         list: Stretched exponential profile evaluated at t.
+
     """
     return list(
         param[0]
@@ -176,8 +182,10 @@ def calc_biexponential(time_vals, param):
         - tf, ts: Time constants (controls the rate of growth)
 
 
-    Returns:
+    Returns
+    -------
         list: Biexponential profile evaluated at t.
+
     """
     return list(
         param[0] * (1 - np.exp(-np.asarray(time_vals) / param[2]))
@@ -199,8 +207,10 @@ def calc_exponential_with_offset(time_vals, param):
         - t0    : Time offset
 
 
-    Returns:
+    Returns
+    -------
         list: Exponential profile with time offset evaluated at t.
+
     """
     return list(
         param[0]
@@ -222,8 +232,10 @@ def calc_biexponential_with_offset(time_vals, param):
         - t0    : Time offset
 
 
-    Returns:
+    Returns
+    -------
         list: Biexponential profile with time offset evaluated at t.
+
     """
     return list(
         param[0]
@@ -267,9 +279,7 @@ def generate_spectra_param_dict(params):
 
 
 def calc_peak(x_axis, simspec, val):
-    """
-    Simulates spectra based on given parameters.
-    """
+    """Simulates spectra based on given parameters."""
     if len(val) == 5:
         simspec += voigt_profile(x_axis, val[1], val[2], val[3], val[0])
     if len(val) == 3:
@@ -280,9 +290,7 @@ def calc_peak(x_axis, simspec, val):
 
 
 def format_mapping():
-    """
-    Returns a dictionary mapping each buildup function type to its corresponding parameter names.
-    """
+    """Maps each buildup function type to its parameter names."""
     return {
         "exponential": [
             "A1",
@@ -348,9 +356,7 @@ def format_mapping():
 
 
 def buildup_header():
-    """
-    Returns a list of headers for the buildup analysis table.
-    """
+    """Returns a list of headers for the buildup analysis table."""
     return [
         "Label",
         "A1 / a.u.",
@@ -366,9 +372,7 @@ def buildup_header():
 
 
 def spectrum_fit_header():
-    """
-    Returns a list of headers for the spectrum fitting results table.
-    """
+    """Returns a list of headers for the spectrum fitting results table."""
     return [
         "Label",
         "Time / s",
@@ -384,9 +388,7 @@ def spectrum_fit_header():
 
 
 def return_func_map():
-    """
-    Returns a dictionary mapping function types to their corresponding fitting functions.
-    """
+    """Returns a dictionary mapping function types to their corresponding fitting functions."""
     return {
         "exponential": calc_exponential,
         "biexponential": calc_biexponential,
@@ -405,6 +407,7 @@ def generate_subspec(spectrum, subspec):
     tuple of ndarray
         A tuple containing two arrays:
         The sliced x- and y-axis values specified range.
+
     """
     start = np.argmax(spectrum.x_axis < max(subspec))
     stop = np.argmax(spectrum.x_axis < min(subspec))

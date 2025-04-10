@@ -18,25 +18,21 @@ class TopspinImporter:
     """
     Class for importing NMR data from Bruker's TopSpin software.
 
-    Attributes:
+    Attributes
+    ----------
         dataset:  :obj:`CorziliusNMR.dataset.Dataset` to store imported spectra and necessary
         metadata.
     """
 
     def __init__(self, dataset):
-        """
-        Initialize the TopspinImporter.
-
-        """
+        """Initialize the TopspinImporter."""
         self._dataset = dataset
         self.file = None
         self._current_path_to_exp = None
         self._nmr_data = None
 
     def _set_values(self):
-        """
-        Set internal values including scans, buildup time, x and y data.
-        """
+        """Set internal values including scans, buildup time, x and y data."""
         self._set_number_of_scans()
         self._set_buildup_time()
         self._set_x_data()
@@ -46,9 +42,7 @@ class TopspinImporter:
             self._gen_subspectrum()
 
     def _add_spectrum(self):
-        """
-        Add a new spectrum to the dataset.
-        """
+        """Add a new spectrum to the dataset."""
         self._dataset.spectra.append(dataset.Spectra())
 
     def _get_physical_range(self):
@@ -142,9 +136,7 @@ class ScreamImporter(TopspinImporter):
                     )
 
     def import_topspin_data(self):
-        """
-        Import NMR data from TopSpin and process it.
-        """
+        """Import NMR data from TopSpin and process it."""
         files = self._generate_path_to_experiment()
         for file in files:
             self.file = file
@@ -152,9 +144,7 @@ class ScreamImporter(TopspinImporter):
             self._set_values()
 
     def _set_buildup_time(self):
-        """
-        Set the buildup time for the last spectrum in the dataset.
-        """
+        """Set the buildup time for the last spectrum in the dataset."""
         delay = self._extract_params_from_acqus("##$D= (0..63)", 64)
         loop = self._extract_params_from_acqus("##$L= (0..31)", 32)
         self._dataset.spectra[-1].tpol = loop * delay
@@ -199,9 +189,7 @@ class ScreamImporter(TopspinImporter):
         return param
 
     def _set_x_data(self):
-        """
-        Set the x-axis data for the last spectrum in the dataset.
-        """
+        """Set the x-axis data for the last spectrum in the dataset."""
         physical_range = self._get_physical_range()
         number_of_datapoints = self._get_num_of_datapoints()
         self._dataset.spectra[-1].x_axis = self._calc_x_axis(
@@ -209,18 +197,14 @@ class ScreamImporter(TopspinImporter):
         )
 
     def _set_y_data(self):
-        """
-        Set the y-axis data for the last spectrum in the dataset.
-        """
+        """Set the y-axis data for the last spectrum in the dataset."""
         _, y_data = ng.bruker.read_pdata(
             f"{self.file}\\pdata\\" f"{self._dataset.props.procno}"
         )
         self._dataset.spectra[-1].y_axis = y_data
 
     def _normalize_y_values_to_number_of_scans(self):
-        """
-        Normalize the y-axis values to the number of scans.
-        """
+        """Normalize the y-axis values to the number of scans."""
         self._dataset.spectra[-1].y_axis = np.divide(
             self._dataset.spectra[-1].y_axis,
             self._dataset.spectra[-1].number_of_scans,
@@ -244,8 +228,10 @@ class Exporter:
     """
     A class to handle exporting and printing dataset information.
 
-    Attributes:
+    Attributes
+    ----------
         dataset:  :obj:`CorziliusNMR.dataset.Dataset` with all information aquired during fitting.
+
     """
 
     def __init__(self, dataset):
@@ -296,7 +282,7 @@ class Exporter:
     def _plot_topspin_data(self):
         """
         Plots the spectral data from the dataset, displaying time delays (t_del) on the x-axis and
-         intensity values on the y-axis.
+        intensity values on the y-axis.
 
         The spectra are plotted with different colors, and the resulting plot is saved as a
          high-resolution PDF.
@@ -624,15 +610,18 @@ class Exporter:
                     for val_nr, val in enumerate(valdict[keys]):
                         if len(val) == 5:
                             f.write(
-                                f"{self.dataset.peak_list[val_nr].peak_label}\t{round(val[1],3)}\t{round(val[0],3)}\t{round(val[2],3)}\t{round(val[3],3)}\n"
+                                f"{self.dataset.peak_list[val_nr].peak_label}\t{round(val[1],3)}\t"
+                                f"{round(val[0],3)}\t{round(val[2],3)}\t{round(val[3],3)}\n"
                             )
                         elif len(val) == 3:
                             f.write(
-                                f"{self.dataset.peak_list[val_nr].peak_label}\t{round(val[1],3)}\t{round(val[0],3)}\t{round(val[2],3)}\t---\n"
+                                f"{self.dataset.peak_list[val_nr].peak_label}\t{round(val[1],3)}\t"
+                                f"{round(val[0],3)}\t{round(val[2],3)}\t---\n"
                             )
                         elif len(val) == 4:
                             f.write(
-                                f"{self.dataset.peak_list[val_nr].peak_label}\t{round(val[1],3)}\t{round(val[0],3)}\t---\t{round(val[2],3)}\n"
+                                f"{self.dataset.peak_list[val_nr].peak_label}\t"
+                                f"{round(val[1],3)}\t{round(val[0],3)}\t---\t{round(val[2],3)}\n"
                             )
             else:
                 f.write("[[Prefit]]\nNo prefit performed.\n")
@@ -710,7 +699,10 @@ class Exporter:
         a header row followed by the formatted data rows for each result.
         """
         for buildup_type in self.dataset.props.buildup_types:
-            output_file_path = f"{self.dataset.props.output_folder}/Buildup_fit_result_{buildup_type}.txt"
+            output_file_path = (
+                f"{self.dataset.props.output_folder}/"
+                f"Buildup_fit_result_{buildup_type}.txt"
+            )
             with open(output_file_path, "w", encoding="utf-8") as f:
                 header = functions.buildup_header()
                 f.write(";".join(header) + "\n")
@@ -721,7 +713,10 @@ class Exporter:
                         buildup_type
                     ]
                 ):
-                    lmfit_report = f"{self.dataset.props.output_folder}/Buildup_fit_result_{buildup_type}_{result_nr}.txt"
+                    lmfit_report = (
+                        f"{self.dataset.props.output_folder}/"
+                        f"Buildup_fit_result_{buildup_type}_{result_nr}.txt"
+                    )
                     with open(lmfit_report, "w", encoding="utf-8") as a:
                         a.write(lmfit.fit_report(result))
                     a.close()
@@ -834,7 +829,7 @@ class Exporter:
         :type delay_time: int
         :param val_nr: The index of the spectrum being processed.
         :type val_nr: int
-        :return: A list containing the formatted fit parameter row or None if values do not match the expected format.
+        :return: A list with the formatted fit parameter row, or None if the format is invalid.
         :rtype: list or None
         """
         row = None
@@ -880,11 +875,13 @@ class LmfitResultHandler:
     prefit, individual fit, global fit, and buildup fit. It provides a container
     for the various fit results to facilitate later analysis and processing.
 
-    Attributes:
-        prefit (object or None): Stores the prefit result, which may be an object or None.
-        individual_fit (object or None): Stores the result of a individual fit operation, or None if not available.
-        global_fit (object or None): Stores the result of a global fit operation, or None if not available.
-        buildup_fit (dict): A dictionary that stores results from buildup fits, keyed by fit identifiers.
+    Attributes
+    ----------
+        prefit (object | None): Stores the prefit result, which may be an object or None.
+        individual_fit (object | None): Result of an individual fit, or None if unavailable.
+        global_fit (object | None): Result of a global fit, or None if unavailable.
+        buildup_fit (dict): Stores buildup fit results, keyed by fit ID.
+
     """
 
     def __init__(self):
