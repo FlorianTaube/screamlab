@@ -1,6 +1,4 @@
-"""
-The `settings` module is responsible for managing configuration options used in the analysis process.
-"""
+"""The `settings` module is responsible for managing configuration options used in the analysis process."""
 
 from typing import Any
 import os
@@ -14,18 +12,19 @@ class Properties:
     ----------
     path_to_experiment : str
         Path to the experiment data. Default is an empty string ("").
-    output_folder : str
-        Folder path for saving output. Default is an empty string ("").
     expno : list of int
         Experiment numbers. Default is None.
     prefit : bool, optional
         Indicates whether prefit mode is enabled. Default is False.
     spectrum_for_prefit : int, optional
-        Specifies the spectrum index to be used for prefit. Default is -1 meaning the last spectrum added to :obj:`CorziliusNMR.settings.Spectra`  class.
+        Specifies the spectrum index for prefit. Default is -1, meaning the last spectrum in
+        :obj:`CorziliusNMR.settings.Spectra`.
     buildup_types : list of str, optional
-        A list specifying the types of buildup function to be used. Default is ["exponential"]. Alternatives are "biexponential", "exponential_with_offset", "biexponential_with_offset", "stretched_exponential".
+        A list of buildup function types. Default is ["exponential"]. Options:
+        "biexponential", "exponential_with_offset", "biexponential_with_offset",
+        "stretched_exponential".
     spectrum_fit_type : str, optional
-        A list specifying the spectrum fit type. Default is "global". Alternatively "independent" can be used.
+        A list specifying the spectrum fit type: "global" (default) or "independent".
     procno : int, optional
         Process number. Default is 103 (standard in SCREAM-DNP experiments).
     loop20 : str, optional
@@ -33,7 +32,7 @@ class Properties:
     delay20 : str, optional
         Delay parameter. Default is "D 20" (standard in SCREAM-DNP experiments).
     subspec : list, optional
-        A list of two floats specifying the range to be cut from a spectrum. Ensure the values are within the valid range of the spectrum. Default is [].
+        Two floats defining the spectrum range to cut. Must be within the valid spectrum range. Default is [].
     """
 
     def __init__(
@@ -91,17 +90,26 @@ class Properties:
             f"Spectrum for prefit: {self.spectrum_for_prefit}\n"
             f"Spectrum fitting type: {self.spectrum_fit_type}\n"
             f"Buildup evaluation: {self.buildup_types}\n"
-            f"Calculated polarization time from {self.loop20} and {self.delay20} if SCREAM data given.\n"
+            f"Calculated polarization time from {self.loop20} and "
+            f"{self.delay20} if SCREAM data given.\n"
             f"Wrote output files to: {self.output_folder}"
         )
 
     @property
     def output_folder(self) -> str:
+        """
+        Folder path for saving output. Default is an empty string ("").
+
+        Returns
+        -------
+            str: The current folder path where the output is being saved.
+
+        """
         return self._output_folder
 
     @output_folder.setter
     def output_folder(self, value: Any):
-
+        """Set the folder path for saving output."""
         if not isinstance(value, str):
             raise TypeError(
                 f"Expected 'output_folder' to be of type 'str', got {type(value).__name__}."

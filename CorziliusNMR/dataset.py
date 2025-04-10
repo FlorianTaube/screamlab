@@ -3,10 +3,9 @@
 
 """
 
-import lmfit
+from datetime import datetime
 from CorziliusNMR import io, utils, settings, functions
 import numpy as np
-from datetime import datetime
 
 
 class Dataset:

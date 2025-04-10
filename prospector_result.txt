@@ -102,27 +102,27 @@ docs.conf (docs\conf.py):
     Constant name "todo_include_todos" doesn't conform to UPPER_CASE naming style
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L586:4 Exporter._print_report: pylint - too-many-locals
+    L587:4 Exporter._print_report: pylint - too-many-locals
     Too many local variables (22/15)
 
 CorziliusNMR\io.py:
-    L586:- Exporter._print_report: mccabe - MC0001
+    L587:- Exporter._print_report: mccabe - MC0001
     Exporter._print_report is too complex (15)
 
 CorziliusNMR\io.py:
-    L572:52 None: pycodestyle - W605
+    L573:52 None: pycodestyle - W605
     invalid escape sequence '\,'
 
 CorziliusNMR\io.py:
-    L572:55 None: pycodestyle - W605
+    L573:55 None: pycodestyle - W605
     invalid escape sequence '\m'
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L572:51 None: pylint - anomalous-backslash-in-string
+    L573:51 None: pylint - anomalous-backslash-in-string
     Anomalous backslash in string: '\,'. String constant might be missing an r prefix.
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L572:54 None: pylint - anomalous-backslash-in-string
+    L573:54 None: pylint - anomalous-backslash-in-string
     Anomalous backslash in string: '\m'. String constant might be missing an r prefix.
 
 CorziliusNMR\io.py:
@@ -134,18 +134,6 @@ CorziliusNMR\io.py:
     Missing blank line after last section ('Attributes')
 
 CorziliusNMR\io.py:
-    L28:- None: pydocstyle - D210
-    No whitespaces allowed surrounding docstring text
-
-CorziliusNMR\io.py:
-    L35:- None: pydocstyle - D210
-    No whitespaces allowed surrounding docstring text
-
-CorziliusNMR\io.py:
-    L45:- None: pydocstyle - D210
-    No whitespaces allowed surrounding docstring text
-
-CorziliusNMR\io.py:
     L120:- None: pydocstyle - D205
     1 blank line required between summary line and description (found 0)
 
@@ -154,43 +142,19 @@ CorziliusNMR\io.py:
     One-line docstring should fit on one line with quotes (found 3)
 
 CorziliusNMR\io.py:
-    L139:- None: pydocstyle - D210
-    No whitespaces allowed surrounding docstring text
-
-CorziliusNMR\io.py:
-    L147:- None: pydocstyle - D210
-    No whitespaces allowed surrounding docstring text
-
-CorziliusNMR\io.py:
-    L192:- None: pydocstyle - D210
-    No whitespaces allowed surrounding docstring text
-
-CorziliusNMR\io.py:
-    L200:- None: pydocstyle - D210
-    No whitespaces allowed surrounding docstring text
-
-CorziliusNMR\io.py:
-    L207:- None: pydocstyle - D210
-    No whitespaces allowed surrounding docstring text
-
-CorziliusNMR\io.py:
-    L222:- None: pydocstyle - D204
-    1 blank line required after class docstring (found 0)
-
-CorziliusNMR\io.py:
-    L282:- None: pydocstyle - D205
+    L283:- None: pydocstyle - D205
     1 blank line required between summary line and description (found 0)
 
 CorziliusNMR\io.py:
-    L883:- None: pydocstyle - D413
+    L888:- None: pydocstyle - D413
     Missing blank line after last section ('Attributes')
 
 CorziliusNMR\io.py:
-    L883:- None: pydocstyle - D407
+    L888:- None: pydocstyle - D407
     Missing dashed underline after section ('Attributes')
 
 CorziliusNMR\io.py:
-    L883:- None: pydocstyle - D406
+    L888:- None: pydocstyle - D406
     Section name should end with a newline ('Attributes', not 'Attributes:')
 
 CorziliusNMR.io (CorziliusNMR\io.py):
@@ -238,63 +202,135 @@ CorziliusNMR.io (CorziliusNMR\io.py):
     Redefining name 'dataset' from outer scope (line 6)
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L223:4 _Pseudo2DImporter: pylint - unnecessary-pass
+    L224:4 _Pseudo2DImporter: pylint - unnecessary-pass
     Unnecessary pass statement
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L236:23 Exporter.__init__: pylint - redefined-outer-name
+    L237:23 Exporter.__init__: pylint - redefined-outer-name
     Redefining name 'dataset' from outer scope (line 6)
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L510:4 Exporter._plot_global_all_together: pylint - too-many-locals
+    L511:4 Exporter._plot_global_all_together: pylint - too-many-locals
     Too many local variables (23/15)
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L575:21 Exporter._plot_global_all_together: pylint - use-dict-literal
+    L576:21 Exporter._plot_global_all_together: pylint - use-dict-literal
     Consider using '{"facecolor": 'white', "alpha": 0.5}' instead of a call to 'dict'.
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L608:20 Exporter._print_report: pylint - unused-variable
+    L609:20 Exporter._print_report: pylint - unused-variable
     Unused variable 'key_nr'
 
+CorziliusNMR\settings.py:
+    L1:100 None: pycodestyle - E501
+    line too long (107 > 99 characters)
+
+CorziliusNMR\settings.py:
+    L35:100 None: pycodestyle - E501
+    line too long (110 > 99 characters)
+
+CorziliusNMR\settings.py:
+    L8:- None: pydocstyle - D413
+    Missing blank line after last section ('Attributes')
+
+CorziliusNMR\settings.py:
+    L83:- None: pydocstyle - D105
+    Missing docstring in magic method
+
+CorziliusNMR\settings.py:
+    L123:- None: pydocstyle - D102
+    Missing docstring in public method
+
+CorziliusNMR\settings.py:
+    L132:- None: pydocstyle - D102
+    Missing docstring in public method
+
+CorziliusNMR\settings.py:
+    L141:- None: pydocstyle - D102
+    Missing docstring in public method
+
+CorziliusNMR\settings.py:
+    L159:- None: pydocstyle - D102
+    Missing docstring in public method
+
+CorziliusNMR\settings.py:
+    L171:- None: pydocstyle - D102
+    Missing docstring in public method
+
+CorziliusNMR\settings.py:
+    L183:- None: pydocstyle - D102
+    Missing docstring in public method
+
+CorziliusNMR\settings.py:
+    L206:- None: pydocstyle - D102
+    Missing docstring in public method
+
+CorziliusNMR\settings.py:
+    L218:- None: pydocstyle - D102
+    Missing docstring in public method
+
+CorziliusNMR\settings.py:
+    L243:- None: pydocstyle - D102
+    Missing docstring in public method
+
+CorziliusNMR.settings (CorziliusNMR\settings.py):
+    L7:- Properties: pylint - too-many-instance-attributes
+    Too many instance attributes (22/10)
+
+CorziliusNMR.settings (CorziliusNMR\settings.py):
+    L38:4 Properties.__init__: pylint - dangerous-default-value
+    Dangerous default value [] as argument
+
+CorziliusNMR.settings (CorziliusNMR\settings.py):
+    L38:4 Properties.__init__: pylint - too-many-arguments
+    Too many arguments (12/5)
+
+CorziliusNMR.settings (CorziliusNMR\settings.py):
+    L38:4 Properties.__init__: pylint - too-many-positional-arguments
+    Too many positional arguments (12/5)
+
 CorziliusNMR\dataset.py:
-    L17:100 None: pycodestyle - E501
+    L13:1 None: pycodestyle - E303
+    too many blank lines (4)
+
+CorziliusNMR\dataset.py:
+    L18:100 None: pycodestyle - E501
     line too long (113 > 99 characters)
 
 CorziliusNMR\dataset.py:
-    L25:100 None: pycodestyle - E501
+    L26:100 None: pycodestyle - E501
     line too long (108 > 99 characters)
 
 CorziliusNMR\dataset.py:
-    L43:100 None: pycodestyle - E501
+    L44:100 None: pycodestyle - E501
     line too long (119 > 99 characters)
 
 CorziliusNMR\dataset.py:
-    L48:100 None: pycodestyle - E501
+    L49:100 None: pycodestyle - E501
     line too long (127 > 99 characters)
 
 CorziliusNMR\dataset.py:
-    L89:100 None: pycodestyle - E501
+    L90:100 None: pycodestyle - E501
     line too long (119 > 99 characters)
 
 CorziliusNMR\dataset.py:
-    L90:100 None: pycodestyle - E501
+    L91:100 None: pycodestyle - E501
     line too long (109 > 99 characters)
 
 CorziliusNMR\dataset.py:
-    L92:100 None: pycodestyle - E501
+    L93:100 None: pycodestyle - E501
     line too long (152 > 99 characters)
 
 CorziliusNMR\dataset.py:
-    L430:100 None: pycodestyle - E501
+    L431:100 None: pycodestyle - E501
     line too long (108 > 99 characters)
 
 CorziliusNMR\dataset.py:
-    L448:100 None: pycodestyle - E501
+    L449:100 None: pycodestyle - E501
     line too long (124 > 99 characters)
 
 CorziliusNMR\dataset.py:
-    L482:100 None: pycodestyle - E501
+    L483:100 None: pycodestyle - E501
     line too long (112 > 99 characters)
 
 CorziliusNMR\dataset.py:
@@ -302,272 +338,172 @@ CorziliusNMR\dataset.py:
     Docstring is empty
 
 CorziliusNMR\dataset.py:
-    L13:- None: pydocstyle - D413
+    L14:- None: pydocstyle - D413
     Missing blank line after last section ('Attributes')
 
 CorziliusNMR\dataset.py:
-    L13:- None: pydocstyle - D407
+    L14:- None: pydocstyle - D407
     Missing dashed underline after section ('Attributes')
 
 CorziliusNMR\dataset.py:
-    L13:- None: pydocstyle - D406
+    L14:- None: pydocstyle - D406
     Section name should end with a newline ('Attributes', not 'Attributes:')
 
 CorziliusNMR\dataset.py:
-    L21:- None: pydocstyle - D413
+    L22:- None: pydocstyle - D413
     Missing blank line after last section ('Args')
 
 CorziliusNMR\dataset.py:
-    L21:- None: pydocstyle - D407
+    L22:- None: pydocstyle - D407
     Missing dashed underline after section ('Args')
 
 CorziliusNMR\dataset.py:
-    L42:- None: pydocstyle - D202
+    L43:- None: pydocstyle - D202
     No blank lines allowed after function docstring (found 1)
 
 CorziliusNMR\dataset.py:
-    L42:- None: pydocstyle - D205
+    L43:- None: pydocstyle - D205
     1 blank line required between summary line and description (found 0)
 
 CorziliusNMR\dataset.py:
-    L65:- None: pydocstyle - D200
+    L66:- None: pydocstyle - D200
     One-line docstring should fit on one line with quotes (found 3)
 
 CorziliusNMR\dataset.py:
-    L71:- None: pydocstyle - D200
+    L72:- None: pydocstyle - D200
     One-line docstring should fit on one line with quotes (found 3)
 
 CorziliusNMR\dataset.py:
-    L84:- None: pydocstyle - D413
+    L85:- None: pydocstyle - D413
     Missing blank line after last section ('Args')
 
 CorziliusNMR\dataset.py:
-    L84:- None: pydocstyle - D407
+    L85:- None: pydocstyle - D407
     Missing dashed underline after section ('Args')
 
 CorziliusNMR\dataset.py:
-    L207:- None: pydocstyle - D413
+    L208:- None: pydocstyle - D413
     Missing blank line after last section ('Attributes')
 
 CorziliusNMR\dataset.py:
-    L231:- None: pydocstyle - D205
+    L232:- None: pydocstyle - D205
     1 blank line required between summary line and description (found 0)
 
 CorziliusNMR\dataset.py:
-    L237:- None: pydocstyle - D200
+    L238:- None: pydocstyle - D200
     One-line docstring should fit on one line with quotes (found 3)
 
 CorziliusNMR\dataset.py:
-    L388:- None: pydocstyle - D102
+    L389:- None: pydocstyle - D102
     Missing docstring in public method
 
 CorziliusNMR\dataset.py:
-    L489:- None: pydocstyle - D413
+    L490:- None: pydocstyle - D413
     Missing blank line after last section ('Attributes')
 
 CorziliusNMR\dataset.py:
-    L489:- None: pydocstyle - D407
+    L490:- None: pydocstyle - D407
     Missing dashed underline after section ('Attributes')
 
 CorziliusNMR\dataset.py:
-    L489:- None: pydocstyle - D406
+    L490:- None: pydocstyle - D406
     Section name should end with a newline ('Attributes', not 'Attributes:')
 
 CorziliusNMR\dataset.py:
-    L503:- None: pydocstyle - D413
+    L504:- None: pydocstyle - D413
     Missing blank line after last section ('Returns')
 
 CorziliusNMR\dataset.py:
-    L503:- None: pydocstyle - D407
+    L504:- None: pydocstyle - D407
     Missing dashed underline after section ('Returns')
 
 CorziliusNMR\dataset.py:
-    L503:- None: pydocstyle - D406
+    L504:- None: pydocstyle - D406
     Section name should end with a newline ('Returns', not 'Returns:')
 
 CorziliusNMR\dataset.py:
-    L517:- None: pydocstyle - D413
+    L518:- None: pydocstyle - D413
     Missing blank line after last section ('Args')
 
 CorziliusNMR\dataset.py:
-    L517:- None: pydocstyle - D407
+    L518:- None: pydocstyle - D407
     Missing dashed underline after section ('Args')
 
 CorziliusNMR\dataset.py:
-    L530:- None: pydocstyle - D413
+    L531:- None: pydocstyle - D413
     Missing blank line after last section ('Args')
 
 CorziliusNMR\dataset.py:
-    L530:- None: pydocstyle - D407
+    L531:- None: pydocstyle - D407
     Missing dashed underline after section ('Args')
 
 CorziliusNMR\dataset.py:
-    L539:- None: pydocstyle - D413
+    L540:- None: pydocstyle - D413
     Missing blank line after last section ('Args')
 
 CorziliusNMR\dataset.py:
-    L539:- None: pydocstyle - D407
+    L540:- None: pydocstyle - D407
     Missing dashed underline after section ('Args')
 
 CorziliusNMR\dataset.py:
-    L569:- None: pydocstyle - D413
+    L570:- None: pydocstyle - D413
     Missing blank line after last section ('Returns')
 
 CorziliusNMR\dataset.py:
-    L569:- None: pydocstyle - D407
+    L570:- None: pydocstyle - D407
     Missing dashed underline after section ('Returns')
 
 CorziliusNMR\dataset.py:
-    L569:- None: pydocstyle - D406
+    L570:- None: pydocstyle - D406
     Section name should end with a newline ('Returns', not 'Returns:')
 
 CorziliusNMR\dataset.py:
-    L584:- None: pydocstyle - D200
+    L585:- None: pydocstyle - D200
     One-line docstring should fit on one line with quotes (found 3)
-
-CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L6:- None: pylint - unused-import
-    Unused import lmfit
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
     L8:- None: pylint - wrong-import-order
     third party import "numpy" should be placed before first party import "CorziliusNMR.io" 
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L9:- None: pylint - wrong-import-order
-    standard import "datetime.datetime" should be placed before third party imports "lmfit", "numpy" and first party import "CorziliusNMR.io" 
-
-CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L68:8 Dataset._start_buildup_fit_from_spectra: pylint - unnecessary-pass
+    L69:8 Dataset._start_buildup_fit_from_spectra: pylint - unnecessary-pass
     Unnecessary pass statement
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L74:8 Dataset._start_buildup_from_intensitys: pylint - unnecessary-pass
+    L75:8 Dataset._start_buildup_from_intensitys: pylint - unnecessary-pass
     Unnecessary pass statement
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L76:4 Dataset.add_peak: pylint - too-many-arguments
+    L77:4 Dataset.add_peak: pylint - too-many-arguments
     Too many arguments (6/5)
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L76:4 Dataset.add_peak: pylint - too-many-positional-arguments
+    L77:4 Dataset.add_peak: pylint - too-many-positional-arguments
     Too many positional arguments (6/5)
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L112:28 Dataset._setup_correct_topspin_importer: pylint - protected-access
+    L113:28 Dataset._setup_correct_topspin_importer: pylint - protected-access
     Access to a protected member _Pseudo2DImporter of a client class
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L123:8 Dataset._read_in_data_from_csv: pylint - unnecessary-pass
+    L124:8 Dataset._read_in_data_from_csv: pylint - unnecessary-pass
     Unnecessary pass statement
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L132:21 Dataset._calculate_peak_intensities: pylint - protected-access
+    L133:21 Dataset._calculate_peak_intensities: pylint - protected-access
     Access to a protected member _fit of a client class
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L137:21 Dataset._calculate_peak_intensities: pylint - protected-access
+    L138:21 Dataset._calculate_peak_intensities: pylint - protected-access
     Access to a protected member _fit of a client class
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L145:21 Dataset._calculate_peak_intensities: pylint - protected-access
+    L146:21 Dataset._calculate_peak_intensities: pylint - protected-access
     Access to a protected member _fit of a client class
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L164:20 Dataset._start_buildup_fit: pylint - protected-access
+    L165:20 Dataset._start_buildup_fit: pylint - protected-access
     Access to a protected member _perform_fit of a client class
-
-CorziliusNMR\settings.py:
-    L2:100 None: pycodestyle - E501
-    line too long (101 > 99 characters)
-
-CorziliusNMR\settings.py:
-    L24:100 None: pycodestyle - E501
-    line too long (153 > 99 characters)
-
-CorziliusNMR\settings.py:
-    L26:100 None: pycodestyle - E501
-    line too long (210 > 99 characters)
-
-CorziliusNMR\settings.py:
-    L28:100 None: pycodestyle - E501
-    line too long (110 > 99 characters)
-
-CorziliusNMR\settings.py:
-    L36:100 None: pycodestyle - E501
-    line too long (153 > 99 characters)
-
-CorziliusNMR\settings.py:
-    L94:100 None: pycodestyle - E501
-    line too long (105 > 99 characters)
-
-CorziliusNMR\settings.py:
-    L1:- None: pydocstyle - D200
-    One-line docstring should fit on one line with quotes (found 3)
-
-CorziliusNMR\settings.py:
-    L10:- None: pydocstyle - D413
-    Missing blank line after last section ('Attributes')
-
-CorziliusNMR\settings.py:
-    L84:- None: pydocstyle - D105
-    Missing docstring in magic method
-
-CorziliusNMR\settings.py:
-    L99:- None: pydocstyle - D102
-    Missing docstring in public method
-
-CorziliusNMR\settings.py:
-    L115:- None: pydocstyle - D102
-    Missing docstring in public method
-
-CorziliusNMR\settings.py:
-    L124:- None: pydocstyle - D102
-    Missing docstring in public method
-
-CorziliusNMR\settings.py:
-    L133:- None: pydocstyle - D102
-    Missing docstring in public method
-
-CorziliusNMR\settings.py:
-    L151:- None: pydocstyle - D102
-    Missing docstring in public method
-
-CorziliusNMR\settings.py:
-    L163:- None: pydocstyle - D102
-    Missing docstring in public method
-
-CorziliusNMR\settings.py:
-    L175:- None: pydocstyle - D102
-    Missing docstring in public method
-
-CorziliusNMR\settings.py:
-    L198:- None: pydocstyle - D102
-    Missing docstring in public method
-
-CorziliusNMR\settings.py:
-    L210:- None: pydocstyle - D102
-    Missing docstring in public method
-
-CorziliusNMR\settings.py:
-    L235:- None: pydocstyle - D102
-    Missing docstring in public method
-
-CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L9:- Properties: pylint - too-many-instance-attributes
-    Too many instance attributes (22/10)
-
-CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L39:4 Properties.__init__: pylint - dangerous-default-value
-    Dangerous default value [] as argument
-
-CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L39:4 Properties.__init__: pylint - too-many-arguments
-    Too many arguments (12/5)
-
-CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L39:4 Properties.__init__: pylint - too-many-positional-arguments
-    Too many positional arguments (12/5)
 
 CorziliusNMR\__init__.py:
     L1:- None: pydocstyle - D104
@@ -589,13 +525,13 @@ setup (setup.py):
 
 Check Information
 =================
-         Started: 2025-04-10 09:16:17.183785
-        Finished: 2025-04-10 09:17:39.556962
-      Time Taken: 82.37 seconds
+         Started: 2025-04-10 11:12:21.738347
+        Finished: 2025-04-10 11:13:30.269828
+      Time Taken: 68.53 seconds
        Formatter: text
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 
        Tools Run: bandit, dodgy, mccabe, profile-validator, pycodestyle, pydocstyle, pyflakes, pylint, pyroma
-  Messages Found: 146
+  Messages Found: 130
 
