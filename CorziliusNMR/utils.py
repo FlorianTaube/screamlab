@@ -34,18 +34,18 @@ class Fitter:
     """
     Base class for spectral fitting using `lmfit`.
 
-    This class handles parameter initialization and spectral fitting for a dataset.
+    This class handles parameter initialization and spectral fitting for a ds.
 
     Attributes
     ----------
-    dataset : :obj:`CorziliusNMR.dataset.Dataset`
+    dataset : :obj:`CorziliusNMR.ds.Dataset`
         Containing spectra and peak information.
 
     """
 
     def __init__(self, dataset):
         """
-        Initializes the Fitter with a dataset.
+        Initializes the Fitter with a ds.
 
         Args
         ----
@@ -96,7 +96,7 @@ class Fitter:
 
     def _generate_axis_list(self):
         """
-        Generates lists of x-axis and y-axis values for all spectra in the dataset.
+        Generates lists of x-axis and y-axis values for all spectra in the ds.
 
         Returns
         -------
@@ -112,7 +112,7 @@ class Fitter:
 
     def _generate_params_list(self):
         """
-        Generates initial fitting parameters based on peak information in the dataset.
+        Generates initial fitting parameters based on peak information in the ds.
 
         Returns
         -------
@@ -265,7 +265,7 @@ class Prefitter(Fitter):
         Generate the x and y axes for prefit spectrum.
 
         This function retrieves the x and y axes from the spectrum
-        specified in the dataset properties for prefit.
+        specified in the ds properties for prefit.
 
         :return: Tuple containing lists of x and y axes.
         """
@@ -353,27 +353,27 @@ class BuildupFitter:
     """
     Base class for fitting buildup data using `lmfit`.
 
-    This class is responsible for performing a fitting procedure on a dataset
+    This class is responsible for performing a fitting procedure on a ds
     of peaks with time-dependent intensities.
 
     Attributes
     ----------
-    dataset:  :obj:`CorziliusNMR.dataset.Dataset` containing peak
+    dataset:  :obj:`CorziliusNMR.ds.Dataset` containing peak
               intensity and polarization time information.
 
     """
 
     def __init__(self, dataset):
         """
-        Initialize the BuildupFitter with a dataset.
+        Initialize the BuildupFitter with a ds.
 
-        :param dataset: The dataset containing peak list information.
+        :param dataset: The ds containing peak list information.
         """
         self.dataset = dataset
 
     def perform_fit(self):
         """
-        Perform the fitting procedure on the dataset's peak list.
+        Perform the fitting procedure on the ds's peak list.
 
         :return: List of best fit results for each peak.
         """

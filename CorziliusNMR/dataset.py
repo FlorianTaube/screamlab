@@ -9,7 +9,7 @@ from CorziliusNMR import io, utils, settings, functions
 
 class Dataset:
     """
-    Represents a dataset containing NMR spectra, peak fitting, and buildup fitting.
+    Represents a ds containing NMR spectra, peak fitting, and buildup fitting.
 
     Attributes
     ----------
@@ -25,7 +25,7 @@ class Dataset:
         Parameters
         ----------
         props : settings.Properties, optional
-            Experiment properties used to configure the dataset.
+            Experiment properties used to configure the ds.
             Defaults to settings.Properties().
 
         """
@@ -37,7 +37,7 @@ class Dataset:
         self.lmfit_result_handler = io.LmfitResultHandler()
 
     def __str__(self):
-        """Returns a string representation of the dataset."""
+        """Returns a string representation of the ds."""
         return (
             f"[[Dataset]]\n"
             f"Fitted {len(self.peak_list)} peaks per spectrum in {len(self.spectra)} spectra."
@@ -85,10 +85,9 @@ class Dataset:
         line_broadening=None,
     ):
         """
-        Adds a peak to the dataset.
+        Adds a peak to the ds.
 
-        Args
-        ----
+        Args:
             center_of_peak (float): Peak position in ppm (chemical shift).
             peak_label (str, optional): Custom label. Defaults to "Peak_at_<ppm>_ppm".
             fitting_type (str, optional): Peak shape: "gauss", "lorentz", or "voigt" (default).
@@ -554,54 +553,21 @@ class BuildupList:
 
     def set_vals(self, result, spectra, label):
         """
-        Sets the buildup values by processing the result parameters and spectra.
+        Sets buildup values using the result parameters and spectra.
 
-        Args
-        ----
-            result (object): The result object containing fitted parameter values,
-                             typically keyed by formatted strings like
-                             'label_paramname_index'. These parameters are used
-                             to compute buildup values.
-            spectra (list): A list of spectrum objects, each representing a measured
-                            spectrum at a given condition. These are used in combination
-                            with the result to determine the buildup values.
-            label (str): A peak label used to filter relevant parameters from the result
-                         that correspond to a specific peak in the spectra.
+        Args:
+            result (object): Fitted parameter values used for calculating buildup.
+            spectra (list): Spectrum objects used with result to compute buildup.
+            label (str): Peak label used to filter relevant parameters in result.
         """
         self._set_tpol(spectra)
         self._set_intensity(result, label, spectra)
         self._sort_lists()
 
     def _set_tpol(self, spectra):
-        """
-        Extracts delay times from the spectra and assigns them to tpol.
-
-        Args
-        ----
-            spectra (list): A list of spectrum objects. Each object should have a
-                            'tpol' attribute representing a polarization transfer
-                            delay time, which will be collected into a list and
-                            stored in the 'tpol' attribute of the instance.
-
-        """
         self.tpol = [s.tpol for s in spectra]
 
     def _set_intensity(self, result, label, spectra):
-        """
-        Computes and assigns intensity values based on the result parameters.
-
-        Arguments
-        ---------
-            result (object): The result object containing fitted parameter values,
-                             typically with keys like 'label_paramname_index'. This is
-                             used to extract intensity-related parameters.
-            label (str): The peak label used to identify and filter relevant parameters
-                         from the result object that correspond to a specific peak.
-            spectra (list): A list of spectrum objects. Each spectrum corresponds to a
-                            digitized peak and is used for calculating the integral,
-                            which relates to the peak intensity.
-
-        """
         last_digid = None
         self.intensity = []
         val_list = []

@@ -102,31 +102,27 @@ docs.conf (docs\conf.py):
     Constant name "todo_include_todos" doesn't conform to UPPER_CASE naming style
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L586:4 Exporter._print_report: pylint - too-many-locals
+    L585:4 Exporter._print_report: pylint - too-many-locals
     Too many local variables (22/15)
 
 CorziliusNMR\io.py:
-    L586:- Exporter._print_report: mccabe - MC0001
+    L585:- Exporter._print_report: mccabe - MC0001
     Exporter._print_report is too complex (15)
 
 CorziliusNMR\io.py:
-    L226:1 None: pycodestyle - E303
-    too many blank lines (3)
-
-CorziliusNMR\io.py:
-    L572:52 None: pycodestyle - W605
+    L571:52 None: pycodestyle - W605
     invalid escape sequence '\,'
 
 CorziliusNMR\io.py:
-    L572:55 None: pycodestyle - W605
+    L571:55 None: pycodestyle - W605
     invalid escape sequence '\m'
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L572:51 None: pylint - anomalous-backslash-in-string
+    L571:51 None: pylint - anomalous-backslash-in-string
     Anomalous backslash in string: '\,'. String constant might be missing an r prefix.
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L572:54 None: pylint - anomalous-backslash-in-string
+    L571:54 None: pylint - anomalous-backslash-in-string
     Anomalous backslash in string: '\m'. String constant might be missing an r prefix.
 
 CorziliusNMR\io.py:
@@ -146,27 +142,23 @@ CorziliusNMR\io.py:
     One-line docstring should fit on one line with quotes (found 3)
 
 CorziliusNMR\io.py:
-    L282:- None: pydocstyle - D205
+    L281:- None: pydocstyle - D205
     1 blank line required between summary line and description (found 0)
 
 CorziliusNMR\io.py:
-    L887:- None: pydocstyle - D413
+    L886:- None: pydocstyle - D413
     Missing blank line after last section ('Attributes')
 
 CorziliusNMR\io.py:
-    L887:- None: pydocstyle - D407
+    L886:- None: pydocstyle - D407
     Missing dashed underline after section ('Attributes')
 
 CorziliusNMR\io.py:
-    L887:- None: pydocstyle - D406
+    L886:- None: pydocstyle - D406
     Section name should end with a newline ('Attributes', not 'Attributes:')
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L13:- None: pylint - wrong-import-order
-    standard import "sys" should be placed before third party imports "lmfit", "numpy", "matplotlib.pyplot" and first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L13:- None: pylint - unused-import
+    L8:- None: pylint - unused-import
     Unused import sys
 
 CorziliusNMR.io (CorziliusNMR\io.py):
@@ -174,52 +166,32 @@ CorziliusNMR.io (CorziliusNMR\io.py):
     Unused variable 'procno'
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L7:- None: pylint - wrong-import-order
-    third party import "numpy" should be placed before first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L8:- None: pylint - wrong-import-order
-    standard import "os" should be placed before third party imports "lmfit", "numpy" and first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L9:- None: pylint - wrong-import-order
-    third party import "matplotlib.pyplot" should be placed before first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L10:- None: pylint - wrong-import-order
-    standard import "copy" should be placed before third party imports "lmfit", "numpy", "matplotlib.pyplot" and first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L11:- None: pylint - wrong-import-order
-    standard import "csv" should be placed before third party imports "lmfit", "numpy", "matplotlib.pyplot" and first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L12:- None: pylint - wrong-import-order
-    standard import "math" should be placed before third party imports "lmfit", "numpy", "matplotlib.pyplot" and first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L14:- None: pylint - wrong-import-order
-    third party import "nmrglue" should be placed before first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L27:23 TopspinImporter.__init__: pylint - redefined-outer-name
-    Redefining name 'dataset' from outer scope (line 6)
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L236:23 Exporter.__init__: pylint - redefined-outer-name
-    Redefining name 'dataset' from outer scope (line 6)
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L510:4 Exporter._plot_global_all_together: pylint - too-many-locals
+    L509:4 Exporter._plot_global_all_together: pylint - too-many-locals
     Too many local variables (23/15)
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L575:21 Exporter._plot_global_all_together: pylint - use-dict-literal
+    L574:21 Exporter._plot_global_all_together: pylint - use-dict-literal
     Consider using '{"facecolor": 'white', "alpha": 0.5}' instead of a call to 'dict'.
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L608:20 Exporter._print_report: pylint - unused-variable
+    L607:20 Exporter._print_report: pylint - unused-variable
     Unused variable 'key_nr'
+
+CorziliusNMR\__init__.py:
+    L2:100 None: pycodestyle - E501
+    line too long (111 > 99 characters)
+
+CorziliusNMR\__init__.py:
+    L5:100 None: pycodestyle - E501
+    line too long (237 > 99 characters)
+
+CorziliusNMR\__init__.py:
+    L1:- None: pydocstyle - D205
+    1 blank line required between summary line and description (found 0)
+
+CorziliusNMR (CorziliusNMR\__init__.py):
+    L1:- None: pylint - invalid-name
+    Module name "CorziliusNMR" doesn't conform to snake_case naming style
 
 CorziliusNMR\settings.py:
     L1:100 None: pycodestyle - E501
@@ -294,44 +266,24 @@ CorziliusNMR\dataset.py:
     Docstring is empty
 
 CorziliusNMR\dataset.py:
-    L86:- None: pydocstyle - D417
-    Missing argument descriptions in the docstring (argument(s) center_of_peak, fitting_type, line_broadening, peak_label, peak_sign are missing descriptions in 'add_peak' docstring)
+    L87:- None: pydocstyle - D407
+    Missing dashed underline after section ('Args')
 
 CorziliusNMR\dataset.py:
     L555:- None: pydocstyle - D413
     Missing blank line after last section ('Args')
 
 CorziliusNMR\dataset.py:
-    L555:- None: pydocstyle - D417
-    Missing argument descriptions in the docstring (argument(s) label, result, spectra are missing descriptions in 'set_vals' docstring)
-
-CorziliusNMR\dataset.py:
-    L575:- None: pydocstyle - D417
-    Missing argument descriptions in the docstring (argument(s) spectra are missing descriptions in '_set_tpol' docstring)
-
-CorziliusNMR\dataset.py:
-    L589:- None: pydocstyle - D413
-    Missing blank line after last section ('Arguments')
-
-CorziliusNMR\dataset.py:
-    L589:- None: pydocstyle - D417
-    Missing argument descriptions in the docstring (argument(s) label, result, spectra are missing descriptions in '_set_intensity' docstring)
+    L555:- None: pydocstyle - D407
+    Missing dashed underline after section ('Args')
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L78:4 Dataset.add_peak: pylint - too-many-arguments
+    L79:4 Dataset.add_peak: pylint - too-many-arguments
     Too many arguments (6/5)
 
 CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L78:4 Dataset.add_peak: pylint - too-many-positional-arguments
+    L79:4 Dataset.add_peak: pylint - too-many-positional-arguments
     Too many positional arguments (6/5)
-
-CorziliusNMR\__init__.py:
-    L1:- None: pydocstyle - D104
-    Missing docstring in public package
-
-CorziliusNMR (CorziliusNMR\__init__.py):
-    L1:- None: pylint - invalid-name
-    Module name "CorziliusNMR" doesn't conform to snake_case naming style
 
 CorziliusNMR.utils (CorziliusNMR\utils.py):
     L393:23 BuildupFitter.perform_fit: pylint - broad-exception-caught
@@ -345,13 +297,13 @@ setup (setup.py):
 
 Check Information
 =================
-         Started: 2025-04-11 08:17:58.697867
-        Finished: 2025-04-11 08:19:04.557258
-      Time Taken: 65.86 seconds
+         Started: 2025-04-11 09:34:00.429779
+        Finished: 2025-04-11 09:35:08.945009
+      Time Taken: 68.52 seconds
        Formatter: text
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 
        Tools Run: bandit, dodgy, mccabe, profile-validator, pycodestyle, pydocstyle, pyflakes, pylint, pyroma
-  Messages Found: 85
+  Messages Found: 73
 

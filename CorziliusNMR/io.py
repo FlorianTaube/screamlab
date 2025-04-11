@@ -1,17 +1,16 @@
-"""
-io module of the CorziliusNMR package.
-"""
+"""io module of the CorziliusNMR package."""
 
-import lmfit
-from CorziliusNMR import dataset, functions
-import numpy as np
-import os
-import matplotlib.pyplot as plt
 import copy
 import csv
 import math
+import os
 import sys
+import numpy as np
+import matplotlib.pyplot as plt
 import nmrglue as ng
+
+import lmfit
+from CorziliusNMR import dataset, functions
 
 
 class TopspinImporter:
@@ -20,13 +19,13 @@ class TopspinImporter:
 
     Attributes
     ----------
-        dataset:  :obj:`CorziliusNMR.dataset.Dataset` to store imported spectra and necessary
+        ds:  :obj:`CorziliusNMR.ds.Dataset` to store imported spectra and necessary
         metadata.
     """
 
-    def __init__(self, dataset):
+    def __init__(self, ds):
         """Initialize the TopspinImporter."""
-        self._dataset = dataset
+        self._dataset = ds
         self.file = None
         self._current_path_to_exp = None
         self._nmr_data = None
@@ -42,7 +41,7 @@ class TopspinImporter:
             self._gen_subspectrum()
 
     def _add_spectrum(self):
-        """Add a new spectrum to the dataset."""
+        """Add a new spectrum to the ds."""
         self._dataset.spectra.append(dataset.Spectra())
 
     def _get_physical_range(self):
@@ -126,7 +125,7 @@ class ScreamImporter(TopspinImporter):
 
     def _set_number_of_scans(self):
         """
-        Set the number of scans for the last spectrum in the dataset.
+        Set the number of scans for the last spectrum in the ds.
         """
         with open(f"{self.file}\\acqu", "r", encoding="utf-8") as acqu_file:
             for acqu_line in acqu_file:
@@ -144,7 +143,7 @@ class ScreamImporter(TopspinImporter):
             self._set_values()
 
     def _set_buildup_time(self):
-        """Set the buildup time for the last spectrum in the dataset."""
+        """Set the buildup time for the last spectrum in the ds."""
         delay = self._extract_params_from_acqus("##$D= (0..63)", 64)
         loop = self._extract_params_from_acqus("##$L= (0..31)", 32)
         self._dataset.spectra[-1].tpol = loop * delay
@@ -189,7 +188,7 @@ class ScreamImporter(TopspinImporter):
         return param
 
     def _set_x_data(self):
-        """Set the x-axis data for the last spectrum in the dataset."""
+        """Set the x-axis data for the last spectrum in the ds."""
         physical_range = self._get_physical_range()
         number_of_datapoints = self._get_num_of_datapoints()
         self._dataset.spectra[-1].x_axis = self._calc_x_axis(
@@ -197,7 +196,7 @@ class ScreamImporter(TopspinImporter):
         )
 
     def _set_y_data(self):
-        """Set the y-axis data for the last spectrum in the dataset."""
+        """Set the y-axis data for the last spectrum in the ds."""
         _, y_data = ng.bruker.read_pdata(
             f"{self.file}\\pdata\\" f"{self._dataset.props.procno}"
         )
@@ -224,38 +223,38 @@ class Pseudo2DImporter(TopspinImporter):
 
 class Exporter:
     """
-    A class to handle exporting and printing dataset information.
+    A class to handle exporting and printing ds information.
 
     Attributes
     ----------
-        dataset:  :obj:`CorziliusNMR.dataset.Dataset` with all information aquired during fitting.
+        dataset:  :obj:`CorziliusNMR.ds.Dataset` with all information aquired during fitting.
 
     """
 
-    def __init__(self, dataset):
+    def __init__(self, ds):
         """
-        Initializes the Exporter with a dataset.
+        Initializes the Exporter with a ds.
 
-        :param dataset: The dataset to be processed.
-        :type dataset: object
+        :param ds: The ds to be processed.
+        :type ds: object
         """
-        self.dataset = dataset
+        self.dataset = ds
 
     def print(self):
         """
-        Executes the complete visualization and export pipeline for the dataset.
+        Executes the complete visualization and export pipeline for the ds.
 
         This method performs the following actions:
 
         1. Plots TopSpin raw data after identifying sub-spectra (if the option is selected)
            and normalizing by the number of scans. Additionally, outputs them in CSV format.
-        2. If prefit is enabled in the dataset properties:
+        2. If prefit is enabled in the ds properties:
             - Plots prefit results.
             - Prints the lmfit prefit report.
         3. If the spectrum fit type includes "global" or "individual":
             - Plots the combined fit.
             - Plots each individual component of the global fit.
-        4. For each buildup type defined in the dataset properties:
+        4. For each buildup type defined in the ds properties:
             - Plots the corresponding buildup data.
         5. Prints a summary report of the fitting and analysis.
         6. Exports results:
@@ -279,7 +278,7 @@ class Exporter:
 
     def _plot_topspin_data(self):
         """
-        Plots the spectral data from the dataset, displaying time delays (t_del) on the x-axis and
+        Plots the spectral data from the ds, displaying time delays (t_del) on the x-axis and
         intensity values on the y-axis.
 
         The spectra are plotted with different colors, and the resulting plot is saved as a
@@ -759,7 +758,7 @@ class Exporter:
         """
         Writes spectral data to a CSV file with semicolon-separated values.
 
-        This method extracts the x-axis and y-axis data from each spectrum in the dataset,
+        This method extracts the x-axis and y-axis data from each spectrum in the ds,
         and writes the data to a CSV file named 'Spectral_data_csv.csv' in the specified
         output folder. The file is structured such that each row contains the corresponding
         values for the x-axis and y-axis.
