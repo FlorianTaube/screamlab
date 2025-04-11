@@ -218,10 +218,8 @@ class ScreamImporter(TopspinImporter):
         )
 
 
-class _Pseudo2DImporter(TopspinImporter):
-    """Not implemented"""
-
-    pass
+class Pseudo2DImporter(TopspinImporter):
+    """Not implemented yet."""
 
 
 class Exporter:

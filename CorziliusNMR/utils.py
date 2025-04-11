@@ -54,7 +54,7 @@ class Fitter:
         """
         self.dataset = dataset
 
-    def _fit(self):
+    def fit(self):
         """
         Performs spectral fitting using the `lmfit.minimize` function.
 
@@ -371,7 +371,7 @@ class BuildupFitter:
         """
         self.dataset = dataset
 
-    def _perform_fit(self):
+    def perform_fit(self):
         """
         Perform the fitting procedure on the dataset's peak list.
 

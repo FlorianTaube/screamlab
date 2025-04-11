@@ -454,7 +454,7 @@ class TestDataset(unittest.TestCase):
     def test_prefiter_fit_one_voigt(self):
         self.add_n_spectra(1)
         self.prefitter.dataset.peak_list[0].peak_center = 250
-        result = self.prefitter._fit()
+        result = self.prefitter.fit()
         value_list = []
         for key in result.params:
             value_list.append(round(result.params[key].value))
@@ -465,7 +465,7 @@ class TestDataset(unittest.TestCase):
         self.ds.add_peak(210, fitting_type="gauss")
         self.prefitter.dataset.peak_list[0].peak_center = 250
         self.prefitter.dataset.peak_list[1].peak_center = 150
-        result = self.prefitter._fit()
+        result = self.prefitter.fit()
         value_list = []
         for key in result.params:
             value_list.append(round(result.params[key].value))
@@ -477,7 +477,7 @@ class TestDataset(unittest.TestCase):
         self.ds.add_peak(200, fitting_type="lorentz")
         self.prefitter.dataset.peak_list[0].peak_center = 250
         self.prefitter.dataset.peak_list[1].peak_center = 150
-        result = self.prefitter._fit()
+        result = self.prefitter.fit()
         value_list = []
         for key in result.params:
             value_list.append(round(result.params[key].value))
@@ -489,7 +489,7 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(1)
         self.ds.spectra[0].y_axis = self.add_noise(self.ds.spectra[0].y_axis)
         self.prefitter.dataset.peak_list[0].peak_center = 250
-        result = self.prefitter._fit()
+        result = self.prefitter.fit()
         value_list = []
         for key in result.params:
             value_list.append(round(result.params[key].value))
@@ -499,7 +499,7 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(1)
         self.ds.spectra[0].y_axis = self.add_noise(self.ds.spectra[0].y_axis)
         self.prefitter.dataset.peak_list[0].peak_center = 250
-        result = self.prefitter._fit()
+        result = self.prefitter.fit()
         value_list = []
         for key in result.params:
             value_list.append(round(result.params[key].value))
@@ -512,7 +512,7 @@ class TestDataset(unittest.TestCase):
         self.ds.spectra[0].y_axis = self.add_noise(self.ds.spectra[0].y_axis)
         self.prefitter.dataset.peak_list[0].peak_center = 250
         self.prefitter.dataset.peak_list[1].peak_center = 150
-        result = self.prefitter._fit()
+        result = self.prefitter.fit()
         value_list = []
         for key in result.params:
             value_list.append(round(result.params[key].value))
@@ -642,7 +642,7 @@ class TestDataset(unittest.TestCase):
         self.singlefitter.dataset.peak_list[0].peak_center = 250
         self.singlefitter.dataset.peak_list[1].peak_center = 250
         self.singlefitter.dataset.peak_list[2].peak_center = 250
-        result = self.singlefitter._fit()
+        result = self.singlefitter.fit()
         value_list = []
         for key in result.params:
             value_list.append(round(result.params[key].value))
@@ -656,7 +656,7 @@ class TestDataset(unittest.TestCase):
         self.singlefitter.dataset.peak_list[0].peak_center = 250
         self.singlefitter.dataset.peak_list[1].peak_center = 250
         self.singlefitter.dataset.peak_list[2].peak_center = 250
-        result = self.singlefitter._fit()
+        result = self.singlefitter.fit()
         value_list = []
         for key in result.params:
             value_list.append(round(result.params[key].value))
@@ -714,7 +714,7 @@ class TestDataset(unittest.TestCase):
         self.globalfitter.dataset.peak_list[0].peak_center = 250
         self.globalfitter.dataset.peak_list[1].peak_center = 250
         self.globalfitter.dataset.peak_list[2].peak_center = 250
-        result = self.globalfitter._fit()
+        result = self.globalfitter.fit()
         value_list = []
         result_list = [
             204,

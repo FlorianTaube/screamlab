@@ -8,7 +8,7 @@ class TestDataset(unittest.TestCase):
 
     def setUp(self):
         self.scream_importer = io.ScreamImporter(dataset.Dataset())
-        self.pseudo_importer = io._Pseudo2DImporter(dataset.Dataset())
+        self.pseudo_importer = io.Pseudo2DImporter(dataset.Dataset())
         self.lmfit_result = io.LmfitResultHandler()
 
     def set_up_one_real_spectrum(self):

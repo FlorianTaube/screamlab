@@ -1,27 +1,33 @@
 """
 
-
 """
 
 from datetime import datetime
-from CorziliusNMR import io, utils, settings, functions
 import numpy as np
+from CorziliusNMR import io, utils, settings, functions
 
 
 class Dataset:
     """
     Represents a dataset containing NMR spectra, peak fitting, and buildup fitting.
 
-    Attributes:
-        - props (settings.Properties): Object that stores all variable settings needed for hole analysis process.
+    Attributes
+    ----------
+        - props (settings.Properties): Object that stores all variable settings needed for hole
+        analysis process.
+
     """
 
     def __init__(self, props=settings.Properties()):
         """
-        Initializes the Dataset with default or specified properties.
+        Initialize the Dataset with default or specified properties.
 
-        Args:
-            props (settings.Properties, optional): Experiment properties. Defaults to settings.Properties().
+        Parameters
+        ----------
+        props : settings.Properties, optional
+            Experiment properties used to configure the dataset.
+            Defaults to settings.Properties().
+
         """
         self.importer = None
         self.props = props
@@ -39,12 +45,16 @@ class Dataset:
 
     def start_analysis(self):
         """
-        The analysis is carried out in three stages: first, the spectral data is imported from the Topspin file format;
-        second, spectral deconvolution is performed; and finally, a buildup fit is applied.
-        """
+        Starting the analysis process.
 
+        The analysis is carried out in three stages: first, the spectral data is imported
+        from the Topspin file format; second, spectral deconvolution is performed; and finally,
+        a buildup fit is applied.
+
+        """
         print(
-            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start loading data from topspin: {self.props.path_to_experiment}"
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: "
+            f"Start loading data from topspin: {self.props.path_to_experiment}"
         )
         self._read_in_data_from_topspin()
         print(
@@ -61,16 +71,10 @@ class Dataset:
         self._print_all()
 
     def _start_buildup_fit_from_spectra(self):
-        """
-        Starts buildup fitting using data imported from spectra CSV files.
-        """
-        pass
+        """Starts buildup fitting using data imported from spectra CSV files."""
 
     def _start_buildup_from_intensitys(self):
-        """
-        Placeholder for starting buildup fitting from intensity values.
-        """
-        pass
+        """Placeholder for starting buildup fitting from intensity values."""
 
     def add_peak(
         self,
@@ -83,12 +87,15 @@ class Dataset:
         """
         Adds a peak to the dataset.
 
-        Args:
-            center_of_peak (float): Center of the peak.
-            peak_label (str, optional): Label for the peak. Default: "Peak_at_xxx_ppm where xxx is the center_of_peak".
-            fitting_type (str, optional): Type of fitting ("gauss", "lorentz", "voigt"). Defaults to "voigt".
-            peak_sign (str, optional): Sign of the peak ("+" or "-"). Defaults to "-".
-            line_broadening (dict, optional): Line broadening parameters. Defaults to { "sigma": {"min": 0, "max": 3}, "gamma": {"min": 0, "max": 3}, }.
+        Args
+        ----
+            center_of_peak (float): Peak position in ppm (chemical shift).
+            peak_label (str, optional): Custom label. Defaults to "Peak_at_<ppm>_ppm".
+            fitting_type (str, optional): Peak shape: "gauss", "lorentz", or "voigt" (default).
+            peak_sign (str, optional): "+" for upward, "-" for downward peaks. Defaults to "+".
+            line_broadening (dict, optional): Dict with "sigma" and "gamma" keys for line width.
+                Defaults to {"sigma": {"min": 0, "max": 3}, "gamma": {"min": 0, "max": 3}}.
+
         """
         if line_broadening is None:
             line_broadening = {}
@@ -108,7 +115,7 @@ class Dataset:
     def _setup_correct_topspin_importer(self):
         """Sets up the appropriate TopSpin importer based on experiment properties."""
         if len(self.props.expno) == 1:
-            self.importer = io._Pseudo2DImporter(self)
+            self.importer = io.Pseudo2DImporter(self)
         else:
             self.importer = io.ScreamImporter(self)
 
@@ -119,7 +126,6 @@ class Dataset:
 
     def _read_in_data_from_csv(self):
         """Placeholder function for reading data from CSV files."""
-        pass
 
     def _calculate_peak_intensities(self):
         """Calculates peak intensities based on fitting methods."""
@@ -128,12 +134,12 @@ class Dataset:
                 f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start prefit."
             )
             self._set_prefitter()
-            result = self.fitter._fit()
+            result = self.fitter.fit()
             self.lmfit_result_handler.prefit = result
             self._update_line_broadening(result)
         if "individual" in self.props.spectrum_fit_type:
             self._set_single_fitter()
-            result = self.fitter._fit()
+            result = self.fitter.fit()
             self.lmfit_result_handler.single_fit = result
             self._get_intensities(result)
         if "global" in self.props.spectrum_fit_type:
@@ -141,7 +147,7 @@ class Dataset:
                 f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start global fit."
             )
             self._set_global_fitter()
-            result = self.fitter._fit()
+            result = self.fitter.fit()
             self.lmfit_result_handler.global_fit = result
             self._get_intensities(result)
 
@@ -160,7 +166,7 @@ class Dataset:
             if fitter_class:
                 fitter = fitter_class(self)
                 self.lmfit_result_handler.buildup_fit[b_type] = (
-                    fitter._perform_fit()
+                    fitter.perform_fit()
                 )
 
     def _set_prefitter(self):
@@ -216,6 +222,7 @@ class Spectra:
         The x-axis values representing frequency domain data data.
     y_axis : array-like or None
         The y-axis values representing intensity or amplitude data.
+
     """
 
     def __init__(self):
@@ -228,14 +235,15 @@ class Spectra:
 
 class Peak:
     """
-    Represents a peak with properties such as peak center, peak label,
-    fitting group, fitting type, peak sign, line broadening, and buildup values.
+    Represents a peak with its properties.
+
+    Such as peak center, peak label, fitting group, fitting type,
+    peak sign, line broadening, and buildup values.
+
     """
 
     def __init__(self):
-        """
-        Initializes a Peak object with default values set to None.
-        """
+        """Initializes a Peak object with default values set to None."""
         self._peak_center = None
         self._peak_label = None
         self._fitting_type = None
@@ -385,10 +393,34 @@ class Peak:
 
     @property
     def peak_label(self) -> str:
+        """
+        Get or set the label for a peak.
+
+        Returns
+        -------
+            str: The current peak label.
+
+        """
         return self._peak_label
 
     @peak_label.setter
     def peak_label(self, value):
+        """
+        Set the label for a peak.
+
+        If an empty string is provided, a default label in the format
+        'Peak_at_<center>_ppm' is generated, where <center> is the integer
+        value of `self.peak_center` (with '-' replaced by 'm').
+
+        Args
+        ----
+            value (str): The label to assign to the peak.
+
+        Raises
+        ------
+            TypeError: If the provided value is not a string.
+
+        """
         if not isinstance(value, str):
             raise TypeError(
                 f"'peak_label' must be of type 'str', but got {type(value)}."
@@ -426,7 +458,8 @@ class Peak:
         ]
         if invalid_keys:
             raise ValueError(
-                f"Invalid keys found in the dictionary: {invalid_keys}. Allowed keys are: {allowed_values}."
+                f"Invalid keys found in the dictionary: {invalid_keys}. "
+                f"Allowed keys are: {allowed_values}."
             )
 
     def _check_for_invalid_dict(self, value):
@@ -444,7 +477,8 @@ class Peak:
             ]
             if invalid_inner_keys:
                 raise ValueError(
-                    f"Invalid inner keys for '{key}': {invalid_inner_keys}. Allowed inner keys are: {inner_allowed_values}."
+                    f"Invalid inner keys for '{key}': {invalid_inner_keys}. "
+                    f"Allowed inner keys are: {inner_allowed_values}."
                 )
 
     def _set_init_params(self):
@@ -470,6 +504,7 @@ class Peak:
         :param allowed_values: List of allowed outer dictionary keys.
         :param inner_allowed_values: List of allowed inner dictionary keys.
         :param params: Dictionary of existing parameters to be updated.
+
         """
         for key in allowed_values:
             if key in value:
@@ -478,7 +513,8 @@ class Peak:
                     if inner_value is not None:
                         if not isinstance(inner_value, (int, float)):
                             raise TypeError(
-                                f"'{inner_key}' value must be an 'int' or 'float', but got {type(inner_value)}."
+                                f"'{inner_key}' value must be an 'int' or 'float', "
+                                f"but got {type(inner_value)}."
                             )
                         params[key][inner_key] = float(inner_value)
         return params
@@ -488,9 +524,11 @@ class BuildupList:
     """
     Represents a list of buildup values used for fitting delay times and intensities.
 
-    Attributes:
+    Attributes
+    ----------
         tpol (list): List of delay times.
         intensity (list): List of intensity values.
+
     """
 
     def __init__(self):
@@ -502,8 +540,10 @@ class BuildupList:
         """
         Returns a formatted string representation of the buildup values.
 
-        Returns:
+        Returns
+        -------
             str: A formatted string listing delay times and intensities.
+
         """
         return (
             "Parameters for buildup fitting:\nDelay times:\t"
@@ -516,10 +556,17 @@ class BuildupList:
         """
         Sets the buildup values by processing the result parameters and spectra.
 
-        Args:
-            result (object): Result object containing parameter values.
-            spectra (list): List of spectrum objects.
-            label (str): Peak label to filter parameters.
+        Args
+        ----
+            result (object): The result object containing fitted parameter values,
+                             typically keyed by formatted strings like
+                             'label_paramname_index'. These parameters are used
+                             to compute buildup values.
+            spectra (list): A list of spectrum objects, each representing a measured
+                            spectrum at a given condition. These are used in combination
+                            with the result to determine the buildup values.
+            label (str): A peak label used to filter relevant parameters from the result
+                         that correspond to a specific peak in the spectra.
         """
         self._set_tpol(spectra)
         self._set_intensity(result, label, spectra)
@@ -529,8 +576,13 @@ class BuildupList:
         """
         Extracts delay times from the spectra and assigns them to tpol.
 
-        Args:
-            spectra (list): List of spectrum objects containing delay times.
+        Args
+        ----
+            spectra (list): A list of spectrum objects. Each object should have a
+                            'tpol' attribute representing a polarization transfer
+                            delay time, which will be collected into a list and
+                            stored in the 'tpol' attribute of the instance.
+
         """
         self.tpol = [s.tpol for s in spectra]
 
@@ -538,10 +590,17 @@ class BuildupList:
         """
         Computes and assigns intensity values based on the result parameters.
 
-        Args:
-            result (object): Result object containing parameter values.
-            label (str): Peak label used to filter parameters.
-            spectra (list): List of spectrum objects for intensity calculations.
+        Arguments
+        ---------
+            result (object): The result object containing fitted parameter values,
+                             typically with keys like 'label_paramname_index'. This is
+                             used to extract intensity-related parameters.
+            label (str): The peak label used to identify and filter relevant parameters
+                         from the result object that correspond to a specific peak.
+            spectra (list): A list of spectrum objects. Each spectrum corresponds to a
+                            digitized peak and is used for calculating the integral,
+                            which relates to the peak intensity.
+
         """
         last_digid = None
         self.intensity = []
@@ -568,12 +627,15 @@ class BuildupList:
         """
         Computes the numerical integral of the simulated spectrum.
 
-        Args:
+        Args
+        ----
             val_list (list): List of values used for peak calculation.
             spectrum (object): Spectrum object containing x-axis data.
 
-        Returns:
+        Returns
+        -------
             float: The computed integral of the spectrum.
+
         """
         simspec = [0 for _ in range(len(spectrum.x_axis))]
         simspec = functions.calc_peak(spectrum.x_axis, simspec, val_list)
@@ -581,7 +643,10 @@ class BuildupList:
 
     def _sort_lists(self):
         """
-        Sorts the delay times and corresponding intensity values in ascending order of delay times.
+        Sorting method.
+
+        Sorts the delay times and corresponding intensity values in
+        ascending order of delay times.
         """
         self.tpol, self.intensity = map(
             list, zip(*sorted(zip(self.tpol, self.intensity)))

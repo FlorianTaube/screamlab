@@ -72,14 +72,14 @@ class TestDataset(unittest.TestCase):
     def test_setup_correct_topspin_importer_default_properties(self):
         self.ds._setup_correct_topspin_importer()
         self.assertEqual(
-            type(self.ds.importer), CorziliusNMR.io._Pseudo2DImporter
+            type(self.ds.importer), CorziliusNMR.io.Pseudo2DImporter
         )
 
     def test_setup_correct_topspin_importer_set_properties_pseudo2D(self):
         self.ds.props.expno = [2]
         self.ds._setup_correct_topspin_importer()
         self.assertEqual(
-            type(self.ds.importer), CorziliusNMR.io._Pseudo2DImporter
+            type(self.ds.importer), CorziliusNMR.io.Pseudo2DImporter
         )
 
     def test_setup_correct_topspin_importer_set_properties_SCREAM(self):
@@ -448,7 +448,7 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(1)
         self.ds.add_peak(250)
         self.ds._set_prefitter()
-        result = self.ds.fitter._fit()
+        result = self.ds.fitter.fit()
         self.ds._update_line_broadening(result)
         self.ds.peak_list[-1].line_broadening["gamma"]["max"] = round(
             self.ds.peak_list[-1].line_broadening["gamma"]["max"], 1
@@ -476,7 +476,7 @@ class TestDataset(unittest.TestCase):
         self.ds.add_peak(150)
         self.ds.peak_list[0].fitting_type = "gauss"
         self.ds._set_prefitter()
-        result = self.ds.fitter._fit()
+        result = self.ds.fitter.fit()
         self.ds._update_line_broadening(result)
         self.ds.peak_list[-1].line_broadening["sigma"]["max"] = round(
             self.ds.peak_list[-1].line_broadening["sigma"]["max"], 3
@@ -495,7 +495,7 @@ class TestDataset(unittest.TestCase):
         self.ds.add_peak(200)
         self.ds.peak_list[0].fitting_type = "lorentz"
         self.ds._set_prefitter()
-        result = self.ds.fitter._fit()
+        result = self.ds.fitter.fit()
         self.ds._update_line_broadening(result)
         self.ds.peak_list[-1].line_broadening["gamma"]["max"] = round(
             self.ds.peak_list[-1].line_broadening["gamma"]["max"], 3
@@ -578,7 +578,7 @@ class TestDataset(unittest.TestCase):
         b_list = CorziliusNMR.dataset.BuildupList()
         b_list._set_tpol(self.ds.spectra)
         self.ds._set_single_fitter()
-        result = self.ds.fitter._fit()
+        result = self.ds.fitter.fit()
         b_list._set_intensity(
             result, self.ds.peak_list[0].peak_label, self.ds.spectra
         )
