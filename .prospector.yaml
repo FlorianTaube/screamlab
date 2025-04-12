@@ -5,12 +5,12 @@ ignore-paths:
   - templates
   - build
   - docs
-  - '**/__init__.py'
+  - '__init__.py'
   - setup.py
 
 ignore-patterns:
-  - .*/__init__.py
-  - setup.py
+  - CorziliusNMR\__init__.py
+  - setup
 
 inherits:
   - strictness_high

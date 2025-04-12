@@ -556,9 +556,11 @@ class BuildupList:
         Sets buildup values using the result parameters and spectra.
 
         Args:
+        ----
             result (object): Fitted parameter values used for calculating buildup.
             spectra (list): Spectrum objects used with result to compute buildup.
             label (str): Peak label used to filter relevant parameters in result.
+
         """
         self._set_tpol(spectra)
         self._set_intensity(result, label, spectra)

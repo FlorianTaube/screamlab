@@ -13,8 +13,7 @@ class Properties:
 
     Attributes
     ----------
-    path_to_experiment : str
-        Path to the experiment data. Default is an empty string ("").
+
     expno : list of int
         Experiment numbers. Default is None.
     prefit : bool, optional
@@ -174,10 +173,31 @@ class Properties:
 
     @property
     def path_to_experiment(self) -> str:
+        """
+        str: Path to the experiment data.
+
+        Returns the path where experiment-related data is stored.
+        This is typically a directory path in string format.
+
+        Default is an empty string ("").
+        """
         return self._path_to_experiment
 
     @path_to_experiment.setter
     def path_to_experiment(self, value: Any):
+        """
+        Sets the path to the experiment data.
+
+        Parameters
+        ----------
+        value : str
+            The path to set. Must be a string.
+
+        Raises
+        ------
+        TypeError
+            If `value` is not a string.
+        """
         if not isinstance(value, str):
             raise TypeError(
                 f"Expected 'path_to_experiment' to be of type 'str', got {type(value).__name__}."

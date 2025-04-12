@@ -2,44 +2,44 @@ Messages
 ========
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L582:4 Exporter._print_report: pylint - too-many-locals
+    L580:4 Exporter._print_report: pylint - too-many-locals
     Too many local variables (21/15)
 
 CorziliusNMR\io.py:
-    L582:- Exporter._print_report: mccabe - MC0001
+    L580:- Exporter._print_report: mccabe - MC0001
     Exporter._print_report is too complex (15)
 
 CorziliusNMR\io.py:
-    L568:52 None: pycodestyle - W605
-    invalid escape sequence '\,'
-
-CorziliusNMR\io.py:
-    L568:55 None: pycodestyle - W605
-    invalid escape sequence '\m'
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L568:51 None: pylint - anomalous-backslash-in-string
-    Anomalous backslash in string: '\,'. String constant might be missing an r prefix.
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L568:54 None: pylint - anomalous-backslash-in-string
-    Anomalous backslash in string: '\m'. String constant might be missing an r prefix.
-
-CorziliusNMR\io.py:
-    L118:- None: pydocstyle - D205
-    1 blank line required between summary line and description (found 0)
-
-CorziliusNMR\io.py:
-    L278:- None: pydocstyle - D205
+    L279:- None: pydocstyle - D205
     1 blank line required between summary line and description (found 0)
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L506:4 Exporter._plot_global_all_together: pylint - too-many-locals
+    L45:37 TopspinImporter._add_spectrum: pylint - undefined-variable
+    Undefined variable 'CorziliusNMR'
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L504:4 Exporter._plot_global_all_together: pylint - too-many-locals
     Too many local variables (23/15)
 
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L571:21 Exporter._plot_global_all_together: pylint - use-dict-literal
-    Consider using '{"facecolor": 'white', "alpha": 0.5}' instead of a call to 'dict'.
+CorziliusNMR\dataset.py:
+    L1:- None: pydocstyle - D419
+    Docstring is empty
+
+CorziliusNMR\dataset.py:
+    L87:- None: pydocstyle - D407
+    Missing dashed underline after section ('Args')
+
+CorziliusNMR\dataset.py:
+    L555:- None: pydocstyle - D417
+    Missing argument descriptions in the docstring (argument(s) label, result, spectra are missing descriptions in 'set_vals' docstring)
+
+CorziliusNMR.dataset (CorziliusNMR\dataset.py):
+    L79:4 Dataset.add_peak: pylint - too-many-arguments
+    Too many arguments (6/5)
+
+CorziliusNMR.dataset (CorziliusNMR\dataset.py):
+    L79:4 Dataset.add_peak: pylint - too-many-positional-arguments
+    Too many positional arguments (6/5)
 
 CorziliusNMR\settings.py:
     L1:- None: pydocstyle - D205
@@ -101,30 +101,6 @@ CorziliusNMR.settings (CorziliusNMR\settings.py):
     L43:4 Properties.__init__: pylint - too-many-positional-arguments
     Too many positional arguments (12/5)
 
-CorziliusNMR\dataset.py:
-    L1:- None: pydocstyle - D419
-    Docstring is empty
-
-CorziliusNMR\dataset.py:
-    L87:- None: pydocstyle - D407
-    Missing dashed underline after section ('Args')
-
-CorziliusNMR\dataset.py:
-    L555:- None: pydocstyle - D413
-    Missing blank line after last section ('Args')
-
-CorziliusNMR\dataset.py:
-    L555:- None: pydocstyle - D407
-    Missing dashed underline after section ('Args')
-
-CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L79:4 Dataset.add_peak: pylint - too-many-arguments
-    Too many arguments (6/5)
-
-CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L79:4 Dataset.add_peak: pylint - too-many-positional-arguments
-    Too many positional arguments (6/5)
-
 CorziliusNMR\__init__.py:
     L1:- None: pydocstyle - D104
     Missing docstring in public package
@@ -132,10 +108,6 @@ CorziliusNMR\__init__.py:
 CorziliusNMR (CorziliusNMR\__init__.py):
     L1:- None: pylint - invalid-name
     Module name "CorziliusNMR" doesn't conform to snake_case naming style
-
-CorziliusNMR.utils (CorziliusNMR\utils.py):
-    L1:- None: pylint - cyclic-import
-    Cyclic import (CorziliusNMR.dataset -> CorziliusNMR.io)
 
 CorziliusNMR.utils (CorziliusNMR\utils.py):
     L393:23 BuildupFitter.perform_fit: pylint - broad-exception-caught
@@ -149,13 +121,13 @@ setup (setup.py):
 
 Check Information
 =================
-         Started: 2025-04-12 10:52:43.117826
-        Finished: 2025-04-12 10:53:00.633445
-      Time Taken: 17.52 seconds
+         Started: 2025-04-12 14:48:25.868978
+        Finished: 2025-04-12 14:48:45.400812
+      Time Taken: 19.53 seconds
        Formatter: text
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 
        Tools Run: bandit, dodgy, mccabe, profile-validator, pycodestyle, pydocstyle, pyflakes, pylint, pyroma
-  Messages Found: 36
+  Messages Found: 29
 

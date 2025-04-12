@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import nmrglue as ng
 
 import lmfit
-from CorziliusNMR import dataset, functions
+from CorziliusNMR import functions
 
 
 class TopspinImporter:
@@ -42,7 +42,7 @@ class TopspinImporter:
 
     def _add_spectrum(self):
         """Add a new spectrum to the ds."""
-        self._dataset.spectra.append(dataset.Spectra())
+        self._dataset.spectra.append(CorziliusNMR.dataset.Spectra())
 
     def _get_physical_range(self):
         """
@@ -116,8 +116,9 @@ class TopspinImporter:
 
 class ScreamImporter(TopspinImporter):
     """
-    Class for importing and processing SCREAM DNP data. Automatically reads information
-    about x- and y-axis (chemical shift and intensitys),
+    Class for importing and processing SCREAM DNP data.
+
+    Automatically reads information about x- and y-axis (chemical shift and intensitys),
     polarization times (t_pol) and the number of scans used for the respective experiment.
     Automatically normalizes the  intensitys to the number of scans.
 
@@ -281,9 +282,6 @@ class Exporter:
 
         The spectra are plotted with different colors, and the resulting plot is saved as a
         high-resolution PDF.
-
-        :return: None
-        :rtype: None
         """
         colormap = plt.cm.viridis
         colors = [
@@ -565,10 +563,10 @@ class Exporter:
             ax_spectrum.text(
                 0.05,
                 0.85,
-                f"$t_{{pol}} = {spectrum.tpol:.2f} \, \mathrm{{s}}$",
+                rf"$t_{{pol}} = {spectrum.tpol:.2f} \\, \\mathrm{{s}}$",
                 transform=ax_spectrum.transAxes,
                 fontsize=7,
-                bbox=dict(facecolor="white", alpha=0.5),
+                bbox={"facecolor": "white", "alpha": 0.5},
             )
 
         plot_filename_pdf = os.path.join(output_dir, "All_Spectra.pdf")
