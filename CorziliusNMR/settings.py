@@ -1,4 +1,7 @@
-"""The `settings` module is responsible for managing configuration options used in the analysis process."""
+"""
+The `settings` module is responsible for managing configuration options used
+in the analysis process.
+"""
 
 from typing import Any
 import os
@@ -32,7 +35,9 @@ class Properties:
     delay20 : str, optional
         Delay parameter. Default is "D 20" (standard in SCREAM-DNP experiments).
     subspec : list, optional
-        Two floats defining the spectrum range to cut. Must be within the valid spectrum range. Default is [].
+        Two floats defining the spectrum range to cut. Must be within the valid spectrum range.
+        Default is [].
+
     """
 
     def __init__(

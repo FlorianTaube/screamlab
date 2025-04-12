@@ -4,9 +4,13 @@
 ignore-paths:
   - templates
   - build
-  - my_data
-  - S45F_evaluation
-  - proline_data
+  - docs
+  - '**/__init__.py'
+  - setup.py
+
+ignore-patterns:
+  - .*/__init__.py
+  - setup.py
 
 inherits:
   - strictness_high

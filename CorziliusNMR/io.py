@@ -4,7 +4,6 @@ import copy
 import csv
 import math
 import os
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import nmrglue as ng
@@ -21,6 +20,7 @@ class TopspinImporter:
     ----------
         ds:  :obj:`CorziliusNMR.ds.Dataset` to store imported spectra and necessary
         metadata.
+
     """
 
     def __init__(self, ds):
@@ -107,7 +107,6 @@ class TopspinImporter:
         :rtype: list
         """
         base_path = self._dataset.props.path_to_experiment
-        procno = self._dataset.props.procno
         path_list = [
             os.path.join(base_path, str(expno))
             for expno in self._dataset.props.expno
@@ -121,12 +120,11 @@ class ScreamImporter(TopspinImporter):
     about x- and y-axis (chemical shift and intensitys),
     polarization times (t_pol) and the number of scans used for the respective experiment.
     Automatically normalizes the  intensitys to the number of scans.
+
     """
 
     def _set_number_of_scans(self):
-        """
-        Set the number of scans for the last spectrum in the ds.
-        """
+        """Set the number of scans for the last spectrum in the ds."""
         with open(f"{self.file}\\acqu", "r", encoding="utf-8") as acqu_file:
             for acqu_line in acqu_file:
                 if "##$NS=" in acqu_line:
@@ -282,7 +280,7 @@ class Exporter:
         intensity values on the y-axis.
 
         The spectra are plotted with different colors, and the resulting plot is saved as a
-         high-resolution PDF.
+        high-resolution PDF.
 
         :return: None
         :rtype: None
@@ -603,7 +601,7 @@ class Exporter:
                 f.write(
                     "Label\t\t\tCenter\t\t\t\tAmplitude\t\t\tSigma\t\t\t\tGamma\n"
                 )
-                for key_nr, keys in enumerate(valdict):
+                for _, keys in enumerate(valdict):
                     for val_nr, val in enumerate(valdict[keys]):
                         if len(val) == 5:
                             f.write(
@@ -889,11 +887,13 @@ class LmfitResultHandler:
         indicating that no fit results have been stored yet. The buildup_fit
         attribute is initialized as an empty dictionary to store multiple buildup fit results.
 
-        Attributes:
+        Attributes
+        ----------
             prefit (None): Default value for the prefit result.
             individual_fit (None): Default value for the single fit result.
             global_fit (None): Default value for the global fit result.
             buildup_fit (dict): Default empty dictionary for storing buildup fit results.
+
         """
         self.prefit = None
         self.single_fit = None

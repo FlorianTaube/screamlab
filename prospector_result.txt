@@ -1,264 +1,104 @@
 Messages
 ========
 
-docs\conf.py:
-    L13:- None: bandit - B404
-    Consider possible security implications associated with the subprocess module.
-
-docs\conf.py:
-    L101:- None: bandit - B607
-    Starting a process with a partial executable path
-
-docs.conf (docs\conf.py):
-    L101:6 None: pylint - subprocess-run-check
-    'subprocess.run' used without explicitly defining the value for 'check'.
-
-docs\conf.py:
-    L103:- None: bandit - B602
-    subprocess call with shell=True seems safe, but may be changed in the future, consider rewriting without shell
-
-docs.conf (docs\conf.py):
-    L1:- None: pylint - cyclic-import
-    Cyclic import (CorziliusNMR.dataset -> CorziliusNMR.io)
-
-docs\conf.py:
-    L1:- None: pydocstyle - D100
-    Missing docstring in public module
-
-docs.conf (docs\conf.py):
-    L19:5 None: pylint - unspecified-encoding
-    Using open without explicitly specifying an encoding
-
-docs.conf (docs\conf.py):
-    L24:- None: pylint - invalid-name
-    Constant name "project" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L25:- None: pylint - redefined-builtin
-    Redefining built-in 'copyright'
-
-docs.conf (docs\conf.py):
-    L25:- None: pylint - invalid-name
-    Constant name "copyright" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L26:- None: pylint - invalid-name
-    Constant name "author" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L29:- None: pylint - invalid-name
-    Constant name "version" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L63:- None: pylint - invalid-name
-    Constant name "source_suffix" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L66:- None: pylint - invalid-name
-    Constant name "master_doc" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L73:- None: pylint - invalid-name
-    Constant name "language" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L81:- None: pylint - invalid-name
-    Constant name "pygments_style" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L97:- None: pylint - invalid-name
-    Constant name "smv_branch_whitelist" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L98:- None: pylint - invalid-name
-    Constant name "smv_tag_whitelist" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L99:- None: pylint - invalid-name
-    Constant name "smv_released_pattern" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L114:- None: pylint - invalid-name
-    Constant name "html_theme" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L134:- None: pylint - invalid-name
-    Constant name "html_logo" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L139:- None: pylint - invalid-name
-    Constant name "html_favicon" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L161:- None: pylint - invalid-name
-    Constant name "htmlhelp_basename" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L224:- None: pylint - invalid-name
-    Constant name "epub_title" doesn't conform to UPPER_CASE naming style
-
-docs.conf (docs\conf.py):
-    L256:- None: pylint - invalid-name
-    Constant name "todo_include_todos" doesn't conform to UPPER_CASE naming style
-
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L585:4 Exporter._print_report: pylint - too-many-locals
-    Too many local variables (22/15)
+    L582:4 Exporter._print_report: pylint - too-many-locals
+    Too many local variables (21/15)
 
 CorziliusNMR\io.py:
-    L585:- Exporter._print_report: mccabe - MC0001
+    L582:- Exporter._print_report: mccabe - MC0001
     Exporter._print_report is too complex (15)
 
 CorziliusNMR\io.py:
-    L571:52 None: pycodestyle - W605
+    L568:52 None: pycodestyle - W605
     invalid escape sequence '\,'
 
 CorziliusNMR\io.py:
-    L571:55 None: pycodestyle - W605
+    L568:55 None: pycodestyle - W605
     invalid escape sequence '\m'
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L571:51 None: pylint - anomalous-backslash-in-string
+    L568:51 None: pylint - anomalous-backslash-in-string
     Anomalous backslash in string: '\,'. String constant might be missing an r prefix.
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L571:54 None: pylint - anomalous-backslash-in-string
+    L568:54 None: pylint - anomalous-backslash-in-string
     Anomalous backslash in string: '\m'. String constant might be missing an r prefix.
 
 CorziliusNMR\io.py:
-    L1:- None: pydocstyle - D200
-    One-line docstring should fit on one line with quotes (found 3)
-
-CorziliusNMR\io.py:
-    L18:- None: pydocstyle - D413
-    Missing blank line after last section ('Attributes')
-
-CorziliusNMR\io.py:
-    L120:- None: pydocstyle - D205
+    L118:- None: pydocstyle - D205
     1 blank line required between summary line and description (found 0)
 
 CorziliusNMR\io.py:
-    L128:- None: pydocstyle - D200
-    One-line docstring should fit on one line with quotes (found 3)
-
-CorziliusNMR\io.py:
-    L281:- None: pydocstyle - D205
+    L278:- None: pydocstyle - D205
     1 blank line required between summary line and description (found 0)
 
-CorziliusNMR\io.py:
-    L886:- None: pydocstyle - D413
-    Missing blank line after last section ('Attributes')
-
-CorziliusNMR\io.py:
-    L886:- None: pydocstyle - D407
-    Missing dashed underline after section ('Attributes')
-
-CorziliusNMR\io.py:
-    L886:- None: pydocstyle - D406
-    Section name should end with a newline ('Attributes', not 'Attributes:')
-
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L8:- None: pylint - unused-import
-    Unused import sys
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L111:8 TopspinImporter._generate_path_to_experiment: pylint - unused-variable
-    Unused variable 'procno'
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L509:4 Exporter._plot_global_all_together: pylint - too-many-locals
+    L506:4 Exporter._plot_global_all_together: pylint - too-many-locals
     Too many local variables (23/15)
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L574:21 Exporter._plot_global_all_together: pylint - use-dict-literal
+    L571:21 Exporter._plot_global_all_together: pylint - use-dict-literal
     Consider using '{"facecolor": 'white', "alpha": 0.5}' instead of a call to 'dict'.
 
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L607:20 Exporter._print_report: pylint - unused-variable
-    Unused variable 'key_nr'
-
-CorziliusNMR\__init__.py:
-    L2:100 None: pycodestyle - E501
-    line too long (111 > 99 characters)
-
-CorziliusNMR\__init__.py:
-    L5:100 None: pycodestyle - E501
-    line too long (237 > 99 characters)
-
-CorziliusNMR\__init__.py:
+CorziliusNMR\settings.py:
     L1:- None: pydocstyle - D205
     1 blank line required between summary line and description (found 0)
 
-CorziliusNMR (CorziliusNMR\__init__.py):
-    L1:- None: pylint - invalid-name
-    Module name "CorziliusNMR" doesn't conform to snake_case naming style
-
 CorziliusNMR\settings.py:
-    L1:100 None: pycodestyle - E501
-    line too long (107 > 99 characters)
-
-CorziliusNMR\settings.py:
-    L35:100 None: pycodestyle - E501
-    line too long (110 > 99 characters)
-
-CorziliusNMR\settings.py:
-    L8:- None: pydocstyle - D413
-    Missing blank line after last section ('Attributes')
-
-CorziliusNMR\settings.py:
-    L83:- None: pydocstyle - D105
+    L88:- None: pydocstyle - D105
     Missing docstring in magic method
 
 CorziliusNMR\settings.py:
-    L123:- None: pydocstyle - D102
+    L128:- None: pydocstyle - D102
     Missing docstring in public method
 
 CorziliusNMR\settings.py:
-    L132:- None: pydocstyle - D102
+    L137:- None: pydocstyle - D102
     Missing docstring in public method
 
 CorziliusNMR\settings.py:
-    L141:- None: pydocstyle - D102
+    L146:- None: pydocstyle - D102
     Missing docstring in public method
 
 CorziliusNMR\settings.py:
-    L159:- None: pydocstyle - D102
+    L164:- None: pydocstyle - D102
     Missing docstring in public method
 
 CorziliusNMR\settings.py:
-    L171:- None: pydocstyle - D102
+    L176:- None: pydocstyle - D102
     Missing docstring in public method
 
 CorziliusNMR\settings.py:
-    L183:- None: pydocstyle - D102
+    L188:- None: pydocstyle - D102
     Missing docstring in public method
 
 CorziliusNMR\settings.py:
-    L206:- None: pydocstyle - D102
+    L211:- None: pydocstyle - D102
     Missing docstring in public method
 
 CorziliusNMR\settings.py:
-    L218:- None: pydocstyle - D102
+    L223:- None: pydocstyle - D102
     Missing docstring in public method
 
 CorziliusNMR\settings.py:
-    L243:- None: pydocstyle - D102
+    L248:- None: pydocstyle - D102
     Missing docstring in public method
 
 CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L7:- Properties: pylint - too-many-instance-attributes
+    L10:- Properties: pylint - too-many-instance-attributes
     Too many instance attributes (22/10)
 
 CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L38:4 Properties.__init__: pylint - dangerous-default-value
+    L43:4 Properties.__init__: pylint - dangerous-default-value
     Dangerous default value [] as argument
 
 CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L38:4 Properties.__init__: pylint - too-many-arguments
+    L43:4 Properties.__init__: pylint - too-many-arguments
     Too many arguments (12/5)
 
 CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L38:4 Properties.__init__: pylint - too-many-positional-arguments
+    L43:4 Properties.__init__: pylint - too-many-positional-arguments
     Too many positional arguments (12/5)
 
 CorziliusNMR\dataset.py:
@@ -285,6 +125,18 @@ CorziliusNMR.dataset (CorziliusNMR\dataset.py):
     L79:4 Dataset.add_peak: pylint - too-many-positional-arguments
     Too many positional arguments (6/5)
 
+CorziliusNMR\__init__.py:
+    L1:- None: pydocstyle - D104
+    Missing docstring in public package
+
+CorziliusNMR (CorziliusNMR\__init__.py):
+    L1:- None: pylint - invalid-name
+    Module name "CorziliusNMR" doesn't conform to snake_case naming style
+
+CorziliusNMR.utils (CorziliusNMR\utils.py):
+    L1:- None: pylint - cyclic-import
+    Cyclic import (CorziliusNMR.dataset -> CorziliusNMR.io)
+
 CorziliusNMR.utils (CorziliusNMR\utils.py):
     L393:23 BuildupFitter.perform_fit: pylint - broad-exception-caught
     Catching too general exception Exception
@@ -297,13 +149,13 @@ setup (setup.py):
 
 Check Information
 =================
-         Started: 2025-04-11 09:34:00.429779
-        Finished: 2025-04-11 09:35:08.945009
-      Time Taken: 68.52 seconds
+         Started: 2025-04-12 10:52:43.117826
+        Finished: 2025-04-12 10:53:00.633445
+      Time Taken: 17.52 seconds
        Formatter: text
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 
        Tools Run: bandit, dodgy, mccabe, profile-validator, pycodestyle, pydocstyle, pyflakes, pylint, pyroma
-  Messages Found: 73
+  Messages Found: 36
 
