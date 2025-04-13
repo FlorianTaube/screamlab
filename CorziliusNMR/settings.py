@@ -197,6 +197,7 @@ class Properties:
         ------
         TypeError
             If `value` is not a string.
+
         """
         if not isinstance(value, str):
             raise TypeError(
