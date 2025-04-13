@@ -4,6 +4,8 @@ import copy
 import csv
 import math
 import os
+
+import CorziliusNMR.dataset
 import numpy as np
 import matplotlib.pyplot as plt
 import nmrglue as ng
