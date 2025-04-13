@@ -11,32 +11,6 @@ class Properties:
     """
     A class to manage and validate properties related to spectral fitting and buildup types.
 
-    Attributes
-    ----------
-
-    expno : list of int
-        Experiment numbers. Default is None.
-    prefit : bool, optional
-        Indicates whether prefit mode is enabled. Default is False.
-    spectrum_for_prefit : int, optional
-        Specifies the spectrum index for prefit. Default is -1, meaning the last spectrum in
-        :obj:`CorziliusNMR.settings.Spectra`.
-    buildup_types : list of str, optional
-        A list of buildup function types. Default is ["exponential"]. Options:
-        "biexponential", "exponential_with_offset", "biexponential_with_offset",
-        "stretched_exponential".
-    spectrum_fit_type : str, optional
-        A list specifying the spectrum fit type: "global" (default) or "independent".
-    procno : int, optional
-        Process number. Default is 103 (standard in SCREAM-DNP experiments).
-    loop20 : str, optional
-        Loop parameter. Default is "L 20" (standard in SCREAM-DNP experiments).
-    delay20 : str, optional
-        Delay parameter. Default is "D 20" (standard in SCREAM-DNP experiments).
-    subspec : list, optional
-        Two floats defining the spectrum range to cut. Must be within the valid spectrum range.
-        Default is [].
-
     """
 
     def __init__(
@@ -48,8 +22,6 @@ class Properties:
         path_to_experiment: str = "",
         procno: int = 103,
         expno: list = None,
-        loop20: str = "L 20",
-        delay20: str = "D 20",
         output_folder: str = "",
         subspec=[],
     ):
@@ -74,10 +46,8 @@ class Properties:
         self.spectrum_for_prefit = spectrum_for_prefit
         self._spectrum_fit_type = None
         self.spectrum_fit_type = spectrum_fit_type
-        self._loop20 = None
-        self.loop20 = loop20
-        self._delay20 = None
-        self.delay20 = delay20
+        self.loop20 = "L 20"
+        self.delay20 = "D 20"
 
         self._output_folder = None
         self.output_folder = output_folder
@@ -85,6 +55,7 @@ class Properties:
         self.init_call = False
 
     def __str__(self):
+        """Returns string representation of Properties class"""
         return (
             f"[[Settings]]\n"
             f"Experiment folder: {self.path_to_experiment}\n"
@@ -102,12 +73,11 @@ class Properties:
     @property
     def output_folder(self) -> str:
         """
-        Folder path for saving output. Default is an empty string ("").
+        str: The current folder path where the output is being saved.
 
-        Returns
-        -------
-            str: The current folder path where the output is being saved.
+        Folder path for saving output.
 
+        Default is an empty string ("").
         """
         return self._output_folder
 
@@ -124,29 +94,20 @@ class Properties:
         self._output_folder = value
 
     @property
-    def delay20(self) -> str:
-        return self._delay20
-
-    @delay20.setter
-    def delay20(self, value: Any):
-        # TODO Write controls
-        self._delay20 = value
-
-    @property
-    def loop20(self) -> str:
-        return self._loop20
-
-    @loop20.setter
-    def loop20(self, value: Any):
-        # TODO Write controls
-        self._loop20 = value
-
-    @property
     def expno(self) -> list:
+        """
+        List of int: List of experiment numbers (expno; TopSpin) that should be used for analysis.
+
+        Two different input formats are allowed. [1, 8] means using all experiment numbers
+        between 1 and 8, while [1, 3, 5, 7, 8] allows for a specific selection.
+
+        Default is None.
+        """
         return self._expno
 
     @expno.setter
     def expno(self, value: Any):
+        """Set the expno list."""
         if not isinstance(value, list):
             raise TypeError(
                 f"Expected 'expno' to be of type 'list', got {type(value).__name__}."
@@ -161,10 +122,16 @@ class Properties:
 
     @property
     def procno(self) -> int:
+        """
+        int, optional: Processing number according to Bruker's TopSpin
+
+        Default is 103 (standard in SCREAM-DNP experiments).
+        """
         return self._procno
 
     @procno.setter
     def procno(self, value: Any):
+        """Set the procno"""
         if not isinstance(value, int):
             raise TypeError(
                 f"Expected 'procno' to be of type 'int', got {type(value).__name__}."
@@ -185,20 +152,7 @@ class Properties:
 
     @path_to_experiment.setter
     def path_to_experiment(self, value: Any):
-        """
-        Sets the path to the experiment data.
-
-        Parameters
-        ----------
-        value : str
-            The path to set. Must be a string.
-
-        Raises
-        ------
-        TypeError
-            If `value` is not a string.
-
-        """
+        """Sets the path to the experiment data."""
         if not isinstance(value, str):
             raise TypeError(
                 f"Expected 'path_to_experiment' to be of type 'str', got {type(value).__name__}."
@@ -207,10 +161,17 @@ class Properties:
 
     @property
     def spectrum_fit_type(self) -> list:
+        """
+        str, optional: A list specifying the spectrum fit type
+
+        Options supporded: "global","independent".
+
+        """
         return self._spectrum_fit_type
 
     @spectrum_fit_type.setter
     def spectrum_fit_type(self, value: Any):
+        """Sets the spectrum fit type"""
         allowed_values = {
             "global",
             "individual",
@@ -229,23 +190,21 @@ class Properties:
         self._spectrum_fit_type = value
 
     @property
-    def spectrum_for_prefit(self) -> int:
-        return self._spectrum_for_prefit
-
-    @spectrum_for_prefit.setter
-    def spectrum_for_prefit(self, value: Any):
-        if not isinstance(value, int):
-            raise TypeError(
-                f"Expected 'spectrum_for_prefit' to be of type 'int', got {type(value).__name__}."
-            )
-        self._spectrum_for_prefit = value
-
-    @property
     def buildup_types(self) -> list:
+        """
+        List of str, optional: A list of buildup function types
+
+        Options supporded: "exponential","biexponential", "exponential_with_offset",
+        "biexponential_with_offset", "stretched_exponential".
+
+        Default is ["exponential"].
+
+        """
         return self._buildup_types
 
     @buildup_types.setter
     def buildup_types(self, value: Any):
+        """Sets buildup type list"""
         allowed_values = {
             "exponential",
             "biexponential",
@@ -267,12 +226,39 @@ class Properties:
 
     @property
     def prefit(self) -> bool:
+        """
+        bool, optional: Indicates whether a prefit should be performed or not.
+
+        Default is False.
+
+        """
         return self._prefit
 
     @prefit.setter
     def prefit(self, value: Any):
+        """Sets prefit to True or False"""
         if not isinstance(value, bool):
             raise TypeError(
                 f"Expected 'prefit' to be of type 'bool', got {type(value).__name__}."
             )
         self._prefit = value
+
+    @property
+    def spectrum_for_prefit(self) -> int:
+        """
+        int, optional: Specifies the spectrum used for prefit.
+
+        Default is -1, meaning the last spectrum in
+        :obj:`CorziliusNMR.settings.Spectra`.
+
+        """
+        return self._spectrum_for_prefit
+
+    @spectrum_for_prefit.setter
+    def spectrum_for_prefit(self, value: Any):
+        """Sets spectrum for prefit."""
+        if not isinstance(value, int):
+            raise TypeError(
+                f"Expected 'spectrum_for_prefit' to be of type 'int', got {type(value).__name__}."
+            )
+        self._spectrum_for_prefit = value
