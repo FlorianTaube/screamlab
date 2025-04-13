@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import nmrglue as ng
 import lmfit
-from CorziliusNMR import functions
+import CorziliusNMR
 
 
 class TopspinImporter:
@@ -210,7 +210,7 @@ class ScreamImporter(TopspinImporter):
 
     def _gen_subspectrum(self):
         self._dataset.spectra[-1].x_axis, self._dataset.spectra[-1].y_axis = (
-            functions.generate_subspec(
+            CorziliusNMR.functions.generate_subspec(
                 self._dataset.spectra[-1], self._dataset.props.subspec
             )
         )
@@ -317,13 +317,15 @@ class Exporter:
             self.dataset.props.spectrum_for_prefit
         ]
         x_axis, y_axis = spectrum.x_axis, spectrum.y_axis
-        valdict = functions.generate_spectra_param_dict(
+        valdict = CorziliusNMR.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.prefit.params
         )
         simspec = [0] * len(y_axis)
         for values in valdict.values():
             for val in values:
-                simspec = functions.calc_peak(x_axis, simspec, val)
+                simspec = CorziliusNMR.functions.calc_peak(
+                    x_axis, simspec, val
+                )
         _, axs = plt.subplots(
             2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}
         )
@@ -357,7 +359,7 @@ class Exporter:
         The x-axis represents time delay (`t_del`), and the y-axis represents intensity (`I`).
         The plot is saved as a high-resolution PDF.
         """
-        valdict = functions.generate_spectra_param_dict(
+        valdict = CorziliusNMR.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
 
@@ -369,7 +371,7 @@ class Exporter:
                 self.dataset.spectra[key].y_axis, dtype=float
             )
             for val in values:
-                simspec = functions.calc_peak(
+                simspec = CorziliusNMR.functions.calc_peak(
                     self.dataset.spectra[key].x_axis, simspec, val
                 )
             label_exp = "Experiment" if first else None
@@ -413,7 +415,7 @@ class Exporter:
         colors = plt.get_cmap("viridis")
         norm = plt.Normalize(vmin=0, vmax=len(self.dataset.peak_list))
 
-        func_map = functions.return_func_map()
+        func_map = CorziliusNMR.functions.return_func_map()
 
         for peak_nr, peak in enumerate(self.dataset.peak_list):
             peak_result = self.dataset.lmfit_result_handler.buildup_fit[
@@ -457,7 +459,7 @@ class Exporter:
         )
         os.makedirs(output_dir, exist_ok=True)
 
-        param_dict = functions.generate_spectra_param_dict(
+        param_dict = CorziliusNMR.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
 
@@ -477,7 +479,9 @@ class Exporter:
             )
 
             for params in param_list:
-                simspec = functions.calc_peak(x_axis, simspec, params)
+                simspec = CorziliusNMR.functions.calc_peak(
+                    x_axis, simspec, params
+                )
 
             axs[0].plot(x_axis, y_axis, color="black", label="Experiment")
             axs[0].plot(x_axis, simspec, "r--", label="Simulation", alpha=0.8)
@@ -507,7 +511,7 @@ class Exporter:
         )
         os.makedirs(output_dir, exist_ok=True)
 
-        param_dict = functions.generate_spectra_param_dict(
+        param_dict = CorziliusNMR.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
 
@@ -538,7 +542,9 @@ class Exporter:
             residual = copy.deepcopy(y_axis)
 
             for params in param_list:
-                simspec = functions.calc_peak(x_axis, simspec, params)
+                simspec = CorziliusNMR.functions.calc_peak(
+                    x_axis, simspec, params
+                )
 
             ax_spectrum.plot(
                 x_axis, y_axis, color="black", label="Experiment"
@@ -593,7 +599,7 @@ class Exporter:
 
             if self.dataset.props.prefit:
                 f.write("[[Prefit]]\n")
-                valdict = functions.generate_spectra_param_dict(
+                valdict = CorziliusNMR.functions.generate_spectra_param_dict(
                     self.dataset.lmfit_result_handler.prefit.params
                 )
                 f.write(
@@ -620,10 +626,10 @@ class Exporter:
                 f.write("[[Prefit]]\nNo prefit performed.\n")
 
             f.write("[[Global fit results]]\n")
-            valdict = functions.generate_spectra_param_dict(
+            valdict = CorziliusNMR.functions.generate_spectra_param_dict(
                 self.dataset.lmfit_result_handler.global_fit.params
             )
-            header = functions.spectrum_fit_header()
+            header = CorziliusNMR.functions.spectrum_fit_header()
             column_widths = [25, 6, 10, 15, 10, 10, 15, 15, 15, 10]
             f.write(
                 "".join(f"{h:<{w}}" for h, w in zip(header, column_widths))
@@ -650,13 +656,13 @@ class Exporter:
             f.write("[[Buildup fit results]]\n")
             for buildup_type in self.dataset.props.buildup_types:
                 f.write(f"[{buildup_type}]\n")
-                header = functions.buildup_header()
+                header = CorziliusNMR.functions.buildup_header()
                 column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35]
                 f.write(
                     "".join(h.ljust(w) for h, w in zip(header, column_widths))
                     + "\n"
                 )
-                format_mappings = functions.format_mapping()
+                format_mappings = CorziliusNMR.functions.format_mapping()
                 type_format = format_mappings.get(buildup_type, [])
                 for result_nr, result in enumerate(
                     self.dataset.lmfit_result_handler.buildup_fit[
@@ -697,9 +703,9 @@ class Exporter:
                 f"Buildup_fit_result_{buildup_type}.txt"
             )
             with open(output_file_path, "w", encoding="utf-8") as f:
-                header = functions.buildup_header()
+                header = CorziliusNMR.functions.buildup_header()
                 f.write(";".join(header) + "\n")
-                format_mappings = functions.format_mapping()
+                format_mappings = CorziliusNMR.functions.format_mapping()
                 type_format = format_mappings.get(buildup_type, [])
                 for result_nr, result in enumerate(
                     self.dataset.lmfit_result_handler.buildup_fit[
@@ -738,10 +744,10 @@ class Exporter:
         )
 
         with open(output_file_path, "w", encoding="utf-8") as f:
-            valdict = functions.generate_spectra_param_dict(
+            valdict = CorziliusNMR.functions.generate_spectra_param_dict(
                 self.dataset.lmfit_result_handler.global_fit.params
             )
-            header = functions.spectrum_fit_header()
+            header = CorziliusNMR.functions.spectrum_fit_header()
             f.write(";".join(str(item) for item in header) + "\n")
             for delay_time in range(0, len(valdict[0])):
                 for val_nr, (_, values) in enumerate(valdict.items()):
@@ -839,13 +845,19 @@ class Exporter:
                 round(values[delay_time][2], 3),
                 round(values[delay_time][3], 3),
                 round(
-                    functions.fwhm_lorentzian(values[delay_time][3]), 3
-                ),  # FWHM Lorentzian
+                    CorziliusNMR.functions.fwhm_lorentzian(
+                        values[delay_time][3]
+                    ),
+                    3,
+                ),
                 round(
-                    functions.fwhm_gaussian(values[delay_time][2]), 3
-                ),  # FWHM Gaussian
+                    CorziliusNMR.functions.fwhm_gaussian(
+                        values[delay_time][2]
+                    ),
+                    3,
+                ),
                 round(
-                    functions.fwhm_voigt(
+                    CorziliusNMR.functions.fwhm_voigt(
                         values[delay_time][2], values[delay_time][3]
                     ),
                     3,

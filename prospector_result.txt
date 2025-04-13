@@ -2,56 +2,32 @@ Messages
 ========
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L582:4 Exporter._print_report: pylint - too-many-locals
+    L580:4 Exporter._print_report: pylint - too-many-locals
     Too many local variables (21/15)
 
 CorziliusNMR\io.py:
-    L582:- Exporter._print_report: mccabe - MC0001
+    L580:- Exporter._print_report: mccabe - MC0001
     Exporter._print_report is too complex (15)
 
 CorziliusNMR\io.py:
-    L281:- None: pydocstyle - D205
+    L279:- None: pydocstyle - D205
     1 blank line required between summary line and description (found 0)
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L9:- None: pylint - wrong-import-order
-    third party import "numpy" should be placed before first party import "CorziliusNMR.dataset" 
+    L45:37 TopspinImporter._add_spectrum: pylint - undefined-variable
+    Undefined variable 'CorziliusNMR'
 
 CorziliusNMR.io (CorziliusNMR\io.py):
-    L10:- None: pylint - wrong-import-order
-    third party import "matplotlib.pyplot" should be placed before first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L11:- None: pylint - wrong-import-order
-    third party import "nmrglue" should be placed before first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L13:- None: pylint - wrong-import-order
-    third party import "lmfit" should be placed before first party import "CorziliusNMR.dataset" 
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L506:4 Exporter._plot_global_all_together: pylint - too-many-locals
+    L504:4 Exporter._plot_global_all_together: pylint - too-many-locals
     Too many local variables (23/15)
 
-CorziliusNMR\dataset.py:
-    L1:- None: pydocstyle - D419
-    Docstring is empty
+CorziliusNMR\__init__.py:
+    L1:- None: pydocstyle - D104
+    Missing docstring in public package
 
-CorziliusNMR\dataset.py:
-    L87:- None: pydocstyle - D407
-    Missing dashed underline after section ('Args')
-
-CorziliusNMR\dataset.py:
-    L555:- None: pydocstyle - D417
-    Missing argument descriptions in the docstring (argument(s) label, result, spectra are missing descriptions in 'set_vals' docstring)
-
-CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L79:4 Dataset.add_peak: pylint - too-many-arguments
-    Too many arguments (6/5)
-
-CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L79:4 Dataset.add_peak: pylint - too-many-positional-arguments
-    Too many positional arguments (6/5)
+CorziliusNMR (CorziliusNMR\__init__.py):
+    L1:- None: pylint - invalid-name
+    Module name "CorziliusNMR" doesn't conform to snake_case naming style
 
 CorziliusNMR\settings.py:
     L1:- None: pydocstyle - D205
@@ -113,17 +89,25 @@ CorziliusNMR.settings (CorziliusNMR\settings.py):
     L42:4 Properties.__init__: pylint - too-many-positional-arguments
     Too many positional arguments (12/5)
 
-CorziliusNMR\__init__.py:
-    L1:- None: pydocstyle - D104
-    Missing docstring in public package
+CorziliusNMR\dataset.py:
+    L1:- None: pydocstyle - D419
+    Docstring is empty
 
-CorziliusNMR (CorziliusNMR\__init__.py):
-    L1:- None: pylint - invalid-name
-    Module name "CorziliusNMR" doesn't conform to snake_case naming style
+CorziliusNMR\dataset.py:
+    L87:- None: pydocstyle - D407
+    Missing dashed underline after section ('Args')
 
-CorziliusNMR.utils (CorziliusNMR\utils.py):
-    L1:- None: pylint - cyclic-import
-    Cyclic import (CorziliusNMR.dataset -> CorziliusNMR.io)
+CorziliusNMR\dataset.py:
+    L555:- None: pydocstyle - D417
+    Missing argument descriptions in the docstring (argument(s) label, result, spectra are missing descriptions in 'set_vals' docstring)
+
+CorziliusNMR.dataset (CorziliusNMR\dataset.py):
+    L79:4 Dataset.add_peak: pylint - too-many-arguments
+    Too many arguments (6/5)
+
+CorziliusNMR.dataset (CorziliusNMR\dataset.py):
+    L79:4 Dataset.add_peak: pylint - too-many-positional-arguments
+    Too many positional arguments (6/5)
 
 CorziliusNMR.utils (CorziliusNMR\utils.py):
     L393:23 BuildupFitter.perform_fit: pylint - broad-exception-caught
@@ -137,13 +121,13 @@ setup (setup.py):
 
 Check Information
 =================
-         Started: 2025-04-13 22:19:58.289078
-        Finished: 2025-04-13 22:20:22.287327
-      Time Taken: 24.00 seconds
+         Started: 2025-04-13 22:24:17.048754
+        Finished: 2025-04-13 22:24:38.006431
+      Time Taken: 20.96 seconds
        Formatter: text
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 
        Tools Run: bandit, dodgy, mccabe, profile-validator, pycodestyle, pydocstyle, pyflakes, pylint, pyroma
-  Messages Found: 33
+  Messages Found: 29
 
