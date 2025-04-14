@@ -2,40 +2,24 @@ Messages
 ========
 
 CorziliusNMR\io.py:
-    L585:- Exporter._print_report: mccabe - MC0001
+    L577:- Exporter._print_report: mccabe - MC0001
     Exporter._print_report is too complex (15)
-
-CorziliusNMR\__init__.py:
-    L1:- None: pydocstyle - D104
-    Missing docstring in public package
 
 CorziliusNMR (CorziliusNMR\__init__.py):
     L1:- None: pylint - invalid-name
     Module name "CorziliusNMR" doesn't conform to snake_case naming style
 
-CorziliusNMR\dataset.py:
-    L1:- None: pydocstyle - D419
-    Docstring is empty
-
-CorziliusNMR.utils (CorziliusNMR\utils.py):
-    L393:23 BuildupFitter.perform_fit: pylint - broad-exception-caught
-    Catching too general exception Exception
-
-setup (setup.py):
-    L-:- None: pyroma - PYR05
-    The package had no description!
-
 
 
 Check Information
 =================
-         Started: 2025-04-14 09:35:18.190739
-        Finished: 2025-04-14 09:35:37.004635
-      Time Taken: 18.81 seconds
+         Started: 2025-04-14 11:36:12.784050
+        Finished: 2025-04-14 11:36:32.207754
+      Time Taken: 19.42 seconds
        Formatter: text
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 
        Tools Run: bandit, dodgy, mccabe, profile-validator, pycodestyle, pydocstyle, pyflakes, pylint, pyroma
-  Messages Found: 6
+  Messages Found: 2
 

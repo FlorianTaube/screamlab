@@ -11,7 +11,7 @@ def read(filename):
 setuptools.setup(
     name="CorziliusNMR",
     version=read("VERSION").strip(),
-    description="",
+    description="Package for reproducible evaluation of SCREAM-DNP data.",
     long_description=read("README.rst"),
     long_description_content_type="text/x_data-rst",
     author="Florian Taube",
@@ -50,6 +50,7 @@ setuptools.setup(
         "scipy",
         "pyDOE2",
         "nmrglue",
+        "contextlib",
     ],
     extras_require={
         "dev": [

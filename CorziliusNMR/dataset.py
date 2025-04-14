@@ -1,4 +1,14 @@
 """
+Spectral and Peak information containing module.
+
+This moduel provides classes for handling and processing of spectral/peak information as well as
+results from spectral fitting.
+
+Classes:
+    Dataset: Represents the hole dataset and provides all functions needed to start analysis.
+    Spectra: Represents spectral data from NMR (Nuclear Magnetic Resonance) experiments.
+    Peak: Represents a peak with its properties.
+    BuildupList: Represents a list of buildup values used for fitting delay times and intensities.
 
 """
 
@@ -8,15 +18,7 @@ from CorziliusNMR import io, utils, settings, functions
 
 
 class Dataset:
-    """
-    Represents a ds containing NMR spectra, peak fitting, and buildup fitting.
-
-    Attributes
-    ----------
-        - props (settings.Properties): Object that stores all variable settings needed for hole
-        analysis process.
-
-    """
+    """Represents a dataset containing NMR spectra, peak fitting, and buildup fitting."""
 
     def __init__(self, props=settings.Properties()):
         """
@@ -47,7 +49,7 @@ class Dataset:
         """
         Starting the analysis process.
 
-        The analysis is carried out in three stages: first, the spectral data is imported
+        The analysis is carried out in three stages: first, the spectral data are imported
         from the Topspin file format; second, spectral deconvolution is performed; and finally,
         a buildup fit is applied.
 

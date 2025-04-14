@@ -13,15 +13,7 @@ import CorziliusNMR
 
 
 class TopspinImporter:
-    """
-    Class for importing NMR data from Bruker's TopSpin software.
-
-    Attributes
-    ----------
-        ds:  :obj:`CorziliusNMR.ds.Dataset` to store imported spectra and necessary
-        metadata.
-
-    """
+    """Class for importing NMR data from Bruker's TopSpin software."""
 
     def __init__(self, ds):
         """Initialize the TopspinImporter."""
