@@ -1,21 +1,9 @@
 Messages
 ========
 
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L586:4 Exporter._print_report: pylint - too-many-locals
-    Too many local variables (21/15)
-
 CorziliusNMR\io.py:
-    L586:- Exporter._print_report: mccabe - MC0001
+    L585:- Exporter._print_report: mccabe - MC0001
     Exporter._print_report is too complex (15)
-
-CorziliusNMR\io.py:
-    L279:- None: pydocstyle - D205
-    1 blank line required between summary line and description (found 0)
-
-CorziliusNMR.io (CorziliusNMR\io.py):
-    L508:4 Exporter._plot_global_all_together: pylint - too-many-locals
-    Too many local variables (23/15)
 
 CorziliusNMR\__init__.py:
     L1:- None: pydocstyle - D104
@@ -29,46 +17,6 @@ CorziliusNMR\dataset.py:
     L1:- None: pydocstyle - D419
     Docstring is empty
 
-CorziliusNMR\dataset.py:
-    L87:- None: pydocstyle - D407
-    Missing dashed underline after section ('Args')
-
-CorziliusNMR\dataset.py:
-    L555:- None: pydocstyle - D417
-    Missing argument descriptions in the docstring (argument(s) label, result, spectra are missing descriptions in 'set_vals' docstring)
-
-CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L79:4 Dataset.add_peak: pylint - too-many-arguments
-    Too many arguments (6/5)
-
-CorziliusNMR.dataset (CorziliusNMR\dataset.py):
-    L79:4 Dataset.add_peak: pylint - too-many-positional-arguments
-    Too many positional arguments (6/5)
-
-CorziliusNMR\settings.py:
-    L1:- None: pydocstyle - D205
-    1 blank line required between summary line and description (found 0)
-
-CorziliusNMR\settings.py:
-    L11:- None: pydocstyle - D200
-    One-line docstring should fit on one line with quotes (found 4)
-
-CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L10:- Properties: pylint - too-many-instance-attributes
-    Too many instance attributes (20/10)
-
-CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L16:4 Properties.__init__: pylint - dangerous-default-value
-    Dangerous default value [] as argument
-
-CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L16:4 Properties.__init__: pylint - too-many-arguments
-    Too many arguments (10/5)
-
-CorziliusNMR.settings (CorziliusNMR\settings.py):
-    L16:4 Properties.__init__: pylint - too-many-positional-arguments
-    Too many positional arguments (10/5)
-
 CorziliusNMR.utils (CorziliusNMR\utils.py):
     L393:23 BuildupFitter.perform_fit: pylint - broad-exception-caught
     Catching too general exception Exception
@@ -81,13 +29,13 @@ setup (setup.py):
 
 Check Information
 =================
-         Started: 2025-04-13 23:08:35.084879
-        Finished: 2025-04-13 23:08:53.275563
-      Time Taken: 18.19 seconds
+         Started: 2025-04-14 09:35:18.190739
+        Finished: 2025-04-14 09:35:37.004635
+      Time Taken: 18.81 seconds
        Formatter: text
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 
        Tools Run: bandit, dodgy, mccabe, profile-validator, pycodestyle, pydocstyle, pyflakes, pylint, pyroma
-  Messages Found: 19
+  Messages Found: 6
 

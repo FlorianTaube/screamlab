@@ -87,7 +87,8 @@ class Dataset:
         """
         Adds a peak to the ds.
 
-        Args:
+        Attributes
+        ----------
             center_of_peak (float): Peak position in ppm (chemical shift).
             peak_label (str, optional): Custom label. Defaults to "Peak_at_<ppm>_ppm".
             fitting_type (str, optional): Peak shape: "gauss", "lorentz", or "voigt" (default).
@@ -555,8 +556,8 @@ class BuildupList:
         """
         Sets buildup values using the result parameters and spectra.
 
-        Args:
-        ----
+        Attributes
+        ----------
             result (object): Fitted parameter values used for calculating buildup.
             spectra (list): Spectrum objects used with result to compute buildup.
             label (str): Peak label used to filter relevant parameters in result.

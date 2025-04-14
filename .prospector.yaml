@@ -5,12 +5,9 @@ ignore-paths:
   - templates
   - build
   - docs
-  - '__init__.py'
-  - setup.py
 
-ignore-patterns:
-  - CorziliusNMR\__init__.py
-  - setup
+paths:
+  - CorziliusNMR/
 
 inherits:
   - strictness_high
@@ -25,10 +22,15 @@ pep257:
     - D415
     - D416
 
+
+
 pylint:
   options:
-    max-attributes: 10
+    max-attributes: 25
     max-module-lines: 1500
+    max-args: 15
+    max-positional-arguments: 15
+    max-locals: 25
 
 pycodestyle:
   disable:

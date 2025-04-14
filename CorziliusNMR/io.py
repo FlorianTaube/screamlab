@@ -277,11 +277,10 @@ class Exporter:
 
     def _plot_topspin_data(self):
         """
-        Plots the spectral data from the ds, displaying time delays (t_del) on the x-axis and
-        intensity values on the y-axis.
+        Plots the spectral data from the ds
 
-        The spectra are plotted with different colors, and the resulting plot is saved as a
-        high-resolution PDF.
+        Displays time delays (t_del) on the x-axis and intensity values on the y-axis.
+
         """
         colormap = plt.cm.viridis
         colors = [

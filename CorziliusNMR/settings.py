@@ -1,17 +1,11 @@
-"""
-The `settings` module is responsible for managing configuration options used
-in the analysis process.
-"""
+"""The `settings` module is responsible for managing configuration options."""
 
 from typing import Any
 import os
 
 
 class Properties:
-    """
-    A class to manage and validate properties related to spectral fitting and buildup types.
-
-    """
+    """A class to manage and validate properties related to spectral fitting and buildup types."""
 
     def __init__(
         self,
@@ -23,7 +17,7 @@ class Properties:
         procno: int = 103,
         expno: list = None,
         output_folder: str = "",
-        subspec=[],
+        subspec=None,
     ):
         self.init_call = True
         if buildup_types is None:
@@ -51,6 +45,7 @@ class Properties:
 
         self._output_folder = None
         self.output_folder = output_folder
+        self._subspec = None
         self.subspec = subspec
         self.init_call = False
 
@@ -69,6 +64,23 @@ class Properties:
             f"{self.delay20} if SCREAM data given.\n"
             f"Wrote output files to: {self.output_folder}"
         )
+
+    @property
+    def subspec(self) -> list:
+        """
+        List of int, optional: Specifies region of subspectrum.
+
+        Default is None.
+        """
+        return self._subspec
+
+    @subspec.setter
+    def subspec(self, value: Any):
+        """Sets list for subspectrum"""
+        if value is not None:
+            self._subspec = value
+        else:
+            self._subspec = []
 
     @property
     def output_folder(self) -> str:
