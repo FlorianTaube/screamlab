@@ -269,22 +269,27 @@ class Peak:
             f"Peak label: {self.peak_label}\n"
             f"Peak shape: {self.fitting_type}\n"
             f"Peak sign: {self.peak_sign}\n"
-            f"During the prefit stage, variables are permitted to vary within the following ranges:\n"
+            f"During the prefit stage, variables are permitted to vary within "
+            f"the following ranges:\n"
             f" {self._format_fitting_range('prefit')}"
-            f"During the main analysis stage, variables are permitted to vary within the following ranges:\n"
+            f"During the main analysis stage, variables are permitted to vary "
+            f"within the following ranges:\n"
             f" {self._format_fitting_range('')}"
         )
 
-    def _format_fitting_range(self, type):
+    def _format_fitting_range(self, fit_type):
         a_max = "0 and inf" if self.peak_sign == "+" else "-inf and 0"
         lb = ""
         line_broadening = (
             self._line_broadening_init
-            if type == "prefit"
+            if fit_type == "prefit"
             else self._line_broadening
         )
         for keys in line_broadening:
-            lb += f"\t{keys}:\t\t\tBetween {line_broadening[keys]['min']} ppm and {line_broadening[keys]['max']} ppm.\n"
+            lb += (
+                f"\t{keys}:\t\t\tBetween {line_broadening[keys]['min']} ppm"
+                f" and {line_broadening[keys]['max']} ppm.\n"
+            )
         return (
             f"\tCenter (µ):\t\tBetween {self.peak_center-1} ppm and"
             f" {self.peak_center+1} ppm.\n"

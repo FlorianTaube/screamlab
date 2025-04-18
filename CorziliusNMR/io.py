@@ -4,7 +4,6 @@ import copy
 import csv
 import math
 import os
-import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -254,7 +253,6 @@ class Exporter:
             - Writes buildup fit results to a semicolon-separated file.
         """
         self._print_report()
-        sys.exit()
         self._plot_topspin_data()
         self._plot_global_all_together()
         if self.dataset.props.prefit:
@@ -290,7 +288,7 @@ class Exporter:
                 color=colors[idx],
             )
         plt.gca().invert_xaxis()
-        plt.xlabel("$t_{\mathrm{pol}}$ / s")
+        plt.xlabel(r"$t_{\mathrm{pol}}$ / s")
         plt.ylabel("$I$ / a.u.")
         plt.legend()
         output_dir = self._generate_output_dir("spectra")
@@ -336,7 +334,7 @@ class Exporter:
         residual = y_axis - simspec
         axs[1].plot(x_axis, residual, color="grey", label="Residual")
         axs[1].set_xlabel("$\\delta$ / ppm")
-        axs[1].set_ylabel("$I_{\mathrm{resid}}$ / a.u.")
+        axs[1].set_ylabel(r"$I_{\mathrm{resid}}$ / a.u.")
         axs[0].set_xlim(max(x_axis), min(x_axis))
         axs[1].set_xlim(max(x_axis), min(x_axis))
         axs[1].legend()
@@ -400,7 +398,7 @@ class Exporter:
                 "-",
                 color=color,
             )
-        plt.xlabel("$t_{\mathrm{pol}}$ / s")
+        plt.xlabel(r"$t_{\mathrm{pol}}$ / s")
         plt.ylabel("$I$ / a.u.")
 
         plt.legend()
@@ -450,7 +448,7 @@ class Exporter:
 
             axs[0].set_ylabel("$I$ / a.u.")
             axs[1].set_xlabel("$\\delta$ / ppm")
-            axs[1].set_ylabel("$I_{\mathrm{resid}}$ / a.u.")
+            axs[1].set_ylabel(r"$I_{\mathrm{resid}}$ / a.u.")
 
             for ax in axs:
                 ax.set_xlim(max(x_axis), min(x_axis))
@@ -517,7 +515,7 @@ class Exporter:
 
             ax_spectrum.set_ylabel("$I$ / a.u.")
             ax_residual.set_xlabel("$\\delta$ / ppm")
-            ax_residual.set_ylabel("$I_{\mathrm{resid}}$ / a.u.")
+            ax_residual.set_ylabel(r"$I_{\mathrm{resid}}$ / a.u.")
 
             ax_spectrum.set_xlim(max(x_axis), min(x_axis))
             ax_spectrum.legend(loc="upper right", fontsize=8)
@@ -545,7 +543,7 @@ class Exporter:
 
     def _print_report(self):
         with open(
-            f"{self.dataset.props.output_folder}/Analysis_result.txt",
+            f"{self.dataset.props.output_folder}/analysis_result.txt",
             "w",
             encoding="utf-8",
         ) as f:
@@ -571,7 +569,7 @@ class Exporter:
         for buildup_type in self.dataset.props.buildup_types:
             f.write(f"[{buildup_type}]\n")
             header = CorziliusNMR.functions.buildup_header()
-            column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35]
+            column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35, 10]
             f.write(
                 "".join(h.ljust(w) for h, w in zip(header, column_widths))
                 + "\n"
@@ -634,7 +632,6 @@ class Exporter:
 
         for _, keys in enumerate(valdict):
             for val_nr, val in enumerate(valdict[keys]):
-                actual_dict = self.dataset.peak_list[val_nr]
                 pars = []
                 if len(val) == 5:
                     pars.append(self.dataset.peak_list[val_nr].peak_label)
@@ -729,8 +726,8 @@ class Exporter:
             a.write(lmfit.fit_report(result, min_correl=0.25))
         a.close()
 
-    def _generate_output_dir(self, dir):
-        output_dir = os.path.join(self.dataset.props.output_folder, dir)
+    def _generate_output_dir(self, new_dir):
+        output_dir = os.path.join(self.dataset.props.output_folder, new_dir)
         os.makedirs(output_dir, exist_ok=True)
         return output_dir
 

@@ -52,7 +52,8 @@ class Properties:
     def __str__(self):
         """Returns string representation of Properties class"""
         sub = (
-            f"A subspectrum ranging from {self.subspec[0]} to {self.subspec[1]} ppm has been extracted."
+            f"A subspectrum ranging from {self.subspec[0]} to {self.subspec[1]} "
+            f"ppm has been extracted."
             if self.subspec
             else "No subspectrum has been extracted."
         )
@@ -197,7 +198,7 @@ class Properties:
                 f"Expected 'spectrum_fit_type' to be of type 'str', got"
                 f" {type(value).__name__}."
             )
-        if not value in allowed_values:
+        if value not in allowed_values:
             raise ValueError(
                 f"'spectrum_fit_type' must be one of {allowed_values}."
             )

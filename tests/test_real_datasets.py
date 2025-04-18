@@ -26,7 +26,7 @@ class TestDataset(unittest.TestCase):
         props.output_folder = r"..\tests\SCREAM_Test_Files\Alanin\result"
         ds = dataset.Dataset()
         ds.props = props
-        ds.add_peak(-16.5, peak_sign="+", fitting_type="gauss")
+        ds.add_peak(-16.5, peak_sign="+", fitting_type="voigt")
         ds.start_analysis()
 
     @unittest.skipIf(

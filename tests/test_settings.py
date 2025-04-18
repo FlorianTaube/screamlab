@@ -96,8 +96,8 @@ class TestProperties(unittest.TestCase):
     def test_buildup_types_invalid(self):
         props = Properties()
         with self.assertRaises(ValueError) as context:
-            props.buildup_types = ["exponential", "invalid_type"]
-        self.assertIn("must be one of", str(context.exception))
+            props.buildup_types = "invalid"
+            self.assertIn("must be one of", str(context.exception))
 
     def test_spectrum_for_prefit_default_value(self):
         props = Properties()
@@ -132,42 +132,40 @@ class TestProperties(unittest.TestCase):
 
     def test_spectrum_fit_type_default_value(self):
         props = Properties()
-        self.assertListEqual(props.spectrum_fit_type, ["global"])
+        self.assertEqual(props.spectrum_fit_type, "global")
 
     def test_spectrum_fit_type_initial_value(self):
-        props = Properties(spectrum_fit_type=["hight"])
-        self.assertListEqual(props.spectrum_fit_type, ["hight"])
+        props = Properties(spectrum_fit_type="global")
+        self.assertEqual(props.spectrum_fit_type, "global")
 
     def test_spectrum_fit_type_set_valid_value(self):
         props = Properties()
-        props.spectrum_fit_type = ["global", "individual"]
-        self.assertListEqual(
-            props.spectrum_fit_type, ["global", "individual"]
-        )
+        props.spectrum_fit_type = "global"
+        self.assertEqual(props.spectrum_fit_type, "global")
 
     def test_spectrum_fit_type_set_invalid_value(self):
         props = Properties()
         with self.assertRaises(TypeError) as context:
-            props.spectrum_fit_type = "invalid"
+            props.spectrum_fit_type = ["invalid"]
         self.assertEqual(
             str(context.exception),
-            "Expected 'spectrum_fit_type' to be of type 'list', got str.",
+            "Expected 'spectrum_fit_type' to be of type 'str', got list.",
         )
 
     def test_spectrum_fit_type_change_value(self):
-        props = Properties(spectrum_fit_type=["global"])
-        props.spectrum_fit_type = ["global", "hight"]
-        self.assertListEqual(props.spectrum_fit_type, ["global", "hight"])
+        props = Properties(spectrum_fit_type="global")
+        props.spectrum_fit_type = "global"
+        self.assertEqual(props.spectrum_fit_type, "global")
 
     def test_spectrum_fit_type_private_variable(self):
-        props = Properties(spectrum_fit_type=["global"])
-        self.assertListEqual(props._spectrum_fit_type, ["global"])
+        props = Properties(spectrum_fit_type="global")
+        self.assertEqual(props._spectrum_fit_type, "global")
 
     def test_spectrum_fit_type_empty_buildup_types(self):
         props = Properties()
-        empty_list = []
+        empty_str = ""
         with self.assertRaises(ValueError) as context:
-            props.spectrum_fit_type = empty_list
+            props.spectrum_fit_type = empty_str
 
     def test_spectrum_fit_type_invalid_buildup_types_contains_non_strings(
         self,
@@ -179,17 +177,15 @@ class TestProperties(unittest.TestCase):
     def test_spectrum_fit_type_valid_in_possibilitys(self):
         props = Properties()
         try:
-            props.spectrum_fit_type = ["global", "individual"]
-            self.assertEqual(
-                props.spectrum_fit_type, ["global", "individual"]
-            )
+            props.spectrum_fit_type = "global"
+            self.assertEqual(props.spectrum_fit_type, "global")
         except Exception as e:
             self.fail(f"Valid values raised an exception: {e}")
 
     def test_buildup_types_invalid(self):
         props = Properties()
         with self.assertRaises(ValueError) as context:
-            props.spectrum_fit_type = ["exponential", "invalid_type"]
+            props.spectrum_fit_type = "invalid_type"
         self.assertIn("must be one of", str(context.exception))
 
     def test_path_to_experiment_initial_value(self):

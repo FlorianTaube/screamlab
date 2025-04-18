@@ -35,17 +35,6 @@ class TestDataset(unittest.TestCase):
     def test_scream_init_nmr_data_is_none(self):
         self.assertIsNone(self.scream_importer._nmr_data)
 
-    @unittest.skipIf(
-        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
-    )
-    def test_generate_path_to_experiment(self):
-        self.scream_importer._dataset.props.expno = [2, 3]
-        pathlist = self.scream_importer._generate_path_to_experiment()
-        self.assertEqual(
-            pathlist[0],
-            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR\2",
-        )
-
     def test_add_one_spectrum(self):
         self.scream_importer._add_spectrum()
         self.assertEqual(len(self.scream_importer._dataset.spectra), 1)
@@ -212,18 +201,6 @@ class TestDataset(unittest.TestCase):
 
     def test_pseudo2dimporter_init_path_is_none(self):
         self.assertIsNone(self.pseudo_importer._current_path_to_exp)
-
-    @unittest.skipIf(
-        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
-    )
-    def test_generate_path_to_experiment_pseudo2dimporter(self):
-        self.pseudo_importer._dataset.props.expno = [1]
-        self.pseudo_importer._dataset.props.procno = 1
-        pathlist = self.pseudo_importer._generate_path_to_experiment()
-        self.assertEqual(
-            pathlist[0],
-            r"C:\Users\Florian Taube\Documents\Programmierung\CorziliusNMR\CorziliusNMR\1",
-        )
 
     def test_add_one_spectrump_seudo2dimporter(self):
         self.pseudo_importer._add_spectrum()

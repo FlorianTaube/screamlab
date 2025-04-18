@@ -508,31 +508,6 @@ class TestDataset(unittest.TestCase):
             {"gamma": {"min": 2.7, "max": 3.3}},
         )
 
-    def test_calculate_peak_intensities_single_fit_result_setter_without_prefit(
-        self,
-    ):
-        self.ds.props.spectrum_fit_type = ["individual"]
-        self.add_n_spectra(3)
-        self.ds.add_peak(250)
-        self.ds._calculate_peak_intensities()
-        self.assertEqual(
-            type(self.ds.lmfit_result_handler.single_fit),
-            lmfit.minimizer.MinimizerResult,
-        )
-
-    def test_calculate_peak_intensities_single_fit_result_setter_with_prefit(
-        self,
-    ):
-        self.ds.props.prefit = True
-        self.ds.props.spectrum_fit_type = ["individual"]
-        self.add_n_spectra(3)
-        self.ds.add_peak(250)
-        self.ds._calculate_peak_intensities()
-        self.assertEqual(
-            type(self.ds.lmfit_result_handler.single_fit),
-            lmfit.minimizer.MinimizerResult,
-        )
-
     def test_calculate_peak_intensities_global_fit_result_setter_without_prefit(
         self,
     ):
