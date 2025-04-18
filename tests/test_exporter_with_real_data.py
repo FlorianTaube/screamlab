@@ -5,6 +5,9 @@ import shutil
 from CorziliusNMR import settings, dataset
 
 
+@unittest.skipIf(
+    os.getenv("CI") == "true", "Skipping test in CI/CD environment"
+)
 class TestDataset(unittest.TestCase):
     @classmethod
     def setUpClass(self):
