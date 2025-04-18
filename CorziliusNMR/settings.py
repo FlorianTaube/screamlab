@@ -11,7 +11,7 @@ class Properties:
         self,
         prefit: bool = False,
         buildup_types: list = None,
-        spectrum_fit_type: list = None,
+        spectrum_fit_type: str = None,
         spectrum_for_prefit: int = -1,
         path_to_experiment: str = "",
         procno: int = 103,
@@ -23,7 +23,7 @@ class Properties:
         if buildup_types is None:
             buildup_types = ["exponential"]
         if spectrum_fit_type is None:
-            spectrum_fit_type = ["global"]
+            spectrum_fit_type = "global"
         if expno is None:
             expno = [1]
         self._path_to_experiment = None
@@ -51,6 +51,11 @@ class Properties:
 
     def __str__(self):
         """Returns string representation of Properties class"""
+        sub = (
+            f"A subspectrum ranging from {self.subspec[0]} to {self.subspec[1]} ppm has been extracted."
+            if self.subspec
+            else "No subspectrum has been extracted."
+        )
         return (
             f"[[Settings]]\n"
             f"Experiment folder: {self.path_to_experiment}\n"
@@ -60,9 +65,8 @@ class Properties:
             f"Spectrum for prefit: {self.spectrum_for_prefit}\n"
             f"Spectrum fitting type: {self.spectrum_fit_type}\n"
             f"Buildup evaluation: {self.buildup_types}\n"
-            f"Calculated polarization time from {self.loop20} and "
-            f"{self.delay20} if SCREAM data given.\n"
-            f"Wrote output files to: {self.output_folder}"
+            f"Wrote output to: {self.output_folder}\n"
+            f"{sub}"
         )
 
     @property
@@ -187,18 +191,18 @@ class Properties:
         allowed_values = {
             "global",
             "individual",
-            "hight",
         }
-        if not isinstance(value, list):
+        if not isinstance(value, str):
             raise TypeError(
-                f"Expected 'spectrum_fit_type' to be of type 'list', got {type(value).__name__}."
+                f"Expected 'spectrum_fit_type' to be of type 'str', got"
+                f" {type(value).__name__}."
             )
-        if not all(item in allowed_values for item in value):
+        if not value in allowed_values:
             raise ValueError(
-                f"All elements in 'spectrum_fit_type' must be one of {allowed_values}."
+                f"'spectrum_fit_type' must be one of {allowed_values}."
             )
         if not value:
-            raise ValueError("'spectrum_fit_type' cannot be an empty list.")
+            raise ValueError("'spectrum_fit_type' cannot be an empty str.")
         self._spectrum_fit_type = value
 
     @property

@@ -19,13 +19,14 @@ class TestDataset(unittest.TestCase):
             "exponential_with_offset",
             "biexponential",
         ]
+        props.spectrum_fit_type = "global"
         props.expno = [1, 8]
         props.procno = 103
         props.path_to_experiment = r"..\tests\SCREAM_Test_Files\Alanin"
         props.output_folder = r"..\tests\SCREAM_Test_Files\Alanin\result"
         ds = dataset.Dataset()
         ds.props = props
-        ds.add_peak(-16.5, peak_sign="+")
+        ds.add_peak(-16.5, peak_sign="+", fitting_type="gauss")
         ds.start_analysis()
 
     @unittest.skipIf(
@@ -41,14 +42,15 @@ class TestDataset(unittest.TestCase):
         props.expno = [29, 32]
         props.output_folder = r"..\tests\SCREAM_Test_Files\Prolin\result"
         props.path_to_experiment = r"..\tests\SCREAM_Test_Files\Prolin"
+        props.subspec = [200, 150]
         ds = dataset.Dataset()
         ds.props = props
         ds.add_peak(
             160, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
         )
-        ds.add_peak(
-            43, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
-        )
+        # ds.add_peak(
+        #    43, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
+        # )
         """        ds.add_peak(
             30, line_broadening={"sigma": {"max": 2}, "gamma": {"max": 2}}
         )

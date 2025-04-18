@@ -276,28 +276,10 @@ class Prefitter(Fitter):
         return x_axis, y_axis
 
     def _start_minimize(self, x_axis, y_axis, params):
-        n_samples = int(len(params) / 2)
-
-        lhs_samples = lhs(int(len(params) / 2), samples=n_samples)
-        best_result = None
-        best_chisqr = np.inf
-        for sample in lhs_samples:
-            i = 0
-            for param in params:
-                if "sigma_0" in param or "gamma_0" in param:
-                    params[param].value = sample[i] * (
-                        params[param].max - params[param].min
-                    )
-                    i += 1
-            result = lmfit.minimize(
-                self._spectral_fitting, params, args=(x_axis, y_axis)
-            )
-            if best_chisqr > result.chisqr:
-                best_chisqr = result.chisqr
-
-                best_result = result
-
-        return best_result
+        result = lmfit.minimize(
+            self._spectral_fitting, params, args=(x_axis, y_axis)
+        )
+        return result
 
 
 class GlobalFitter(Fitter):

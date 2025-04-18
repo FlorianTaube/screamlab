@@ -2,8 +2,152 @@ Messages
 ========
 
 CorziliusNMR\io.py:
-    L577:- Exporter._print_report: mccabe - MC0001
-    Exporter._print_report is too complex (15)
+    L293:25 None: pycodestyle - W605
+    invalid escape sequence '\m'
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L293:24 None: pylint - anomalous-backslash-in-string
+    Anomalous backslash in string: '\m'. String constant might be missing an r prefix.
+
+CorziliusNMR\io.py:
+    L331:32 None: pycodestyle - W605
+    invalid escape sequence '\m'
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L331:31 None: pylint - anomalous-backslash-in-string
+    Anomalous backslash in string: '\m'. String constant might be missing an r prefix.
+
+CorziliusNMR\io.py:
+    L356:5 None: pycodestyle - E303
+    too many blank lines (2)
+
+CorziliusNMR\io.py:
+    L393:25 None: pycodestyle - W605
+    invalid escape sequence '\m'
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L393:24 None: pylint - anomalous-backslash-in-string
+    Anomalous backslash in string: '\m'. String constant might be missing an r prefix.
+
+CorziliusNMR\io.py:
+    L443:36 None: pycodestyle - W605
+    invalid escape sequence '\m'
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L443:35 None: pylint - anomalous-backslash-in-string
+    Anomalous backslash in string: '\m'. String constant might be missing an r prefix.
+
+CorziliusNMR\io.py:
+    L510:41 None: pycodestyle - W605
+    invalid escape sequence '\m'
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L510:40 None: pylint - anomalous-backslash-in-string
+    Anomalous backslash in string: '\m'. String constant might be missing an r prefix.
+
+CorziliusNMR\io.py:
+    L560:28 None: pycodestyle - E231
+    missing whitespace after ','
+
+CorziliusNMR\io.py:
+    L584:5 None: pycodestyle - E301
+    expected 1 blank line, found 0
+
+CorziliusNMR\io.py:
+    L584:39 None: pycodestyle - E231
+    missing whitespace after ','
+
+CorziliusNMR\io.py:
+    L612:32 None: pycodestyle - E231
+    missing whitespace after ','
+
+CorziliusNMR\io.py:
+    L617:26 None: pycodestyle - E231
+    missing whitespace after ','
+
+CorziliusNMR\io.py:
+    L627:100 None: pycodestyle - E501
+    line too long (105 > 99 characters)
+
+CorziliusNMR\io.py:
+    L635:92 None: pycodestyle - E202
+    whitespace before ']'
+
+CorziliusNMR\io.py:
+    L635:68 None: pycodestyle - E231
+    missing whitespace after ','
+
+CorziliusNMR\io.py:
+    L639:5 None: pycodestyle - E303
+    too many blank lines (2)
+
+CorziliusNMR\io.py:
+    L664:65 None: pycodestyle - E231
+    missing whitespace after ','
+
+CorziliusNMR\io.py:
+    L675:40 None: pycodestyle - E231
+    missing whitespace after ','
+
+CorziliusNMR\io.py:
+    L682:44 None: pycodestyle - E231
+    missing whitespace after ','
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L685:34 Exporter._generate_output_dir: pylint - redefined-builtin
+    Redefining built-in 'dir'
+
+CorziliusNMR\io.py:
+    L685:34 None: pycodestyle - E231
+    missing whitespace after ','
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L623:16 Exporter._get_prefit_string: pylint - unused-variable
+    Unused variable 'actual_dict'
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L258:8 Exporter.print: pylint - unreachable
+    Unreachable code
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L653:- None: pylint - superfluous-parens
+    Unnecessary parens after '=' keyword
+
+CorziliusNMR.io (CorziliusNMR\io.py):
+    L702:- None: pylint - superfluous-parens
+    Unnecessary parens after '=' keyword
+
+CorziliusNMR\dataset.py:
+    L272:100 None: pycodestyle - E501
+    line too long (102 > 99 characters)
+
+CorziliusNMR\dataset.py:
+    L274:100 None: pycodestyle - E501
+    line too long (109 > 99 characters)
+
+CorziliusNMR.dataset (CorziliusNMR\dataset.py):
+    L278:35 Peak._format_fitting_range: pylint - redefined-builtin
+    Redefining built-in 'type'
+
+CorziliusNMR\dataset.py:
+    L278:35 None: pycodestyle - E231
+    missing whitespace after ','
+
+CorziliusNMR\dataset.py:
+    L283:100 None: pycodestyle - E501
+    line too long (120 > 99 characters)
+
+CorziliusNMR\dataset.py:
+    L285:12 None: pycodestyle - E127
+    continuation line over-indented for visual indent
+
+CorziliusNMR\settings.py:
+    L54:100 None: pycodestyle - E501
+    line too long (166 > 99 characters)
+
+CorziliusNMR\settings.py:
+    L196:12 None: pycodestyle - E713
+    test for membership should be 'not in'
 
 CorziliusNMR (CorziliusNMR\__init__.py):
     L1:- None: pylint - invalid-name
@@ -13,13 +157,13 @@ CorziliusNMR (CorziliusNMR\__init__.py):
 
 Check Information
 =================
-         Started: 2025-04-14 11:36:12.784050
-        Finished: 2025-04-14 11:36:32.207754
-      Time Taken: 19.42 seconds
+         Started: 2025-04-18 17:20:05.477624
+        Finished: 2025-04-18 17:20:20.086921
+      Time Taken: 14.61 seconds
        Formatter: text
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 
        Tools Run: bandit, dodgy, mccabe, profile-validator, pycodestyle, pydocstyle, pyflakes, pylint, pyroma
-  Messages Found: 2
+  Messages Found: 38
 

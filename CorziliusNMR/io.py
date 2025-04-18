@@ -4,6 +4,7 @@ import copy
 import csv
 import math
 import os
+import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -252,17 +253,19 @@ class Exporter:
             - Writes global/individual fit results to a semicolon-separated file.
             - Writes buildup fit results to a semicolon-separated file.
         """
+        self._print_report()
+        sys.exit()
         self._plot_topspin_data()
         self._plot_global_all_together()
         if self.dataset.props.prefit:
             self._plot_prefit()
             self._print_lmfit_prefit_report()
         if "global" in self.dataset.props.spectrum_fit_type:
-            self._plot_global()
+            self._plot_global_each_individual()
+        if "individual" in self.dataset.props.spectrum_fit_type:
             self._plot_global_each_individual()
         for buildup_type in self.dataset.props.buildup_types:
             self._plot_buildup(buildup_type)
-        self._print_report()
         self._write_global_fit_results_to_semicolon_separated_file()
         self._write_buildup_fit_to_semicolon_separated_file()
         self._csv_output()
@@ -283,16 +286,22 @@ class Exporter:
             plt.plot(
                 spectrum.x_axis,
                 spectrum.y_axis,
-                label=f"t_pol = {spectrum.tpol} s",
+                label=f"$t_{{\\mathrm{{pol}}}}$ = {spectrum.tpol} s",
                 color=colors[idx],
             )
         plt.gca().invert_xaxis()
-        plt.xlabel("$t_{pol}$ / s")
+        plt.xlabel("$t_{\mathrm{pol}}$ / s")
         plt.ylabel("$I$ / a.u.")
         plt.legend()
+        output_dir = self._generate_output_dir("spectra")
         plt.savefig(
-            f"{self.dataset.props.output_folder}/Exported_data.pdf",
-            dpi=500,
+            f"{output_dir}/spectra.pdf",
+            dpi=400,
+            bbox_inches="tight",
+        )
+        plt.savefig(
+            f"{output_dir}/spectra.png",
+            dpi=400,
             bbox_inches="tight",
         )
         plt.close()
@@ -327,70 +336,32 @@ class Exporter:
         residual = y_axis - simspec
         axs[1].plot(x_axis, residual, color="grey", label="Residual")
         axs[1].set_xlabel("$\\delta$ / ppm")
-        axs[1].set_ylabel("$I_{resid}$ / a.u.")
+        axs[1].set_ylabel("$I_{\mathrm{resid}}$ / a.u.")
         axs[0].set_xlim(max(x_axis), min(x_axis))
         axs[1].set_xlim(max(x_axis), min(x_axis))
         axs[1].legend()
         plt.tight_layout()
+        output_dir = self._generate_output_dir("spectral_deconvolution_plots")
         plt.savefig(
-            f"{self.dataset.props.output_folder}/Prefit_plot.pdf",
-            dpi=500,
+            f"{output_dir}/Prefit_plot.pdf",
+            dpi=400,
             bbox_inches="tight",
         )
         plt.close()
 
     def _print_lmfit_prefit_report(self):
-        pass
-
-    def _plot_global(self):
-        """
-        Plots experimental data and simulation results for the global fit summary.
-
-        The plot shows experimental data and corresponding simulations for each spectrum.
-        The x-axis represents time delay (`t_del`), and the y-axis represents intensity (`I`).
-        The plot is saved as a high-resolution PDF.
-        """
-        valdict = CorziliusNMR.functions.generate_spectra_param_dict(
-            self.dataset.lmfit_result_handler.global_fit.params
+        output_dir = self._generate_output_dir("lmfit_reports")
+        lmfit_report = (
+            f"{output_dir}/" f"spectral_decomposition_result_prefit.txt"
         )
 
-        _, ax = plt.subplots(1, 1, sharex=True)
-        first = True
-
-        for key, values in valdict.items():
-            simspec = np.zeros_like(
-                self.dataset.spectra[key].y_axis, dtype=float
-            )
-            for val in values:
-                simspec = CorziliusNMR.functions.calc_peak(
-                    self.dataset.spectra[key].x_axis, simspec, val
+        with open(lmfit_report, "w", encoding="utf-8") as a:
+            a.write(
+                lmfit.fit_report(
+                    self.dataset.lmfit_result_handler.prefit, min_correl=0.25
                 )
-            label_exp = "Experiment" if first else None
-            label_sim = "Simulation" if first else None
-            ax.plot(
-                self.dataset.spectra[key].x_axis,
-                self.dataset.spectra[key].y_axis,
-                color="black",
-                label=label_exp,
             )
-            ax.plot(
-                self.dataset.spectra[key].x_axis,
-                simspec,
-                "r--",
-                label=label_sim,
-            )
-            first = False
-        ax.set_xlabel("$t_{pol}$ / s")
-        ax.set_ylabel("$I$ / a.u.")
-        ax.legend()
-        ax.invert_xaxis()
-        plt.tight_layout()
-        plt.savefig(
-            f"{self.dataset.props.output_folder}/Global_fit_summary.pdf",
-            dpi=500,
-            bbox_inches="tight",
-        )
-        plt.close()
+        a.close()
 
     def _plot_buildup(self, buildup_type):
         """
@@ -403,6 +374,7 @@ class Exporter:
         (e.g., 'exponential', 'biexponential').
         :type buildup_type: str
         """
+        output_dir = self._generate_output_dir("buildup_plots")
         colors = plt.get_cmap("viridis")
         norm = plt.Normalize(vmin=0, vmax=len(self.dataset.peak_list))
 
@@ -428,28 +400,24 @@ class Exporter:
                 "-",
                 color=color,
             )
-        plt.xlabel("$t_{pol}$ / s")
+        plt.xlabel("$t_{\mathrm{pol}}$ / s")
         plt.ylabel("$I$ / a.u.")
 
         plt.legend()
         plt.savefig(
-            f"{self.dataset.props.output_folder}/Buildup_fit_{buildup_type}.pdf",
-            dpi=500,
+            f"{output_dir}/buildup_fit_{buildup_type}.pdf",
+            dpi=400,
             bbox_inches="tight",
         )
         plt.savefig(
-            f"{self.dataset.props.output_folder}/Buildup_fit_{buildup_type}.png",
-            dpi=1500,
+            f"{output_dir}/buildup_fit_{buildup_type}.png",
+            dpi=400,
             bbox_inches="tight",
         )
         plt.close()
 
     def _plot_global_each_individual(self):
-        output_dir = os.path.join(
-            self.dataset.props.output_folder, "fit_per_spectrum"
-        )
-        os.makedirs(output_dir, exist_ok=True)
-
+        output_dir = self._generate_output_dir("spectral_deconvolution_plots")
         param_dict = CorziliusNMR.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
@@ -482,7 +450,7 @@ class Exporter:
 
             axs[0].set_ylabel("$I$ / a.u.")
             axs[1].set_xlabel("$\\delta$ / ppm")
-            axs[1].set_ylabel("$I_{resid}$ / a.u.")
+            axs[1].set_ylabel("$I_{\mathrm{resid}}$ / a.u.")
 
             for ax in axs:
                 ax.set_xlim(max(x_axis), min(x_axis))
@@ -490,17 +458,18 @@ class Exporter:
 
             plt.tight_layout()
             plot_filename = os.path.join(
-                output_dir, f"Spectrum_at_{spectrum.tpol}_s.pdf"
+                output_dir, f"{spectrum.tpol}_s_polarization_time.pdf"
             )
-            plt.savefig(plot_filename, dpi=500, bbox_inches="tight")
+            plt.savefig(plot_filename, dpi=400, bbox_inches="tight")
+            plot_filename = os.path.join(
+                output_dir, f"{spectrum.tpol}_s_polarization_time.png"
+            )
+            plt.savefig(plot_filename, dpi=400, bbox_inches="tight")
 
             plt.close(fig)
 
     def _plot_global_all_together(self):
-        output_dir = os.path.join(
-            self.dataset.props.output_folder, "fit_per_spectrum"
-        )
-        os.makedirs(output_dir, exist_ok=True)
+        output_dir = self._generate_output_dir("spectral_deconvolution_plots")
 
         param_dict = CorziliusNMR.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
@@ -548,11 +517,11 @@ class Exporter:
 
             ax_spectrum.set_ylabel("$I$ / a.u.")
             ax_residual.set_xlabel("$\\delta$ / ppm")
-            ax_residual.set_ylabel("$I_{resid}$ / a.u.")
+            ax_residual.set_ylabel("$I_{\mathrm{resid}}$ / a.u.")
 
             ax_spectrum.set_xlim(max(x_axis), min(x_axis))
-            ax_spectrum.legend(fontsize=8)
-            ax_residual.legend(fontsize=8)
+            ax_spectrum.legend(loc="upper right", fontsize=8)
+            ax_residual.legend(loc="upper right", fontsize=8)
             ax_residual.set_ylim(
                 -1 * max(abs(y_axis)) / 2, max(abs(y_axis)) / 2
             )
@@ -560,7 +529,7 @@ class Exporter:
             ax_spectrum.text(
                 0.05,
                 0.85,
-                rf"$t_{{pol}} = {spectrum.tpol:.2f} \\, \\mathrm{{s}}$",
+                rf"$t_{{pol}}$ = {spectrum.tpol:.2f} s",
                 transform=ax_spectrum.transAxes,
                 fontsize=7,
                 bbox={"facecolor": "white", "alpha": 0.5},
@@ -570,8 +539,8 @@ class Exporter:
         plot_filename_png = os.path.join(output_dir, "All_Spectra.png")
 
         plt.tight_layout()
-        plt.savefig(plot_filename_png, dpi=1000, bbox_inches="tight")
-        plt.savefig(plot_filename_pdf, dpi=1000, bbox_inches="tight")
+        plt.savefig(plot_filename_png, dpi=400, bbox_inches="tight")
+        plt.savefig(plot_filename_pdf, dpi=400, bbox_inches="tight")
         plt.close(fig)
 
     def _print_report(self):
@@ -586,94 +555,127 @@ class Exporter:
             f.write("[[Peaks]]\n")
             for peak_nr, peak in enumerate(self.dataset.peak_list):
                 f.write(f"[Peak {peak_nr + 1}]\n")
-                f.write(str(peak) + "\n")
-
+                f.write(str(peak))
+            f.write("[[Prefit]]\n")
             if self.dataset.props.prefit:
-                f.write("[[Prefit]]\n")
-                valdict = CorziliusNMR.functions.generate_spectra_param_dict(
-                    self.dataset.lmfit_result_handler.prefit.params
-                )
-                f.write(
-                    "Label\t\t\tCenter\t\t\t\tAmplitude\t\t\tSigma\t\t\t\tGamma\n"
-                )
-                for _, keys in enumerate(valdict):
-                    for val_nr, val in enumerate(valdict[keys]):
-                        if len(val) == 5:
-                            f.write(
-                                f"{self.dataset.peak_list[val_nr].peak_label}\t{round(val[1],3)}\t"
-                                f"{round(val[0],3)}\t{round(val[2],3)}\t{round(val[3],3)}\n"
-                            )
-                        elif len(val) == 3:
-                            f.write(
-                                f"{self.dataset.peak_list[val_nr].peak_label}\t{round(val[1],3)}\t"
-                                f"{round(val[0],3)}\t{round(val[2],3)}\t---\n"
-                            )
-                        elif len(val) == 4:
-                            f.write(
-                                f"{self.dataset.peak_list[val_nr].peak_label}\t"
-                                f"{round(val[1],3)}\t{round(val[0],3)}\t---\t{round(val[2],3)}\n"
-                            )
+                self._get_prefit_string(f)
             else:
-                f.write("[[Prefit]]\nNo prefit performed.\n")
+                f.write("No prefit performed.\n")
 
             f.write("[[Global fit results]]\n")
-            valdict = CorziliusNMR.functions.generate_spectra_param_dict(
-                self.dataset.lmfit_result_handler.global_fit.params
-            )
-            header = CorziliusNMR.functions.spectrum_fit_header()
-            column_widths = [25, 6, 10, 15, 10, 10, 15, 15, 15, 10]
+            self._print_global_fit_results(f)
+            f.write("[[Buildup fit results]]\n")
+            self._print_buildup(f)
+
+    def _print_buildup(self, f):
+        for buildup_type in self.dataset.props.buildup_types:
+            f.write(f"[{buildup_type}]\n")
+            header = CorziliusNMR.functions.buildup_header()
+            column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35]
             f.write(
-                "".join(f"{h:<{w}}" for h, w in zip(header, column_widths))
+                "".join(h.ljust(w) for h, w in zip(header, column_widths))
                 + "\n"
             )
+            format_mappings = CorziliusNMR.functions.format_mapping()
+            type_format = format_mappings.get(buildup_type, [])
+            for result_nr, result in enumerate(
+                self.dataset.lmfit_result_handler.buildup_fit[buildup_type]
+            ):
+                row_data = [self.dataset.peak_list[result_nr].peak_label]
 
-            for delay_time in range(0, len(valdict[0])):
-                for val_nr, (_, values) in enumerate(valdict.items()):
-                    row = self._generate_fit_param_row(
-                        values, delay_time, val_nr
+                for param in type_format:
+                    value = self._set_value(param, result, row_data)
+                    value, row_data = self._sort_value_list(
+                        param, value, row_data, result
                     )
-            for delay_time in range(0, len(valdict[0])):
-                for val_nr, (_, values) in enumerate(valdict.items()):
-                    row = self._generate_fit_param_row(
-                        values, delay_time, val_nr
-                    )
-                    f.write(
-                        "".join(
-                            f"{h:<{w}}" for h, w in zip(row, column_widths)
-                        )
-                        + "\n"
-                    )
+                    row_data.append(value)
 
-            f.write("[[Buildup fit results]]\n")
-            for buildup_type in self.dataset.props.buildup_types:
-                f.write(f"[{buildup_type}]\n")
-                header = CorziliusNMR.functions.buildup_header()
-                column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35]
                 f.write(
-                    "".join(h.ljust(w) for h, w in zip(header, column_widths))
+                    "".join(
+                        h.ljust(w) for h, w in zip(row_data, column_widths)
+                    )
                     + "\n"
                 )
-                format_mappings = CorziliusNMR.functions.format_mapping()
-                type_format = format_mappings.get(buildup_type, [])
-                for result_nr, result in enumerate(
-                    self.dataset.lmfit_result_handler.buildup_fit[
-                        buildup_type
-                    ]
-                ):
-                    row_data = [self.dataset.peak_list[result_nr].peak_label]
 
-                    for param in type_format:
-                        value = self._set_value(param, result, row_data)
-                        value, row_data = self._sort_value_list(
-                            param, value, row_data, result
-                        )
-                        row_data.append(value)
+    def _print_global_fit_results(self, f):
+        valdict = CorziliusNMR.functions.generate_spectra_param_dict(
+            self.dataset.lmfit_result_handler.global_fit.params
+        )
+        header = CorziliusNMR.functions.spectrum_fit_header()
+        column_widths = [25, 12, 15, 20, 15, 15, 22, 20, 20, 10]
+        f.write(
+            "".join(f"{h:<{w}}" for h, w in zip(header, column_widths)) + "\n"
+        )
 
+        for delay_time in range(0, len(valdict[0])):
+            for val_nr, (_, values) in enumerate(valdict.items()):
+                row = self._generate_fit_param_row(values, delay_time, val_nr)
+        for delay_time in range(0, len(valdict[0])):
+            for val_nr, (_, values) in enumerate(valdict.items()):
+                row = self._generate_fit_param_row(values, delay_time, val_nr)
+                f.write(
+                    "".join(f"{h:<{w}}" for h, w in zip(row, column_widths))
+                    + "\n"
+                )
+
+    def _get_prefit_string(self, f):
+        valdict = CorziliusNMR.functions.generate_spectra_param_dict(
+            self.dataset.lmfit_result_handler.prefit.params
+        )
+        widths = [25, 18, 20, 15, 15]
+        header = [
+            "Label",
+            "Center / ppm,",
+            "Amplitude / a.u.",
+            "Sigma / ppm",
+            "Gamma / ppm",
+        ]
+        f.write("".join(h.ljust(w) for h, w in zip(header, widths)) + "\n")
+
+        for _, keys in enumerate(valdict):
+            for val_nr, val in enumerate(valdict[keys]):
+                actual_dict = self.dataset.peak_list[val_nr]
+                pars = []
+                if len(val) == 5:
+                    pars.append(self.dataset.peak_list[val_nr].peak_label)
+                    pars.extend(
+                        [
+                            round(val[1], 3),
+                            round(val[0], 3),
+                            round(val[2], 3),
+                            round(val[3], 3),
+                        ]
+                    )
                     f.write(
-                        "".join(
-                            h.ljust(w)
-                            for h, w in zip(row_data, column_widths)
-                        )
+                        "".join(str(h).ljust(w) for h, w in zip(pars, widths))
+                        + "\n"
+                    )
+                elif len(val) == 3:
+                    pars.append(self.dataset.peak_list[val_nr].peak_label)
+                    pars.extend(
+                        [
+                            round(val[1], 3),
+                            round(val[0], 3),
+                            round(val[2], 3),
+                            "---",
+                        ]
+                    )
+                    f.write(
+                        "".join(str(h).ljust(w) for h, w in zip(pars, widths))
+                        + "\n"
+                    )
+                elif len(val) == 4:
+                    pars.append(self.dataset.peak_list[val_nr].peak_label)
+                    pars.extend(
+                        [
+                            round(val[1], 3),
+                            round(val[0], 3),
+                            "---",
+                            round(val[2], 3),
+                        ]
+                    )
+                    f.write(
+                        "".join(str(h).ljust(w) for h, w in zip(pars, widths))
                         + "\n"
                     )
 
@@ -685,13 +687,14 @@ class Exporter:
         buildup fit results, formats them using a predefined header and value mapping, and
         writes the results into individual text files.
 
-        Each file is named as 'Buildup_fit_result_<buildup_type>.txt' and includes
+        Each file is named as 'buildup_fit_result_<buildup_type>.txt' and
+        includes
         a header row followed by the formatted data rows for each result.
         """
         for buildup_type in self.dataset.props.buildup_types:
+            output_folder = self._generate_output_dir("tabular_results")
             output_file_path = (
-                f"{self.dataset.props.output_folder}/"
-                f"Buildup_fit_result_{buildup_type}.txt"
+                f"{output_folder}/buildup_fit_result_{buildup_type}.txt"
             )
             with open(output_file_path, "w", encoding="utf-8") as f:
                 header = CorziliusNMR.functions.buildup_header()
@@ -703,14 +706,11 @@ class Exporter:
                         buildup_type
                     ]
                 ):
-                    lmfit_report = (
-                        f"{self.dataset.props.output_folder}/"
-                        f"Buildup_fit_result_{buildup_type}_{result_nr}.txt"
+                    self._save_lmfit_report_buildup(
+                        buildup_type, result, result_nr
                     )
-                    with open(lmfit_report, "w", encoding="utf-8") as a:
-                        a.write(lmfit.fit_report(result))
-                    a.close()
-                    row_data = [self.dataset.peak_list[result_nr].peak_label]
+                    peak_label = self.dataset.peak_list[result_nr].peak_label
+                    row_data = [peak_label]
                     for param in type_format:
                         value = self._set_value(param, result, row_data)
                         value, row_data = self._sort_value_list(
@@ -718,6 +718,21 @@ class Exporter:
                         )
                         row_data.append(value)
                     f.write(";".join(row_data) + "\n")
+
+    def _save_lmfit_report_buildup(self, buildup_type, result, result_nr):
+        output_dir = self._generate_output_dir("lmfit_reports")
+        lmfit_report = (
+            f"{output_dir}/"
+            f"buildup_fit_result_{buildup_type}_{self.dataset.peak_list[result_nr].peak_label}.txt"
+        )
+        with open(lmfit_report, "w", encoding="utf-8") as a:
+            a.write(lmfit.fit_report(result, min_correl=0.25))
+        a.close()
+
+    def _generate_output_dir(self, dir):
+        output_dir = os.path.join(self.dataset.props.output_folder, dir)
+        os.makedirs(output_dir, exist_ok=True)
+        return output_dir
 
     def _write_global_fit_results_to_semicolon_separated_file(self):
         """
@@ -730,8 +745,9 @@ class Exporter:
 
         The output file is stored in the specified output folder.
         """
+        output_folder = self._generate_output_dir("tabular_results")
         output_file_path = (
-            f"{self.dataset.props.output_folder}/Global_fit_result.txt"
+            f"{output_folder}/spectral_decomposition_result.txt"
         )
 
         with open(output_file_path, "w", encoding="utf-8") as f:
@@ -752,16 +768,14 @@ class Exporter:
         Writes spectral data to a CSV file with semicolon-separated values.
 
         This method extracts the x-axis and y-axis data from each spectrum in the ds,
-        and writes the data to a CSV file named 'Spectral_data_csv.csv' in the specified
+        and writes the data to a CSV file named 'spectra.csv' in the specified
         output folder. The file is structured such that each row contains the corresponding
         values for the x-axis and y-axis.
         """
         spectral_data = []
-        output_file_path = (
-            f"{self.dataset.props.output_folder}\\Spectral_data_csv.csv"
-        )
+        output_dir = self._generate_output_dir("spectra")
         with open(
-            output_file_path, "w", newline="", encoding="utf-8"
+            f"{output_dir}\\spectra.csv", "w", newline="", encoding="utf-8"
         ) as file:
             for spectrum in self.dataset.spectra:
                 spectral_data.append(spectrum.x_axis)

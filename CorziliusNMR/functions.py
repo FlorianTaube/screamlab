@@ -368,6 +368,7 @@ def buildup_header():
         "R2 / 1/s",
         "Sensitivity1 (A1/sqrt(t1))",
         "Sensitivity2 (A2/sqrt(t2))",
+        "beta",
     ]
 
 

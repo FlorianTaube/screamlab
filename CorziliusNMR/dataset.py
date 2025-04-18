@@ -139,12 +139,16 @@ class Dataset:
             result = self.fitter.fit()
             self.lmfit_result_handler.prefit = result
             self._update_line_broadening(result)
-        if "individual" in self.props.spectrum_fit_type:
+        if "individual" == self.props.spectrum_fit_type:
+            print(
+                f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start individual fit."
+            )
             self._set_single_fitter()
             result = self.fitter.fit()
-            self.lmfit_result_handler.single_fit = result
+            print(result)
+            self.lmfit_result_handler.global_fit = result
             self._get_intensities(result)
-        if "global" in self.props.spectrum_fit_type:
+        if "global" == self.props.spectrum_fit_type:
             print(
                 f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start global fit."
             )
@@ -251,6 +255,7 @@ class Peak:
         self._fitting_type = None
         self._peak_sign = None
         self._line_broadening = None
+        self._line_broadening_init = None
         self._buildup_vals = None
 
     def __str__(self):
@@ -264,8 +269,27 @@ class Peak:
             f"Peak label: {self.peak_label}\n"
             f"Peak shape: {self.fitting_type}\n"
             f"Peak sign: {self.peak_sign}\n"
-            f"Start global fit with: {self.line_broadening}\n"
-            f"{self.buildup_vals}"
+            f"During the prefit stage, variables are permitted to vary within the following ranges:\n"
+            f" {self._format_fitting_range('prefit')}"
+            f"During the main analysis stage, variables are permitted to vary within the following ranges:\n"
+            f" {self._format_fitting_range('')}"
+        )
+
+    def _format_fitting_range(self, type):
+        a_max = "0 and inf" if self.peak_sign == "+" else "-inf and 0"
+        lb = ""
+        line_broadening = (
+            self._line_broadening_init
+            if type == "prefit"
+            else self._line_broadening
+        )
+        for keys in line_broadening:
+            lb += f"\t{keys}:\t\t\tBetween {line_broadening[keys]['min']} ppm and {line_broadening[keys]['max']} ppm.\n"
+        return (
+            f"\tCenter (µ):\t\tBetween {self.peak_center-1} ppm and"
+            f" {self.peak_center+1} ppm.\n"
+            f"\tAmplitude (A):\tBetween {a_max}.\n"
+            f"{lb}"
         )
 
     @property
@@ -316,6 +340,8 @@ class Peak:
         )
 
         self._line_broadening = params
+        if self._line_broadening_init is None:
+            self._line_broadening_init = params
 
     @property
     def peak_sign(self) -> str:
