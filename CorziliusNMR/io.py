@@ -252,7 +252,7 @@ class Exporter:
             - Writes global/individual fit results to a semicolon-separated file.
             - Writes buildup fit results to a semicolon-separated file.
         """
-        self._print_report()
+        # self._print_report()
         self._plot_topspin_data()
         self._plot_global_all_together()
         if self.dataset.props.prefit:
@@ -288,9 +288,11 @@ class Exporter:
                 color=colors[idx],
             )
         plt.gca().invert_xaxis()
-        plt.xlabel(r"$t_{\mathrm{pol}}$ / s")
-        plt.ylabel("$I$ / a.u.")
-        plt.legend()
+        plt.xlabel("$\\delta$ / ppm", fontsize=16)
+        plt.ylabel("$I$ / a.u.", fontsize=16)
+        plt.xticks(fontsize=14)
+        plt.yticks(fontsize=14)
+        plt.legend(fontsize=14)
         output_dir = self._generate_output_dir("spectra")
         plt.savefig(
             f"{output_dir}/spectra.pdf",
@@ -329,19 +331,28 @@ class Exporter:
         )
         axs[0].plot(x_axis, y_axis, color="black", label="Experiment")
         axs[0].plot(x_axis, simspec, "r--", label="Simulation")
-        axs[0].legend()
-        axs[0].set_ylabel("$I$ / a.u.")
+        axs[0].legend(fontsize=14)
+        axs[0].set_ylabel("$I$ / a.u.", fontsize=16)
+        axs[0].tick_params(axis="both", labelsize=14)
+
         residual = y_axis - simspec
         axs[1].plot(x_axis, residual, color="grey", label="Residual")
-        axs[1].set_xlabel("$\\delta$ / ppm")
-        axs[1].set_ylabel(r"$I_{\mathrm{resid}}$ / a.u.")
+        axs[1].set_xlabel("$\\delta$ / ppm", fontsize=16)
+        axs[1].set_ylabel(r"$I_{\mathrm{resid}}$ / a.u.", fontsize=16)
         axs[0].set_xlim(max(x_axis), min(x_axis))
         axs[1].set_xlim(max(x_axis), min(x_axis))
-        axs[1].legend()
+        axs[1].legend(fontsize=14)
+        axs[1].tick_params(axis="both", labelsize=14)
         plt.tight_layout()
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
         plt.savefig(
             f"{output_dir}/Prefit_plot.pdf",
+            dpi=400,
+            bbox_inches="tight",
+        )
+        output_dir = self._generate_output_dir("spectral_deconvolution_plots")
+        plt.savefig(
+            f"{output_dir}/Prefit_plot.png",
             dpi=400,
             bbox_inches="tight",
         )
@@ -398,10 +409,11 @@ class Exporter:
                 "-",
                 color=color,
             )
-        plt.xlabel(r"$t_{\mathrm{pol}}$ / s")
-        plt.ylabel("$I$ / a.u.")
-
-        plt.legend()
+        plt.xlabel(r"$t_{\mathrm{pol}}$ / s", fontsize=16)
+        plt.ylabel("$I$ / a.u.", fontsize=16)
+        plt.xticks(fontsize=14)
+        plt.yticks(fontsize=14)
+        plt.legend(fontsize=14)
         plt.savefig(
             f"{output_dir}/buildup_fit_{buildup_type}.pdf",
             dpi=400,
@@ -446,13 +458,15 @@ class Exporter:
             residual -= simspec
             axs[1].plot(x_axis, residual, color="grey", label="Residual")
 
-            axs[0].set_ylabel("$I$ / a.u.")
-            axs[1].set_xlabel("$\\delta$ / ppm")
-            axs[1].set_ylabel(r"$I_{\mathrm{resid}}$ / a.u.")
+            axs[0].set_ylabel("$I$ / a.u.", fontsize=16)
+            axs[1].set_xlabel("$\\delta$ / ppm", fontsize=16)
+            axs[1].set_ylabel(r"$I_{\mathrm{resid}}$ / a.u.", fontsize=16)
+            axs[0].tick_params(axis="both", labelsize=14)
+            axs[1].tick_params(axis="both", labelsize=14)
 
             for ax in axs:
                 ax.set_xlim(max(x_axis), min(x_axis))
-                ax.legend()
+                ax.legend(fontsize=14)
 
             plt.tight_layout()
             plot_filename = os.path.join(
@@ -482,7 +496,7 @@ class Exporter:
             cols,
             sharex=True,
             sharey=False,
-            figsize=(cols * 4, rows * 3),
+            figsize=(cols * 4, rows * 4),
             gridspec_kw={"height_ratios": [3, 1] * rows},
         )
 
@@ -513,13 +527,16 @@ class Exporter:
             residual -= simspec
             ax_residual.plot(x_axis, residual, color="grey", label="Residual")
 
-            ax_spectrum.set_ylabel("$I$ / a.u.")
-            ax_residual.set_xlabel("$\\delta$ / ppm")
-            ax_residual.set_ylabel(r"$I_{\mathrm{resid}}$ / a.u.")
-
+            ax_spectrum.set_ylabel("$I$ / a.u.", fontsize=14)
+            ax_residual.set_xlabel("$\\delta$ / ppm", fontsize=14)
+            ax_residual.set_ylabel(
+                r"$I_{\mathrm{resid}}$ / a.u.", fontsize=14
+            )
+            ax_residual.tick_params(axis="both", labelsize=14)
             ax_spectrum.set_xlim(max(x_axis), min(x_axis))
-            ax_spectrum.legend(loc="upper right", fontsize=8)
-            ax_residual.legend(loc="upper right", fontsize=8)
+            ax_spectrum.legend(loc="upper right", fontsize=10)
+            ax_spectrum.tick_params(axis="both", labelsize=14)
+            ax_residual.legend(loc="upper right", fontsize=10)
             ax_residual.set_ylim(
                 -1 * max(abs(y_axis)) / 2, max(abs(y_axis)) / 2
             )
@@ -529,7 +546,7 @@ class Exporter:
                 0.85,
                 rf"$t_{{pol}}$ = {spectrum.tpol:.2f} s",
                 transform=ax_spectrum.transAxes,
-                fontsize=7,
+                fontsize=10,
                 bbox={"facecolor": "white", "alpha": 0.5},
             )
 
