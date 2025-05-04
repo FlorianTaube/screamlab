@@ -145,7 +145,6 @@ class Dataset:
             )
             self._set_single_fitter()
             result = self.fitter.fit()
-            print(result)
             self.lmfit_result_handler.global_fit = result
             self._get_intensities(result)
         if "global" == self.props.spectrum_fit_type:

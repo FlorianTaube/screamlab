@@ -32,6 +32,15 @@ class TopspinImporter:
         if len(self._dataset.props.subspec) == 2:
             self._gen_subspectrum()
 
+    def _sort_xy_lists(self):
+        t_pol_list = []
+        for spectrum in self._dataset.spectra:
+            t_pol_list.append(spectrum.tpol)
+        sorted_lists = sorted(
+            zip(t_pol_list, self._dataset.spectra)
+        )  # sortiert nach den Werten in liste1
+        _, self._dataset.spectra = zip(*sorted_lists)
+
     def _add_spectrum(self):
         """Add a new spectrum to the ds."""
         self._dataset.spectra.append(CorziliusNMR.dataset.Spectra())
@@ -132,6 +141,7 @@ class ScreamImporter(TopspinImporter):
             self.file = file
             self._add_spectrum()
             self._set_values()
+        self._sort_xy_lists()
 
     def _set_buildup_time(self):
         """Set the buildup time for the last spectrum in the ds."""
@@ -180,17 +190,21 @@ class ScreamImporter(TopspinImporter):
 
     def _set_x_data(self):
         """Set the x-axis data for the last spectrum in the ds."""
-        physical_range = self._get_physical_range()
+        """physical_range = self._get_physical_range()
         number_of_datapoints = self._get_num_of_datapoints()
         self._dataset.spectra[-1].x_axis = self._calc_x_axis(
             physical_range, number_of_datapoints
-        )
+        )"""
+        pass
 
     def _set_y_data(self):
         """Set the y-axis data for the last spectrum in the ds."""
-        _, y_data = ng.bruker.read_pdata(
+        dic, y_data = ng.bruker.read_pdata(
             f"{self.file}\\pdata\\" f"{self._dataset.props.procno}"
         )
+        udic = ng.bruker.guess_udic(dic, y_data)
+        uc = ng.fileiobase.uc_from_udic(udic)
+        self._dataset.spectra[-1].x_axis = uc.ppm_scale()
         self._dataset.spectra[-1].y_axis = y_data
 
     def _normalize_y_values_to_number_of_scans(self):
