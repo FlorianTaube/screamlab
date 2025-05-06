@@ -50,7 +50,6 @@ setuptools.setup(
         "scipy",
         "pyDOE2",
         "nmrglue",
-        "contextlib",
     ],
     extras_require={
         "dev": [

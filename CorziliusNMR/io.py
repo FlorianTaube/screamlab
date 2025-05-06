@@ -34,8 +34,10 @@ class TopspinImporter:
 
     def _sort_xy_lists(self):
         t_pol_list = []
-        for spectrum in self._dataset.spectra:
+        for nr, spectrum in enumerate(self._dataset.spectra):
+
             t_pol_list.append(spectrum.tpol)
+
         sorted_lists = sorted(
             zip(t_pol_list, self._dataset.spectra)
         )  # sortiert nach den Werten in liste1

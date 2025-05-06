@@ -23,7 +23,6 @@ Classes:
 """
 
 import copy
-from contextlib import suppress
 import numpy as np
 import lmfit
 from pyDOE2 import lhs
@@ -367,11 +366,13 @@ class BuildupFitter:
             best_chisqr = np.inf
             for init_params in lhs_init_params:
                 params = self._set_params(default_param_dict, init_params)
-                with suppress(Exception):
+                try:
                     result = self._start_minimize(params, peak.buildup_vals)
                     best_result, best_chisqr = self._check_result_quality(
                         best_result, best_chisqr, result
                     )
+                except:
+                    pass
             result_list.append(best_result)
         return result_list
 
