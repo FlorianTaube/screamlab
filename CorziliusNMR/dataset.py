@@ -68,7 +68,7 @@ class Dataset:
         )
         self._start_buildup_fit()
         print(
-            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start generating result files."
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start generating result files. ({self.props.output_folder})"
         )
         self._print_all()
 
