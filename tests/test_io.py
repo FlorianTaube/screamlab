@@ -114,16 +114,6 @@ class TestDataset(unittest.TestCase):
     @unittest.skipIf(
         os.getenv("CI") == "true", "Skipping test in CI/CD environment"
     )
-    def test_set_x_data(self):
-        self.set_up_one_real_spectrum()
-        self.scream_importer._set_x_data()
-        self.assertEqual(
-            len(self.scream_importer._dataset.spectra[0].x_axis), 16384
-        )
-
-    @unittest.skipIf(
-        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
-    )
     def test_set_y_data(self):
         self.set_up_one_real_spectrum()
         self.scream_importer._set_y_data()
@@ -270,16 +260,6 @@ class TestDataset(unittest.TestCase):
         physical_range = {"start": 150, "end": -200}
         axis = self.scream_importer._calc_x_axis(physical_range, 350)
         self.assertEqual(axis[-1], -200)
-
-    @unittest.skipIf(
-        os.getenv("CI") == "true", "Skipping test in CI/CD environment"
-    )
-    def test_set_x_data_2(self):
-        self.set_up_one_real_spectrum()
-        self.scream_importer._set_x_data()
-        self.assertEqual(
-            len(self.scream_importer._dataset.spectra[0].x_axis), 16384
-        )
 
     @unittest.skipIf(
         os.getenv("CI") == "true", "Skipping test in CI/CD environment"

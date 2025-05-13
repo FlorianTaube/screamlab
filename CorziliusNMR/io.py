@@ -268,7 +268,7 @@ class Exporter:
             - Writes global/individual fit results to a semicolon-separated file.
             - Writes buildup fit results to a semicolon-separated file.
         """
-        # self._print_report()
+        self._print_report()
         self._plot_topspin_data()
         self._plot_global_all_together()
         if self.dataset.props.prefit:
@@ -641,9 +641,6 @@ class Exporter:
         for delay_time in range(0, len(valdict[0])):
             for val_nr, (_, values) in enumerate(valdict.items()):
                 row = self._generate_fit_param_row(values, delay_time, val_nr)
-        for delay_time in range(0, len(valdict[0])):
-            for val_nr, (_, values) in enumerate(valdict.items()):
-                row = self._generate_fit_param_row(values, delay_time, val_nr)
                 f.write(
                     "".join(f"{h:<{w}}" for h, w in zip(row, column_widths))
                     + "\n"
@@ -816,15 +813,15 @@ class Exporter:
 
     def _set_value(self, param, result, row_data):
         param_calc = {
-            "R1": lambda: str(round(1 / float(row_data[2]), 5)),
-            "R2": lambda: str(round(1 / float(row_data[4]), 5)),
-            "S1": lambda: str(
+            "Rf": lambda: str(round(1 / float(row_data[2]), 5)),
+            "Rs": lambda: str(round(1 / float(row_data[4]), 5)),
+            "Sf": lambda: str(
                 round(
                     float(row_data[1]) / math.sqrt(float(row_data[2])),
                     3,
                 )
             ),
-            "S2": lambda: str(
+            "Ss": lambda: str(
                 round(
                     float(row_data[3]) / math.sqrt(float(row_data[4])),
                     3,
@@ -840,7 +837,7 @@ class Exporter:
         return value
 
     def _sort_value_list(self, param, value, row_data, result):
-        if param != "t2":
+        if param != "ts":
             return value, row_data
         param_value = float(result.params[param].value)
         if param_value < float(row_data[2]):
@@ -868,48 +865,103 @@ class Exporter:
         """
         row = None
         if len(values[delay_time]) == 5:
-            row = [
-                (
-                    self.dataset.peak_list[delay_time].peak_label
-                    if val_nr == 0
-                    else ""
-                ),
-                self.dataset.spectra[val_nr].tpol,
-                round(values[delay_time][1], 3),
-                round(values[delay_time][0], 3),
-                round(values[delay_time][2], 3),
-                round(values[delay_time][3], 3),
-                round(
-                    CorziliusNMR.functions.fwhm_lorentzian(
-                        values[delay_time][3]
-                    ),
-                    3,
-                ),
-                round(
-                    CorziliusNMR.functions.fwhm_gaussian(
-                        values[delay_time][2]
-                    ),
-                    3,
-                ),
-                round(
-                    CorziliusNMR.functions.fwhm_voigt(
-                        values[delay_time][2], values[delay_time][3]
-                    ),
-                    3,
-                ),  # FWHM Voigt
-                round(
-                    self.dataset.peak_list[delay_time].buildup_vals.intensity[
-                        val_nr
-                    ],
-                    3,
-                ),  # Intensity
-            ]
+            row = self._gen_voigt_output(values, delay_time, val_nr)
+        if len(values[delay_time]) == 3:
+            row = self._gen_gauss_output(values, delay_time, val_nr)
+        if len(values[delay_time]) == 4:
+            row = self._gen_lorentz_output(values, delay_time, val_nr)
         return row
+
+    def _gen_voigt_output(self, values, delay_time, val_nr):
+        return [
+            (
+                self.dataset.peak_list[delay_time].peak_label
+                if val_nr == 0
+                else ""
+            ),
+            self.dataset.spectra[val_nr].tpol,
+            round(values[delay_time][1], 3),
+            round(values[delay_time][0], 3),
+            round(values[delay_time][2], 3),
+            round(values[delay_time][3], 3),
+            round(
+                CorziliusNMR.functions.fwhm_lorentzian(values[delay_time][3]),
+                3,
+            ),
+            round(
+                CorziliusNMR.functions.fwhm_gaussian(values[delay_time][2]),
+                3,
+            ),
+            round(
+                CorziliusNMR.functions.fwhm_voigt(
+                    values[delay_time][2], values[delay_time][3]
+                ),
+                3,
+            ),
+            round(
+                self.dataset.peak_list[delay_time].buildup_vals.intensity[
+                    val_nr
+                ],
+                3,
+            ),
+        ]
+
+    def _gen_gauss_output(self, values, delay_time, val_nr):
+        return [
+            (
+                self.dataset.peak_list[delay_time].peak_label
+                if val_nr == 0
+                else ""
+            ),
+            self.dataset.spectra[val_nr].tpol,
+            round(values[delay_time][1], 3),
+            round(values[delay_time][0], 3),
+            round(values[delay_time][2], 3),
+            "---",
+            "---",
+            round(
+                CorziliusNMR.functions.fwhm_gaussian(values[delay_time][2]),
+                3,
+            ),
+            "---",
+            round(
+                self.dataset.peak_list[delay_time].buildup_vals.intensity[
+                    val_nr
+                ],
+                3,
+            ),
+        ]
+
+    def _gen_lorentz_output(self, values, delay_time, val_nr):
+        return [
+            (
+                self.dataset.peak_list[delay_time].peak_label
+                if val_nr == 0
+                else ""
+            ),
+            self.dataset.spectra[val_nr].tpol,
+            round(values[delay_time][1], 3),
+            round(values[delay_time][0], 3),
+            "---",
+            round(values[delay_time][2], 3),
+            round(
+                CorziliusNMR.functions.fwhm_lorentzian(values[delay_time][2]),
+                3,
+            ),
+            "---",
+            "---",
+            round(
+                self.dataset.peak_list[delay_time].buildup_vals.intensity[
+                    val_nr
+                ],
+                3,
+            ),
+        ]
 
 
 class LmfitResultHandler:
     """
-    A class to handle the results of fitting operations.
+    A class to store the results of fitting operations.
 
     This class stores and manages the results from different types of fits:
     prefit, individual fit, global fit, and buildup fit. It provides a container

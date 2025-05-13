@@ -522,14 +522,14 @@ class BiexpFitter(BuildupFitter):
     Class for fitting biexponential models to buildup data.
 
     The biexponential model fits buildup curves using two exponential terms
-    characterized by amplitudes (A1, A2) and time constants (t1, t2).
+    characterized by amplitudes (Af, As) and time constants (tf, ts).
 
     The model function is defined as:
-        I(t) = A1 * (1 - exp(-t_pol / t1)) + A2 * (1 - exp(-t_pol / t2))
+        I(t) = Af * (1 - exp(-t_pol / tf)) + As * (1 - exp(-t_pol / ts))
 
     where:
-        - A1, A2   : amplitudes of the exponential components
-        - t1, t2   : time constants of the exponential components (t1, t2 > 0)
+        - Af, As   : amplitudes of the exponential components
+        - tf, ts   : time constants of the exponential components (tf, ts > 0)
         - t_pol    : polarization time (independent variable)
         - I(t_pol) : peak intensity at polarization time t_pol
     """
@@ -539,13 +539,13 @@ class BiexpFitter(BuildupFitter):
         Define default parameters for biexponential fitting.
 
         :param peak: Peak object containing peak_sign and buildup values.
-        :return: Dictionary of default parameters with keys: A1, A2, t1, t2.
+        :return: Dictionary of default parameters with keys: Af, As, tf, ts.
         """
         return {
-            "A1": self._get_intensity_dict(peak),
-            "A2": self._get_intensity_dict(peak),
-            "t1": self._get_time_dict(peak),
-            "t2": self._get_time_dict(peak),
+            "Af": self._get_intensity_dict(peak),
+            "As": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
+            "ts": self._get_time_dict(peak),
         }
 
     def _calc_intensity(self, tdel, param):
@@ -564,15 +564,15 @@ class BiexpFitterWithOffset(BuildupFitter):
     Class for fitting biexponential models with offset to buildup data.
 
     This fits buildup curves using two exponential terms
-    characterized by amplitudes (A1, A2), time constants (t1, t2) and offset (x1).
+    characterized by amplitudes (Af, As), time constants (tf, ts) and offset (t_off).
 
     The model function is defined as:
-        I(t) = A1 * (1 - exp(-(t_pol-x1) / t1)) + A2 * (1 - exp(-(t_pol-x1) / t2))
+        I(t) = Af * (1 - exp(-(t_pol-t_off) / tf)) + As * (1 - exp(-(t_pol-t_off) / ts))
 
     where:
-        - A1, A2   : amplitudes of the exponential components
-        - t1, t2   : time constants of the exponential components (t1, t2 > 0)
-        - x1       : offset in polarization time
+        - Af, As   : amplitudes of the exponential components
+        - tf, ts   : time constants of the exponential components (tf, ts > 0)
+        - t_off       : offset in polarization time
         - t_pol    : polarization time (independent variable)
         - I(t_pol) : peak intensity at polarization time t_pol
     """
@@ -582,14 +582,14 @@ class BiexpFitterWithOffset(BuildupFitter):
         Define default parameters for biexponential fitting.
 
         :param peak: Peak object containing peak_sign and buildup values.
-        :return: Dictionary of default parameters with keys: A1, A2, t1, t2.
+        :return: Dictionary of default parameters with keys: Af, As, tf, ts.
         """
         return {
-            "A1": self._get_intensity_dict(peak),
-            "A2": self._get_intensity_dict(peak),
-            "t1": self._get_time_dict(peak),
-            "t2": self._get_time_dict(peak),
-            "x1": {"value": 0, "min": -5, "max": 5},
+            "Af": self._get_intensity_dict(peak),
+            "As": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
+            "ts": self._get_time_dict(peak),
+            "t_off": {"value": 0, "min": -5, "max": 5},
         }
 
     def _calc_intensity(self, tdel, param):
@@ -608,14 +608,14 @@ class ExpFitter(BuildupFitter):
     Class for fitting exponential models to buildup data.
 
     This fits buildup curves using an exponential term
-    characterized by amplitude (A1) and time constant (t1).
+    characterized by amplitude (Af) and time constant (tf).
 
     The model function is defined as:
-        I(t) = A1 * (1 - exp(-t_pol / t1))
+        I(t) = Af * (1 - exp(-t_pol / tf))
 
     where:
-        - A1       : amplitudes of the exponential components
-        - t1       : time constants of the exponential components (t1 > 0)
+        - Af       : amplitudes of the exponential components
+        - tf       : time constants of the exponential components (tf > 0)
         - t_pol    : polarization time (independent variable)
         - I(t_pol) : peak intensity at polarization time t_pol
     """
@@ -625,11 +625,11 @@ class ExpFitter(BuildupFitter):
         Define default parameters for exponential fitting.
 
         :param peak: Peak object containing peak_sign and buildup values.
-        :return: Dictionary of default parameters with keys: A1, t1.
+        :return: Dictionary of default parameters with keys: Af, tf.
         """
         return {
-            "A1": self._get_intensity_dict(peak),
-            "t1": self._get_time_dict(peak),
+            "Af": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
         }
 
     def _calc_intensity(self, tdel, param):
@@ -648,15 +648,15 @@ class ExpFitterWithOffset(BuildupFitter):
     Class for fitting exponential models with offset to buildup data.
 
     This fits buildup curves using an exponential term
-    characterized by amplitude (A1), time constant (t1) and offset (x1).
+    characterized by amplitude (Af), time constant (tf) and offset (t_off).
 
     The model function is defined as:
-        I(t) = A1 * (1 - exp(-(t_pol-x1) / t1))
+        I(t) = Af * (1 - exp(-(t_pol-t_off) / tf))
 
     where:
-        - A1       : amplitudes of the exponential components
-        - t1       : time constants of the exponential components (t1 > 0)
-        - x1       : offset in polarization time
+        - Af       : amplitudes of the exponential components
+        - tf       : time constants of the exponential components (tf > 0)
+        - t_off       : offset in polarization time
         - t_pol    : polarization time (independent variable)
         - I(t_pol) : peak intensity at polarization time t_pol
     """
@@ -666,12 +666,12 @@ class ExpFitterWithOffset(BuildupFitter):
         Define default parameters for exponential with offset in x fitting.
 
         :param peak: Peak object containing peak_sign and buildup values.
-        :return: Dictionary of default parameters with keys: A1, t1, x1.
+        :return: Dictionary of default parameters with keys: Af, tf, t_off.
         """
         return {
-            "A1": self._get_intensity_dict(peak),
-            "t1": self._get_time_dict(peak),
-            "x1": {"value": 0, "min": -5, "max": 5},
+            "Af": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
+            "t_off": {"value": 0, "min": -5, "max": 5},
         }
 
     def _calc_intensity(self, tdel, param):
@@ -690,14 +690,14 @@ class StrechedExponentialFitter(BuildupFitter):
     Class for fitting streched exponential models to buildup data.
 
     This fits buildup curves using an streched exponential term
-    characterized by amplitude (A1), time constant (t1), and stretching factor (beta)..
+    characterized by amplitude (Af), time constant (tf), and stretching factor (beta)..
 
     The model function is defined as:
-         I(t) = A1 * (1 - exp(-(t_pol / t1)^beta))
+         I(t) = Af * (1 - exp(-(t_pol / tf)^beta))
 
     where:
-        - A1       : amplitudes of the exponential components
-        - t1       : time constants of the exponential components (t1 > 0)
+        - Af       : amplitudes of the exponential components
+        - tf       : time constants of the exponential components (tf > 0)
         - beta     : stretching factor (beta > 0, controls deviation from a simple exponential)
         - t_pol    : polarization time (independent variable)
         - I(t_pol): peak intensity at polarization time t_pol
@@ -710,11 +710,11 @@ class StrechedExponentialFitter(BuildupFitter):
         Define default parameters for strechted exponential fitting.
 
         :param peak: Peak object containing peak_sign and buildup values.
-        :return: Dictionary of default parameters with keys: A1, t1, beta.
+        :return: Dictionary of default parameters with keys: Af, tf, beta.
         """
         return {
-            "A1": self._get_intensity_dict(peak),
-            "t1": self._get_time_dict(peak),
+            "Af": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
             "beta": self._get_beta_dict(),
         }
 

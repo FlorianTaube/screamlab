@@ -79,12 +79,17 @@ class TestDataset(unittest.TestCase):
 
     def check_dict(self, param_dict, a_dict):
         t_dict = {"value": 5, "min": 0, "max": 192}
-        x_dict = {"value": 0, "min": -5, "max": 5}
+        x_dict = {"value": 0, "min": -5, "max": 192}
         for key in param_dict:
             if "A" in key:
                 self.assertDictEqual(param_dict[key], a_dict)
             if "t" in key:
-                self.assertDictEqual(param_dict[key], t_dict)
+                if "t_off" in key:
+                    self.assertDictEqual(
+                        param_dict[key], {"value": 0, "min": -5, "max": 5}
+                    )
+                else:
+                    self.assertDictEqual(param_dict[key], t_dict)
             if "x" in key:
                 self.assertDictEqual(param_dict[key], x_dict)
 
@@ -879,8 +884,8 @@ class TestDataset(unittest.TestCase):
         self.add_one_peak()
         fitter = utils.ExpFitterWithOffset(self.ds)
         param_dict = fitter._get_default_param_dict(self.ds.peak_list[0])
-        result = fitter._get_param_bounds({"value": 5, "min": 0, "max": 192})
-        self.assertEqual(result, (0, 192))
+        result = fitter._get_param_bounds({"value": 5, "min": 0, "max": 5})
+        self.assertEqual(result, (0, 5))
 
     def test_buildup_fitter_get_init_params_list(self):
         self.add_one_peak()
@@ -920,22 +925,24 @@ class TestDataset(unittest.TestCase):
     def test_set_params_exp(self):
         self.add_one_peak()
         params = self.calc_params(utils.ExpFitter(self.ds))
-        self.assertEqual(list(params.keys()), ["A1", "t1"])
+        self.assertEqual(list(params.keys()), ["Af", "tf"])
 
     def test_set_params_biexp(self):
         self.add_one_peak()
         params = self.calc_params(utils.BiexpFitter(self.ds))
-        self.assertEqual(list(params.keys()), ["A1", "A2", "t1", "t2"])
+        self.assertEqual(list(params.keys()), ["Af", "As", "tf", "ts"])
 
     def test_set_params_biexp_offset(self):
         self.add_one_peak()
         params = self.calc_params(utils.BiexpFitterWithOffset(self.ds))
-        self.assertEqual(list(params.keys()), ["A1", "A2", "t1", "t2", "x1"])
+        self.assertEqual(
+            list(params.keys()), ["Af", "As", "tf", "ts", "t_off"]
+        )
 
     def test_set_params_exp_offset(self):
         self.add_one_peak()
         params = self.calc_params(utils.ExpFitterWithOffset(self.ds))
-        self.assertEqual(list(params.keys()), ["A1", "t1", "x1"])
+        self.assertEqual(list(params.keys()), ["Af", "tf", "t_off"])
 
     def test_set_params_biexp_offset(self):
         self.add_one_peak()
