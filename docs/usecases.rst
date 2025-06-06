@@ -43,13 +43,23 @@ Also it can be specified wich buildup model should be used for evaluation. There
 
 Adding peaks and start analysis
 ===============================
-After specifying the properties, the dataset object must be instantiated and assigned to a variable.
-Todo
+In this code segment, a new dataset object is instantiated and assigned to the variable :obj:`ds`. Following this, the properties of the dataset are set by assigning the :obj:`props` object to :obj:`ds.props`, thereby configuring the dataset with parameters set in the paragraph before.
+
+
 .. code-block:: python
     :linenos:
 
     ds = dataset.Dataset()
     ds.props = props
 
+The :obj:`add_peak()` function adds a single peak to a dataset. The only required argument is the peak center, which must be specified with an accuracy of ±1 ppm. In addition to this, there is the option to include a peak label (the default is "Peak_at_xxx_ppm"), specify the peak sign (the default is "-")-
+
+.. code-block:: python
+    :linenos:
+
     ds.add_peak(-16)
     ds.start_buildup_fit_from_topspin()
+
+T
+
+
