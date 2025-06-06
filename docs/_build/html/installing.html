@@ -1,0 +1,174 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &mdash; CorziliusNMR 0.1.0.dev80 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=cdeda9ff"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="People" href="people.html" />
+    <link rel="prev" title="Use cases" href="usecases.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CorziliusNMR
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Manual:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="audience.html">Target audience</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usecases.html">Use cases</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-python">Installing Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-a-python-virtual-environment">Create a Python virtual environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#activate-the-newly-created-virtual-environment">Activate the newly created virtual environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-corziliusnmr">Install CorziliusNMR</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="people.html">People</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploying.html">Deploying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">CorziliusNMR</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CorziliusNMR</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/installing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
+<p>Installing the CorziliusNMR package is as simple as installing any other Python package, as CorziliusNMR is available from the <a class="reference external" href="https://www.pypi.org/">Python Package Index (PyPI)</a>. Simply open a terminal on your computer and type:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>CorziliusNMR
+</pre></div>
+</div>
+<p>This will install the CorziliusNMR package (and all its dependencies) on your computer.</p>
+<p>Of course, you need to have Python (and pip) installed before you can use the above command, and it is always advisable to install packages in a <strong>virtual environment</strong> of their own.</p>
+<p>Hence, a more thorough sequence of events would be:</p>
+<ol class="arabic simple">
+<li><p>Install Python (if it is not already installed on your system).</p></li>
+<li><p>Create a Python virtual environment for CorziliusNMR.</p></li>
+<li><p>Activate the newly created virtual environment.</p></li>
+<li><p>Install CorziliusNMR therein, using the above command.</p></li>
+</ol>
+<p>A few details for all these steps are given below.</p>
+<section id="installing-python">
+<h2>Installing Python<a class="headerlink" href="#installing-python" title="Link to this heading"></a></h2>
+<p>For how to install Python on your system, see the <a class="reference external" href="https://wiki.python.org/moin/BeginnersGuide/Download">official documentation</a>. Linux users: you will most certainly have Python installed already.</p>
+</section>
+<section id="create-a-python-virtual-environment">
+<h2>Create a Python virtual environment<a class="headerlink" href="#create-a-python-virtual-environment" title="Link to this heading"></a></h2>
+<p>It is good practice to always use virtual environments when working with Python. One reason: On some operating systems, crucial tasks depend on Python, and installing Python packages globally may interfere with the system.</p>
+<p>The good news: Creating Python virtual environments is fairly simple:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>CorziliusNMR
+</pre></div>
+</div>
+<p>This will create a Python virtual environment named <code class="docutils literal notranslate"><span class="pre">CorziliusNMR</span></code> in the current directory. Of course, you can give your virtual environment any name you like. However, be careful with spaces and special characters, depending on your system.</p>
+</section>
+<section id="activate-the-newly-created-virtual-environment">
+<h2>Activate the newly created virtual environment<a class="headerlink" href="#activate-the-newly-created-virtual-environment" title="Link to this heading"></a></h2>
+<p>A Python virtual environment needs to be activated. This is usually done using the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>CorziliusNMR/bin/activate
+</pre></div>
+</div>
+<p>Assuming in this case that your virtual environment is called <code class="docutils literal notranslate"><span class="pre">CorziliusNMR</span></code> and that you are in the same path where you just created your virtual environment.</p>
+<p>Deactivating is simple as well, once you are done. Either close the terminal, or issue the command <code class="docutils literal notranslate"><span class="pre">deactivate</span></code>.</p>
+</section>
+<section id="install-corziliusnmr">
+<h2>Install CorziliusNMR<a class="headerlink" href="#install-corziliusnmr" title="Link to this heading"></a></h2>
+<p>Once you activated your virtual environment where you want to install the CorziliusNMR package in, proceed as given above:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>CorziliusNMR
+</pre></div>
+</div>
+<p>This will download the CorziliusNMR package from the <a class="reference external" href="https://www.pypi.org/">Python Package Index (PyPI)</a> and install it locally. All dependencies will be installed as well.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The above instructions assume a fairly standard Python installation using pip. Of course, there are other Python distributions available as well, such as conda. If you are using such a Python distribution, pip should be available as well. However, in case of problems consult the documentation of your respective Python distribution for details.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usecases.html" class="btn btn-neutral float-left" title="Use cases" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="people.html" class="btn btn-neutral float-right" title="People" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Florian Taube.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

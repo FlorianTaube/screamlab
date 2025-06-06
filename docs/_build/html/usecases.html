@@ -1,0 +1,166 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Use cases &mdash; CorziliusNMR 0.1.0.dev80 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=cdeda9ff"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installing.html" />
+    <link rel="prev" title="Target audience" href="audience.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CorziliusNMR
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Manual:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="audience.html">Target audience</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Use cases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#specifying-properties">Specifying properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-peaks-and-start-analysis">Adding peaks and start analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installing.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="people.html">People</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deploying.html">Deploying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">CorziliusNMR</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CorziliusNMR</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Use cases</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usecases.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="use-cases">
+<span id="id1"></span><h1>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h1>
+<p>This section provides several examples of how basic operations might be structured. A typical analysis routine is generally divided into two parts: first, the settings are defined using the <code class="xref py py-obj docutils literal notranslate"><span class="pre">CorziliusNMR.settings.Properties</span></code> class, followed by the determination of peak information using <code class="xref py py-obj docutils literal notranslate"><span class="pre">CorziliusNMR.datset.Dataset</span></code>.</p>
+<section id="specifying-properties">
+<h2>Specifying properties<a class="headerlink" href="#specifying-properties" title="Link to this heading"></a></h2>
+<p>This Python code is configuring properties related to an experiment, specifically designed to handle SCREAM-DNP data provided from Bruker’s TopSpin software. Important in any cases is to specify the path to a folder where the experiments are saved, determine the experiments to be analyzed (using experiment numbers), and defines the output folder for the results. The experiments can be provided in two different formats. A list like [1,8] means that all experiments from 1 to 8 should be included, or it can be more specific by defining a list with all the experiments, e.g., [1,5,9,12,13,18].”</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">CorziliusNMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span><span class="p">,</span> <span class="n">dataset</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="n">props</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">Properties</span><span class="p">()</span>
+<span class="linenos">4</span><span class="n">props</span><span class="o">.</span><span class="n">path_to_experiment</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;/path/to/dataset&quot;</span>
+<span class="linenos">5</span><span class="n">props</span><span class="o">.</span><span class="n">expno</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+<span class="linenos">6</span><span class="n">props</span><span class="o">.</span><span class="n">output_folder</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;/path/to/output&quot;</span>
+</pre></div>
+</div>
+<p>There is also the option of further, optional customisation depending on the requirements.  In many cases, it is practical to carry out a prefit on one specific spectrum in order to minimise computing times. To do this specify the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">props</span><span class="o">.</span><span class="n">prefit</span> <span class="o">=</span> <span class="kc">True</span>             <span class="c1"># Default option is False</span>
+<span class="linenos">2</span><span class="n">props</span><span class="o">.</span><span class="n">spectrum_for_prefit</span> <span class="o">=</span> <span class="mi">3</span>   <span class="c1"># Default option is -1 meaning the last entry in the expno list</span>
+</pre></div>
+</div>
+<p>Note that the value in spectrum_for_prefit refers to the position on an experiment in the expno list and not to the experiment number.
+Also it can be specified wich buildup model should be used for evaluation. There are four options: exponential, exponential with offset, biexponential, and biexponential with offset and either one or multiple can performt during one analysis by providing a list as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">props</span><span class="o">.</span><span class="n">buildup_types</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;exponential&quot;</span><span class="p">,]</span>
+<span class="linenos">2</span><span class="c1">#Performs buidlup fit using a simple exponential. Default option</span>
+<span class="linenos">3</span>
+<span class="linenos">4</span><span class="n">props</span><span class="o">.</span><span class="n">buildup_types</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">&quot;exponential&quot;</span><span class="p">,</span> <span class="s2">&quot;exponential_with_offset&quot;</span><span class="p">,</span> <span class="s2">&quot;biexponential&quot;</span><span class="p">,</span> <span class="p">]</span>
+<span class="linenos">5</span><span class="c1">#Performs three buildup fits using first an exponential model,</span>
+<span class="linenos">6</span><span class="c1">#then an exponential wiht offset followd by a biexponential model.</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-peaks-and-start-analysis">
+<h2>Adding peaks and start analysis<a class="headerlink" href="#adding-peaks-and-start-analysis" title="Link to this heading"></a></h2>
+<p>In this code segment, a new dataset object is instantiated and assigned to the variable <code class="xref py py-obj docutils literal notranslate"><span class="pre">ds</span></code>. Following this, the properties of the dataset are set by assigning the <code class="xref py py-obj docutils literal notranslate"><span class="pre">props</span></code> object to <code class="xref py py-obj docutils literal notranslate"><span class="pre">ds.props</span></code>, thereby configuring the dataset with parameters set in the paragraph before.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">ds</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+<span class="linenos">2</span><span class="n">ds</span><span class="o">.</span><span class="n">props</span> <span class="o">=</span> <span class="n">props</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-obj docutils literal notranslate"><span class="pre">add_peak()</span></code> function adds a single peak to a dataset. The only required argument is the peak center, which must be specified with an accuracy of ±1 ppm. In addition to this, there is the option to include a peak label (the default is “Peak_at_xxx_ppm”), specify the peak sign (the default is “-“)-</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">ds</span><span class="o">.</span><span class="n">add_peak</span><span class="p">(</span><span class="o">-</span><span class="mi">16</span><span class="p">)</span>
+<span class="linenos">2</span><span class="n">ds</span><span class="o">.</span><span class="n">start_buildup_fit_from_topspin</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>T</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="audience.html" class="btn btn-neutral float-left" title="Target audience" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installing.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Florian Taube.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

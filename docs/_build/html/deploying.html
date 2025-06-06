@@ -1,0 +1,228 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deploying &mdash; CorziliusNMR 0.1.0.dev80 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=cdeda9ff"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer documentation" href="developers.html" />
+    <link rel="prev" title="People" href="people.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CorziliusNMR
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Manual:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="audience.html">Target audience</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usecases.html">Use cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installing.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developers:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="people.html">People</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deploying</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#versioning">Versioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#versioning-and-git-branches">Versioning and git branches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#when-to-increment-which-version-number-part">When to increment which version number part</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#patch-bug-fixes">PATCH: Bug fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#minor-new-functionality-or-data">MINOR: New functionality or data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#major-breaking-changes">MAJOR: Breaking changes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-release">Creating a release</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">CorziliusNMR</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CorziliusNMR</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Deploying</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/deploying.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="deploying">
+<h1>Deploying<a class="headerlink" href="#deploying" title="Link to this heading"></a></h1>
+<p>This section documents the relevant details regarding the deployment of the &lt;PROJEKTNAME&gt; package. Focus is on automating all tasks as much as possible, to ease maintenance of the package.</p>
+<section id="versioning">
+<h2>Versioning<a class="headerlink" href="#versioning" title="Link to this heading"></a></h2>
+<p>The &lt;PROJEKTNAME&gt; package follows <a class="reference external" href="https://semver.org/">Semantic Versioning (SemVer)</a>. The version number is contained in the file <code class="docutils literal notranslate"><span class="pre">VERSION</span></code> in the repository root directory and automatically imported into the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file. Furthermore, a bash script <code class="docutils literal notranslate"><span class="pre">./bin/incrementVersion.sh</span></code> is provided to be added as git hook for developers. This increments the <code class="docutils literal notranslate"><span class="pre">.dev#</span></code> suffix of the version number of development versions residing in the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch of the repository.</p>
+</section>
+<section id="versioning-and-git-branches">
+<h2>Versioning and git branches<a class="headerlink" href="#versioning-and-git-branches" title="Link to this heading"></a></h2>
+<p>The &lt;PROJEKTNAME&gt; package is maintained in a <a class="reference external" href="https://gitlab.uni-rostock.de/&lt;nutzername&gt;/&lt;PROJEKTNAME&gt;">GitLab repository</a>. Development takes place in the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch, releases are set as tags with the version number (and additionally, for each minor version an additional tag in the form <code class="docutils literal notranslate"><span class="pre">MAJOR.MINOR</span></code>) in the <code class="docutils literal notranslate"><span class="pre">stable</span></code> branch. Upon creating a release within GitLab (by the package maintainers), the package will automatically be built and uploaded to the <a class="reference external" href="https://pypi.org/project/&lt;PROJEKTNAME&gt;/">Python Package Index (PyPI)</a>. For details, see below.</p>
+</section>
+<section id="when-to-increment-which-version-number-part">
+<h2>When to increment which version number part<a class="headerlink" href="#when-to-increment-which-version-number-part" title="Link to this heading"></a></h2>
+<p>Given that the &lt;PROJEKTNAME&gt; package follows Semantic Versioning (SemVer, see above), below are criteria when to increment which part of the version number.</p>
+<section id="patch-bug-fixes">
+<h3>PATCH: Bug fixes<a class="headerlink" href="#patch-bug-fixes" title="Link to this heading"></a></h3>
+<p>Bug fixes are fixes in the code that do <em>not</em> introduce qualitatively new functionality (in the public API). Every bug fix release increments the PATCH part of the version number.</p>
+</section>
+<section id="minor-new-functionality-or-data">
+<h3>MINOR: New functionality or data<a class="headerlink" href="#minor-new-functionality-or-data" title="Link to this heading"></a></h3>
+<p>As soon as there is new functionality in the public API of the code that is backwards-compatible, the MINOR part of the version number gets incremented. Releasing a new MINOR version means to reset the PATCH part of the version number to zero.</p>
+</section>
+<section id="major-breaking-changes">
+<h3>MAJOR: Breaking changes<a class="headerlink" href="#major-breaking-changes" title="Link to this heading"></a></h3>
+<p>Backwards-incompatible changes in the public API of the code require a release incrementing the MAJOR part of the version number. These changes should be usually rare.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Technically speaking, as long as the MAJOR part of the version number is still zero, everything would be allowed. Furthermore, the criteria when to start with version 1.0.0 are not strict. In any case, the public API should be reasonably stable for this step.</p>
+</div>
+</section>
+</section>
+<section id="creating-a-release">
+<h2>Creating a release<a class="headerlink" href="#creating-a-release" title="Link to this heading"></a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Creating a release should (and can) only be done by the package maintainers. This requires a series of additional Python packages. Hence, if not done already as a maintainer/developer of the package, install the prerequisites for both, documentation and package development:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>&lt;PROJEKTNAME&gt;<span class="o">[</span>dev,docs,deployment<span class="o">]</span>
+</pre></div>
+</div>
+<p>This will install a series of additional packages. For details, have a look at the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file.</p>
+</div>
+<p>Before creating a release, make sure that the tests pass and that static code analysis running prospector does not issue any warnings. For convenience, a <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> with the relevant targets is part of the source code. Running tests and static code analysis is as simple as:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>tests
+make<span class="w"> </span>check
+</pre></div>
+</div>
+<p>Developers should have setup automatic code formatting using Black as <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> git hook. To this end, a helper script <code class="docutils literal notranslate"><span class="pre">./bin/formatPythonCode.sh</span></code> is provided. See the <span class="xref std std-doc">contributing</span> guide for further details. Just in case you would want to manually trigger the code formatting, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>black
+</pre></div>
+</div>
+<p>Eventually, after all the above tests pass, create the documentation and check for errors there:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>docs
+</pre></div>
+</div>
+<p>Now it is time to check whether the package can be successfully built:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>build
+twine<span class="w"> </span>check<span class="w"> </span>dist/*
+</pre></div>
+</div>
+<p>Don’t forget to afterwards remove the packages built having the <code class="docutils literal notranslate"><span class="pre">-dev#</span></code> suffix and located in the <code class="docutils literal notranslate"><span class="pre">dist</span></code> directory.</p>
+<p>If everything is well, creating the release can proceed. First, commit your latest changes, then checkout the <code class="docutils literal notranslate"><span class="pre">stable</span></code> branch and get all changes from the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>stable
+git<span class="w"> </span>merge<span class="w"> </span>--no-commit<span class="w"> </span>-X<span class="w"> </span>theirs<span class="w"> </span>master
+</pre></div>
+</div>
+<p>Next, change the version number in the <code class="docutils literal notranslate"><span class="pre">VERSION</span></code> file (remove the „.dev#“ suffix, add „-rc.#“ if necessary), add the release date to the changelog in the docs, and update the roadmap. Now you are ready to do the final commit:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;release `cat VERSION`&quot;</span><span class="w"> </span>-a
+</pre></div>
+</div>
+<p>Next is to tag the release appropriately:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>tag<span class="w"> </span>v<span class="sb">`</span>cat<span class="w"> </span>VERSION<span class="sb">`</span>
+git<span class="w"> </span>tag<span class="w"> </span>-f<span class="w"> </span>v<span class="sb">`</span>cat<span class="w"> </span>VERSION<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d.<span class="w"> </span>-f1-2<span class="sb">`</span>
+</pre></div>
+</div>
+<p>This will create two tags and update the second one if necessary: The first tag is the full version number, <em>i.e.</em> <code class="docutils literal notranslate"><span class="pre">MAJOR.MINOR.PATCH</span></code>, the second is the abbreviated two-part version number, <em>i.e.</em> <code class="docutils literal notranslate"><span class="pre">MAJOR.MINOR</span></code>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you are about to release a “release candidate”, do <em>not</em> create the second tag.</p>
+</div>
+<p>Now, you can push the new commit and the tags:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>--tags<span class="w"> </span>-f<span class="w"> </span>origin<span class="w"> </span>stable
+</pre></div>
+</div>
+<p>After the commit and tags have been pushed to the <a class="reference external" href="https://gitlab.uni-rostock.de/&lt;nutzername&gt;/&lt;PROJEKTNAME&gt;">GitLab repository</a>, create a new release in GitLab. The name is identical to the last commit message, <em>i.e.</em> <code class="docutils literal notranslate"><span class="pre">Version</span> <span class="pre">#.#.#</span></code>, the description should be identical with the corresponding section in the changelog.</p>
+<p>Upon creating the release, a few things will happen automatically:</p>
+<ul class="simple">
+<li><p>Thanks to the included GitLab workflow, the package will automatically be built and uploaded to <a class="reference external" href="https://pypi.org/project/&lt;PROJEKTNAME&gt;/">PyPI</a>.</p></li>
+<li><p>As Zenodo is connected to the GitLab repository, the <a class="reference external" href="https://doi.org/10.5281/zenodo.&lt;id&gt;">Zenodo record</a> will be updated as well.</p></li>
+</ul>
+<p>The last thing left to be done: Go back to the master branch,</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>master
+</pre></div>
+</div>
+<p>bump the version number (typically resetting <code class="docutils literal notranslate"><span class="pre">PATCH</span></code> and setting <code class="docutils literal notranslate"><span class="pre">dev#</span></code> to <code class="docutils literal notranslate"><span class="pre">dev0</span></code>), cherry-pick <code class="docutils literal notranslate"><span class="pre">docs/changelog.rst</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>stable<span class="w"> </span>docs/changelog.rst
+</pre></div>
+</div>
+<p>and commit the changes. Typically, a generic commit message such as “Post-release” will be used.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="people.html" class="btn btn-neutral float-left" title="People" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="developers.html" class="btn btn-neutral float-right" title="Developer documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Florian Taube.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -16,13 +16,13 @@
 
 # Setuptools distribution folder.
 /dist/
-
+/build/
 
 /*.egg-info
 /*.egg
 
 # Sphinx build
-docs/_build
+#docs/_build
 
 # tox venvs
 .tox
