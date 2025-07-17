@@ -1,6 +1,6 @@
 import unittest
-import CorziliusNMR.dataset
-from CorziliusNMR import io, dataset
+import screamlab.dataset
+from screamlab import io, dataset
 import os
 
 
@@ -13,7 +13,7 @@ class TestDataset(unittest.TestCase):
 
     def set_up_one_real_spectrum(self):
         self.scream_importer._dataset.spectra.append(
-            CorziliusNMR.dataset.Spectra()
+            screamlab.dataset.Spectra()
         )
         self.scream_importer.file = r"..\tests\SCREAM_Test_Files\Alanin\8"
 
@@ -26,7 +26,7 @@ class TestDataset(unittest.TestCase):
 
     def test_scream_init_set_dataset(self):
         self.assertEqual(
-            type(self.scream_importer._dataset), CorziliusNMR.dataset.Dataset
+            type(self.scream_importer._dataset), screamlab.dataset.Dataset
         )
 
     def test_scream_init_path_is_none(self):
@@ -47,7 +47,7 @@ class TestDataset(unittest.TestCase):
         self.scream_importer._add_spectrum()
         self.assertEqual(
             type(self.scream_importer._dataset.spectra[0]),
-            CorziliusNMR.dataset.Spectra,
+            screamlab.dataset.Spectra,
         )
 
     @unittest.skipIf(
@@ -186,7 +186,7 @@ class TestDataset(unittest.TestCase):
 
     def test_pseudo2dimporter_init_set_dataset(self):
         self.assertEqual(
-            type(self.pseudo_importer._dataset), CorziliusNMR.dataset.Dataset
+            type(self.pseudo_importer._dataset), screamlab.dataset.Dataset
         )
 
     def test_pseudo2dimporter_init_path_is_none(self):
@@ -204,7 +204,7 @@ class TestDataset(unittest.TestCase):
         self.pseudo_importer._add_spectrum()
         self.assertEqual(
             type(self.pseudo_importer._dataset.spectra[0]),
-            CorziliusNMR.dataset.Spectra,
+            screamlab.dataset.Spectra,
         )
 
     @unittest.skipIf(

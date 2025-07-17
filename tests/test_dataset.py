@@ -1,6 +1,6 @@
-import CorziliusNMR.settings
+import screamlab.settings
 import lmfit
-from CorziliusNMR import dataset, settings, functions
+from screamlab import dataset, settings, functions
 import unittest
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,7 +14,7 @@ class TestDataset(unittest.TestCase):
 
     def add_n_spectra(self, number_of_spectra, type=["voigt"]):
         for spec in range(0, number_of_spectra):
-            self.ds.spectra.append(CorziliusNMR.dataset.Spectra())
+            self.ds.spectra.append(screamlab.dataset.Spectra())
         self.add_x_axis()
         self.add_y_axix(type)
 
@@ -59,9 +59,7 @@ class TestDataset(unittest.TestCase):
         self.assertIsNone(self.ds.importer)
 
     def test_dataset_init_properties(self):
-        self.assertEqual(
-            type(self.ds.props), CorziliusNMR.settings.Properties
-        )
+        self.assertEqual(type(self.ds.props), screamlab.settings.Properties)
 
     def test_dataset_init_has_none_type_spectra(self):
         self.assertListEqual(self.ds.spectra, [])
@@ -72,22 +70,20 @@ class TestDataset(unittest.TestCase):
     def test_setup_correct_topspin_importer_default_properties(self):
         self.ds._setup_correct_topspin_importer()
         self.assertEqual(
-            type(self.ds.importer), CorziliusNMR.io.Pseudo2DImporter
+            type(self.ds.importer), screamlab.io.Pseudo2DImporter
         )
 
     def test_setup_correct_topspin_importer_set_properties_pseudo2D(self):
         self.ds.props.expno = [2]
         self.ds._setup_correct_topspin_importer()
         self.assertEqual(
-            type(self.ds.importer), CorziliusNMR.io.Pseudo2DImporter
+            type(self.ds.importer), screamlab.io.Pseudo2DImporter
         )
 
     def test_setup_correct_topspin_importer_set_properties_SCREAM(self):
         self.ds.props.expno = [2, 3, 4, 5, 6]
         self.ds._setup_correct_topspin_importer()
-        self.assertEqual(
-            type(self.ds.importer), CorziliusNMR.io.ScreamImporter
-        )
+        self.assertEqual(type(self.ds.importer), screamlab.io.ScreamImporter)
 
     def test_read_in_data_from_topspin_pseudo2D(self):
         # TODO add some real parameters or fake spectrum
@@ -95,19 +91,19 @@ class TestDataset(unittest.TestCase):
         self.assertIsNotNone(self.ds.spectra)
 
     def test_spectra_init_number_of_scans_is_None(self):
-        spectrum = CorziliusNMR.dataset.Spectra()
+        spectrum = screamlab.dataset.Spectra()
         self.assertIsNone(spectrum.number_of_scans)
 
     def test_spectra_init_tdel_None(self):
-        spectrum = CorziliusNMR.dataset.Spectra()
+        spectrum = screamlab.dataset.Spectra()
         self.assertIsNone(spectrum.tpol)
 
     def test_spectra_init_x_axis_is_None(self):
-        spectrum = CorziliusNMR.dataset.Spectra()
+        spectrum = screamlab.dataset.Spectra()
         self.assertIsNone(spectrum.x_axis)
 
     def test_spectra_init_y_axis_is_None(self):
-        spectrum = CorziliusNMR.dataset.Spectra()
+        spectrum = screamlab.dataset.Spectra()
         self.assertIsNone(spectrum.y_axis)
 
     def test_ds_init_peak_list_is_empty_list(self):
@@ -413,24 +409,22 @@ class TestDataset(unittest.TestCase):
 
     def test_dataset_perform_global_spectrum_fit_set_correct_fitter(self):
         self.ds._set_global_fitter()
-        self.assertEqual(
-            type(self.ds.fitter), CorziliusNMR.utils.GlobalFitter
-        )
+        self.assertEqual(type(self.ds.fitter), screamlab.utils.GlobalFitter)
 
     def test_dataset_perform_single_spectrum_fit_set_correct_fitter(self):
         self.ds._set_single_fitter()
         self.assertEqual(
-            type(self.ds.fitter), CorziliusNMR.utils.IndependentFitter
+            type(self.ds.fitter), screamlab.utils.IndependentFitter
         )
 
     def test_dataset_perform_single_spectrum_fit_set_correct_fitter(self):
         self.ds._set_prefitter()
-        self.assertEqual(type(self.ds.fitter), CorziliusNMR.utils.Prefitter)
+        self.assertEqual(type(self.ds.fitter), screamlab.utils.Prefitter)
 
     def test_init_dataset_lmfit_result_handler(self):
         self.assertEqual(
             type(self.ds.lmfit_result_handler),
-            CorziliusNMR.io.LmfitResultHandler,
+            screamlab.io.LmfitResultHandler,
         )
 
     def test_calculate_peak_intensities_prefit_result_setter(self):
@@ -543,14 +537,14 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(5)
         for nr, spectrum in enumerate(self.ds.spectra):
             spectrum.tpol = nr * 2
-        b_list = CorziliusNMR.dataset.BuildupList()
+        b_list = screamlab.dataset.BuildupList()
         b_list._set_tpol(self.ds.spectra)
         self.assertListEqual(b_list.tpol, [0, 2, 4, 6, 8])
 
     def test_buildup_list_set_intensity_one_peak_voigt(self):
         self.add_n_spectra(5)
         self.ds.add_peak(250)
-        b_list = CorziliusNMR.dataset.BuildupList()
+        b_list = screamlab.dataset.BuildupList()
         b_list._set_tpol(self.ds.spectra)
         self.ds._set_single_fitter()
         result = self.ds.fitter.fit()
@@ -570,7 +564,7 @@ class TestDataset(unittest.TestCase):
         self.assertListEqual(b_list.intensity, result_list)
 
     def test_sort_lists(self):
-        b_list = CorziliusNMR.dataset.BuildupList()
+        b_list = screamlab.dataset.BuildupList()
         b_list.tpol = [1, 2, 4, 8, 16, 128, 256, 32, 64]
         b_list.intensity = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         b_list._sort_lists()

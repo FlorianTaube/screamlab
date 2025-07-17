@@ -2,7 +2,7 @@ import unittest
 import os
 import lmfit
 import shutil
-from CorziliusNMR import settings, dataset
+from screamlab import settings, dataset
 
 
 @unittest.skipIf(

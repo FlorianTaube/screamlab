@@ -1,6 +1,6 @@
 import unittest
 import os
-from CorziliusNMR.settings import Properties
+from screamlab.settings import Properties
 
 
 class TestProperties(unittest.TestCase):

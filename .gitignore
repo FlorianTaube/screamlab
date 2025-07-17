@@ -22,7 +22,7 @@
 /*.egg
 
 # Sphinx build
-#docs/_build
+docs/_build
 
 # tox venvs
 .tox

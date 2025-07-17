@@ -2,7 +2,7 @@ import unittest
 import lmfit
 import numpy as np
 import matplotlib.pyplot as plt
-from CorziliusNMR import dataset, settings, utils, functions
+from screamlab import dataset, settings, utils, functions
 
 
 class TestDataset(unittest.TestCase):

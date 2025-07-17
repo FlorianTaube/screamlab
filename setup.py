@@ -9,7 +9,7 @@ def read(filename):
 
 
 setuptools.setup(
-    name="CorziliusNMR",
+    name="screamlab",
     version=read("VERSION").strip(),
     description="Package for reproducible evaluation of SCREAM-DNP data.",
     long_description=read("README.rst"),

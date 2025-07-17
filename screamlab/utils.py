@@ -26,7 +26,7 @@ import copy
 import numpy as np
 import lmfit
 from pyDOE2 import lhs
-from CorziliusNMR import functions
+from screamlab import functions
 
 
 class Fitter:
@@ -37,7 +37,7 @@ class Fitter:
 
     Attributes
     ----------
-    dataset : :obj:`CorziliusNMR.ds.Dataset`
+    dataset : :obj:`screamlab.ds.Dataset`
         Containing spectra and peak information.
 
     """
@@ -339,7 +339,7 @@ class BuildupFitter:
 
     Attributes
     ----------
-    dataset:  :obj:`CorziliusNMR.ds.Dataset` containing peak
+    dataset:  :obj:`screamlab.ds.Dataset` containing peak
               intensity and polarization time information.
 
     """

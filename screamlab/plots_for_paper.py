@@ -1,23 +1,21 @@
-from CorziliusNMR import settings, dataset
+from screamlab import settings, dataset
 import sys
 
 props = settings.Properties()
-props.path_to_experiment = (
-    r"F:\NMR\Max\20230706_100mM_HN-P-OH_10mM_AUPOL_1p3mm_18kHz_DNP_100K"
-)
-props.expno = [25, 33]
+props.path_to_experiment = r"F:\ssNMR\20250120_S47F_150K"
+props.expno = [24, 32]
 props.prefit = True
 props.spectrum_for_prefit = -1
-props.buildup_types = ["biexponential", "exponential"]
-props.output_folder = r"C:\Users\Florian Taube\Desktop\Test\delta_DP"
+props.buildup_types = ["biexponential", "biexponential_with_offset"]
+props.output_folder = r"C:\Users\Florian Taube\Desktop\Test\GP-150"
 
 ds = dataset.Dataset()
 ds.props = props
-ds.add_peak(175, peak_sign="+", fitting_type="voigt")
-ds.add_peak(60, peak_sign="+", fitting_type="voigt")
-ds.add_peak(46, peak_sign="+", fitting_type="voigt")
-ds.add_peak(30, peak_sign="+")
-ds.add_peak(25, peak_sign="+")
+ds.add_peak(177, peak_sign="+", fitting_type="voigt")
+ds.add_peak(61, peak_sign="+", fitting_type="voigt")
+ds.add_peak(48, peak_sign="+", fitting_type="voigt")
+ds.add_peak(31, peak_sign="+")
+ds.add_peak(26, peak_sign="+")
 ds.start_analysis()
 sys.exit()
 props = settings.Properties()

@@ -266,7 +266,7 @@ class Properties:
         int, optional: Specifies the spectrum used for prefit.
 
         Default is -1, meaning the last spectrum in
-        :obj:`CorziliusNMR.settings.Spectra`.
+        :obj:`screamlab.settings.Spectra`.
 
         """
         return self._spectrum_for_prefit

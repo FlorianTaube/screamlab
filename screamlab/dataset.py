@@ -14,7 +14,7 @@ Classes:
 
 from datetime import datetime
 import numpy as np
-from CorziliusNMR import io, utils, settings, functions
+from screamlab import io, utils, settings, functions
 
 
 class Dataset:

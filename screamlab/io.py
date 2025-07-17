@@ -1,4 +1,4 @@
-"""io module of the CorziliusNMR package."""
+"""io module of the screamlab package."""
 
 import copy
 import csv
@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import nmrglue as ng
 import lmfit
-import CorziliusNMR
+import screamlab
 
 
 class TopspinImporter:
@@ -45,7 +45,7 @@ class TopspinImporter:
 
     def _add_spectrum(self):
         """Add a new spectrum to the ds."""
-        self._dataset.spectra.append(CorziliusNMR.dataset.Spectra())
+        self._dataset.spectra.append(screamlab.dataset.Spectra())
 
     def _get_physical_range(self):
         """
@@ -218,7 +218,7 @@ class ScreamImporter(TopspinImporter):
 
     def _gen_subspectrum(self):
         self._dataset.spectra[-1].x_axis, self._dataset.spectra[-1].y_axis = (
-            CorziliusNMR.functions.generate_subspec(
+            screamlab.functions.generate_subspec(
                 self._dataset.spectra[-1], self._dataset.props.subspec
             )
         )
@@ -234,7 +234,7 @@ class Exporter:
 
     Attributes
     ----------
-        dataset:  :obj:`CorziliusNMR.ds.Dataset` with all information aquired during fitting.
+        dataset:  :obj:`screamlab.ds.Dataset` with all information aquired during fitting.
 
     """
 
@@ -333,15 +333,13 @@ class Exporter:
             self.dataset.props.spectrum_for_prefit
         ]
         x_axis, y_axis = spectrum.x_axis, spectrum.y_axis
-        valdict = CorziliusNMR.functions.generate_spectra_param_dict(
+        valdict = screamlab.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.prefit.params
         )
         simspec = [0] * len(y_axis)
         for values in valdict.values():
             for val in values:
-                simspec = CorziliusNMR.functions.calc_peak(
-                    x_axis, simspec, val
-                )
+                simspec = screamlab.functions.calc_peak(x_axis, simspec, val)
         _, axs = plt.subplots(
             2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1]}
         )
@@ -403,7 +401,7 @@ class Exporter:
         colors = plt.get_cmap("viridis")
         norm = plt.Normalize(vmin=0, vmax=len(self.dataset.peak_list))
 
-        func_map = CorziliusNMR.functions.return_func_map()
+        func_map = screamlab.functions.return_func_map()
 
         for peak_nr, peak in enumerate(self.dataset.peak_list):
             peak_result = self.dataset.lmfit_result_handler.buildup_fit[
@@ -444,7 +442,7 @@ class Exporter:
 
     def _plot_global_each_individual(self):
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
-        param_dict = CorziliusNMR.functions.generate_spectra_param_dict(
+        param_dict = screamlab.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
 
@@ -464,7 +462,7 @@ class Exporter:
             )
 
             for params in param_list:
-                simspec = CorziliusNMR.functions.calc_peak(
+                simspec = screamlab.functions.calc_peak(
                     x_axis, simspec, params
                 )
 
@@ -499,7 +497,7 @@ class Exporter:
     def _plot_global_all_together(self):
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
 
-        param_dict = CorziliusNMR.functions.generate_spectra_param_dict(
+        param_dict = screamlab.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
 
@@ -530,7 +528,7 @@ class Exporter:
             residual = copy.deepcopy(y_axis)
 
             for params in param_list:
-                simspec = CorziliusNMR.functions.calc_peak(
+                simspec = screamlab.functions.calc_peak(
                     x_axis, simspec, params
                 )
 
@@ -601,13 +599,13 @@ class Exporter:
     def _print_buildup(self, f):
         for buildup_type in self.dataset.props.buildup_types:
             f.write(f"[{buildup_type}]\n")
-            header = CorziliusNMR.functions.buildup_header()
+            header = screamlab.functions.buildup_header()
             column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35, 10]
             f.write(
                 "".join(h.ljust(w) for h, w in zip(header, column_widths))
                 + "\n"
             )
-            format_mappings = CorziliusNMR.functions.format_mapping()
+            format_mappings = screamlab.functions.format_mapping()
             type_format = format_mappings.get(buildup_type, [])
             for result_nr, result in enumerate(
                 self.dataset.lmfit_result_handler.buildup_fit[buildup_type]
@@ -629,10 +627,10 @@ class Exporter:
                 )
 
     def _print_global_fit_results(self, f):
-        valdict = CorziliusNMR.functions.generate_spectra_param_dict(
+        valdict = screamlab.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.global_fit.params
         )
-        header = CorziliusNMR.functions.spectrum_fit_header()
+        header = screamlab.functions.spectrum_fit_header()
         column_widths = [25, 12, 15, 20, 15, 15, 22, 20, 20, 10]
         f.write(
             "".join(f"{h:<{w}}" for h, w in zip(header, column_widths)) + "\n"
@@ -647,7 +645,7 @@ class Exporter:
                 )
 
     def _get_prefit_string(self, f):
-        valdict = CorziliusNMR.functions.generate_spectra_param_dict(
+        valdict = screamlab.functions.generate_spectra_param_dict(
             self.dataset.lmfit_result_handler.prefit.params
         )
         widths = [25, 18, 20, 15, 15]
@@ -724,9 +722,9 @@ class Exporter:
                 f"{output_folder}/buildup_fit_result_{buildup_type}.txt"
             )
             with open(output_file_path, "w", encoding="utf-8") as f:
-                header = CorziliusNMR.functions.buildup_header()
+                header = screamlab.functions.buildup_header()
                 f.write(";".join(header) + "\n")
-                format_mappings = CorziliusNMR.functions.format_mapping()
+                format_mappings = screamlab.functions.format_mapping()
                 type_format = format_mappings.get(buildup_type, [])
                 for result_nr, result in enumerate(
                     self.dataset.lmfit_result_handler.buildup_fit[
@@ -778,10 +776,10 @@ class Exporter:
         )
 
         with open(output_file_path, "w", encoding="utf-8") as f:
-            valdict = CorziliusNMR.functions.generate_spectra_param_dict(
+            valdict = screamlab.functions.generate_spectra_param_dict(
                 self.dataset.lmfit_result_handler.global_fit.params
             )
-            header = CorziliusNMR.functions.spectrum_fit_header()
+            header = screamlab.functions.spectrum_fit_header()
             f.write(";".join(str(item) for item in header) + "\n")
             for delay_time in range(0, len(valdict[0])):
                 for val_nr, (_, values) in enumerate(valdict.items()):
@@ -885,15 +883,15 @@ class Exporter:
             round(values[delay_time][2], 3),
             round(values[delay_time][3], 3),
             round(
-                CorziliusNMR.functions.fwhm_lorentzian(values[delay_time][3]),
+                screamlab.functions.fwhm_lorentzian(values[delay_time][3]),
                 3,
             ),
             round(
-                CorziliusNMR.functions.fwhm_gaussian(values[delay_time][2]),
+                screamlab.functions.fwhm_gaussian(values[delay_time][2]),
                 3,
             ),
             round(
-                CorziliusNMR.functions.fwhm_voigt(
+                screamlab.functions.fwhm_voigt(
                     values[delay_time][2], values[delay_time][3]
                 ),
                 3,
@@ -920,7 +918,7 @@ class Exporter:
             "---",
             "---",
             round(
-                CorziliusNMR.functions.fwhm_gaussian(values[delay_time][2]),
+                screamlab.functions.fwhm_gaussian(values[delay_time][2]),
                 3,
             ),
             "---",
@@ -945,7 +943,7 @@ class Exporter:
             "---",
             round(values[delay_time][2], 3),
             round(
-                CorziliusNMR.functions.fwhm_lorentzian(values[delay_time][2]),
+                screamlab.functions.fwhm_lorentzian(values[delay_time][2]),
                 3,
             ),
             "---",

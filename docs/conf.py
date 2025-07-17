@@ -21,7 +21,7 @@ with open(
 ) as version_file:
     release_ = version_file.read().strip()
 
-project = "CorziliusNMR"
+project = "screamlab"
 copyright = "2024, Florian Taube"
 author = "Florian Taube"
 
@@ -158,7 +158,7 @@ html_favicon = ""
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "CorziliusNMR"
+htmlhelp_basename = "screamlab"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -183,8 +183,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "CorziliusNMR.tex",
-        "CorziliusNMR Documentation",
+        "screamlab.tex",
+        "screamlab Documentation",
         "Florian Taube",
         "manual",
     ),
@@ -196,7 +196,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, "CorziliusNMR", "CorziliusNMR Documentation", [author], 1)
+    (master_doc, "screamlab", "screamlab Documentation", [author], 1)
 ]
 
 
@@ -208,10 +208,10 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "CorziliusNMR",
-        "CorziliusNMR Documentation",
+        "screamlab",
+        "screamlab Documentation",
         author,
-        "CorziliusNMR",
+        "screamlab",
         "",
         "Miscellaneous",
     ),

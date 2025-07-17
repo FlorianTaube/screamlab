@@ -7,7 +7,7 @@ ignore-paths:
   - docs
 
 paths:
-  - CorziliusNMR/
+  - screamlab/
 
 inherits:
   - strictness_high
