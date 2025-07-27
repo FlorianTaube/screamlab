@@ -4,7 +4,7 @@
 Use cases
 =========
 
-This section provides several examples of how basic operations might be structured. A typical analysis routine is generally divided into two parts: first, the settings are defined using the :obj:`CorziliusNMR.settings.Properties` class, followed by the determination of peak information using :obj:`CorziliusNMR.datset.Dataset`.
+This section provides several examples of how basic operations might be structured. A typical analysis routine is generally divided into two parts: first, the settings are defined using the :obj:`screamlab.settings.Properties` class, followed by the determination of peak information using :obj:`screamlab.datset.Dataset`.
 
 Specifying properties
 =====================
@@ -13,7 +13,7 @@ This Python code is configuring properties related to an experiment, specificall
 .. code-block:: python
     :linenos:
 
-    from CorziliusNMR import settings, dataset
+    from screamlab import settings, dataset
 
     props = settings.Properties()
     props.path_to_experiment = r"/path/to/dataset"

@@ -1,7 +1,7 @@
-CorziliusNMR.settings module
+screamlab.settings module
 ----------------------------
 
-.. automodule:: CorziliusNMR.settings
+.. automodule:: screamlab.settings
    :members:
    :undoc-members:
    :show-inheritance:

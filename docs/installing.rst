@@ -1,13 +1,13 @@
 Installation
 ============
 
-Installing the CorziliusNMR package is as simple as installing any other Python package, as CorziliusNMR is available from the `Python Package Index (PyPI) <https://www.pypi.org/>`_. Simply open a terminal on your computer and type:
+Installing the screamlab package is as simple as installing any other Python package, as screamlab is available from the `Python Package Index (PyPI) <https://www.pypi.org/>`_. Simply open a terminal on your computer and type:
 
 .. code-block:: bash
 
-    pip install CorziliusNMR
+    pip install screamlab
 
-This will install the CorziliusNMR package (and all its dependencies) on your computer.
+This will install the screamlab package (and all its dependencies) on your computer.
 
 Of course, you need to have Python (and pip) installed before you can use the above command, and it is always advisable to install packages in a **virtual environment** of their own.
 
@@ -15,11 +15,11 @@ Hence, a more thorough sequence of events would be:
 
 #. Install Python (if it is not already installed on your system).
 
-#. Create a Python virtual environment for CorziliusNMR.
+#. Create a Python virtual environment for screamlab.
 
 #. Activate the newly created virtual environment.
 
-#. Install CorziliusNMR therein, using the above command.
+#. Install screamlab therein, using the above command.
 
 A few details for all these steps are given below.
 
@@ -39,9 +39,9 @@ The good news: Creating Python virtual environments is fairly simple:
 
 .. code-block:: bash
 
-    python3 -m venv CorziliusNMR
+    python3 -m venv screamlab
 
-This will create a Python virtual environment named ``CorziliusNMR`` in the current directory. Of course, you can give your virtual environment any name you like. However, be careful with spaces and special characters, depending on your system.
+This will create a Python virtual environment named ``screamlab`` in the current directory. Of course, you can give your virtual environment any name you like. However, be careful with spaces and special characters, depending on your system.
 
 
 Activate the newly created virtual environment
@@ -51,23 +51,23 @@ A Python virtual environment needs to be activated. This is usually done using t
 
 .. code-block:: bash
 
-    source CorziliusNMR/bin/activate
+    source screamlab/bin/activate
 
-Assuming in this case that your virtual environment is called ``CorziliusNMR`` and that you are in the same path where you just created your virtual environment.
+Assuming in this case that your virtual environment is called ``screamlab`` and that you are in the same path where you just created your virtual environment.
 
 Deactivating is simple as well, once you are done. Either close the terminal, or issue the command ``deactivate``.
 
 
-Install CorziliusNMR
+Install screamlab
 --------------------
 
-Once you activated your virtual environment where you want to install the CorziliusNMR package in, proceed as given above:
+Once you activated your virtual environment where you want to install the screamlab package in, proceed as given above:
 
 .. code-block:: bash
 
-    pip install CorziliusNMR
+    pip install screamlab
 
-This will download the CorziliusNMR package from the `Python Package Index (PyPI) <https://www.pypi.org/>`_ and install it locally. All dependencies will be installed as well.
+This will download the screamlab package from the `Python Package Index (PyPI) <https://www.pypi.org/>`_ and install it locally. All dependencies will be installed as well.
 
 
 .. note::

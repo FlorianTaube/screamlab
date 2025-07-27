@@ -1,8 +1,8 @@
 ============
-CorziliusNMR
+screamlab
 ============
 
-Welcome! This is CorziliusNMR, a Python package for the evaluation of relaxation processes in multi-spin system observed by  SCREAM-DNP (Specific Cross Relaxation Enhancement by Active Motions under Dynamic Nuclear Polarization).
+Welcome! This is screamlab, a Python package for the evaluation of relaxation processes in multi-spin system observed by  SCREAM-DNP (Specific Cross Relaxation Enhancement by Active Motions under Dynamic Nuclear Polarization).
 
 
 Features
@@ -29,17 +29,17 @@ And to make it even more convenient for users and future-proof:
 
 
 .. warning::
-    CorziliusNMR is currently under active development and still considered in Beta development state. Therefore, expect frequent changes in features and public APIs that may break your own code. Nevertheless, feedback as well as feature requests are highly welcome.
+    screamlab is currently under active development and still considered in Beta development state. Therefore, expect frequent changes in features and public APIs that may break your own code. Nevertheless, feedback as well as feature requests are highly welcome.
 
 
 Installation
 ============
 
-To install the CorziliusNMR package on your computer (sensibly within a Python virtual environment), open a terminal (activate your virtual environment), and type in the following:
+To install the screamlab package on your computer (sensibly within a Python virtual environment), open a terminal (activate your virtual environment), and type in the following:
 
 .. code-block:: bash
 
-    pip install CorziliusNMR
+    pip install screamlab
 
 
 License

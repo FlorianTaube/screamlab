@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Developer documentation &mdash; CorziliusNMR 0.1.0.dev80 documentation</title>
+  <title>Developer documentation &mdash; screamlab 0.1.0.dev83 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=cdeda9ff"></script>
+      <script src="_static/documentation_options.js?v=fa152395"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            CorziliusNMR
+            screamlab
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -66,7 +66,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/modules.html">CorziliusNMR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">API documentation</a></li>
 </ul>
 
         </div>
@@ -75,7 +75,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">CorziliusNMR</a>
+          <a href="index.html">screamlab</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -95,16 +95,16 @@
              
   <section id="developer-documentation">
 <h1>Developer documentation<a class="headerlink" href="#developer-documentation" title="Link to this heading"></a></h1>
-<p>Welcome to the developer documentation of the CorziliusNMR package. Unlike the <a class="reference internal" href="index.html"><span class="doc">API documentation</span></a>, this part gives some general background information for developers who want to actively contribute to the project.</p>
+<p>Welcome to the developer documentation of the screamlab package. Unlike the <a class="reference internal" href="index.html"><span class="doc">API documentation</span></a>, this part gives some general background information for developers who want to actively contribute to the project.</p>
 <section id="virtual-environment">
 <h2>Virtual environment<a class="headerlink" href="#virtual-environment" title="Link to this heading"></a></h2>
 <p>The whole development should take place inside a virtual python environment that should be located <em>outside</em> the project directory.</p>
 <p>To create a new virtual python environment, open a terminal and change to a a directory where the virtual environment should reside. Then type something like:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>CorziliusNMR
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>screamlab
 </pre></div>
 </div>
-<p>This will create a virtual environment in the directory “CorziliusNMR”. To activate this virtual environment, use:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>CorziliusNMR/bin/activate
+<p>This will create a virtual environment in the directory “screamlab”. To activate this virtual environment, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>screamlab/bin/activate
 </pre></div>
 </div>
 <p>To deactivate, the command would simply be:</p>
@@ -123,11 +123,11 @@
 </section>
 <section id="directory-layout">
 <h2>Directory layout<a class="headerlink" href="#directory-layout" title="Link to this heading"></a></h2>
-<p>The CorziliusNMR package follows good practice of the Python community regarding directory layout. As there will be several subpackages available, these reside each in a separate directory containing its own <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file. All packages/modules reside below the <code class="docutils literal notranslate"><span class="pre">CorziliusNMR</span></code> directory of the project root. The <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory follows the same structure and contains all the module tests. Generally, the CorziliusNMR package should be developed test-driven (test-first) as much as possible.</p>
+<p>The screamlab package follows good practice of the Python community regarding directory layout. As there will be several subpackages available, these reside each in a separate directory containing its own <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file. All packages/modules reside below the <code class="docutils literal notranslate"><span class="pre">screamlab</span></code> directory of the project root. The <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory follows the same structure and contains all the module tests. Generally, the screamlab package should be developed test-driven (test-first) as much as possible.</p>
 <p>(This) documentation resides inside the <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory of the project root. The auto-generated <a class="reference internal" href="index.html"><span class="doc">API documentation</span></a> is in its own directory.</p>
 <p>A general overview of the overall package structure:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bin/
-CorziliusNMR/
+screamlab/
 api/
 tests/
 </pre></div>
@@ -141,11 +141,11 @@ tests/
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>black
 </pre></div>
 </div>
-<p>or install the CorziliusNMR package with the appropriate dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>CorziliusNMR<span class="o">[</span>dev<span class="o">]</span>
+<p>or install the screamlab package with the appropriate dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>screamlab<span class="o">[</span>dev<span class="o">]</span>
 </pre></div>
 </div>
-<p>In case you are installing the CorziliusNMR package in editable fashion (as usual for development purposes), use the following command from <em>within</em> the package directory (<em>i.e.</em>, the one containing the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file):</p>
+<p>In case you are installing the screamlab package in editable fashion (as usual for development purposes), use the following command from <em>within</em> the package directory (<em>i.e.</em>, the one containing the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -157,17 +157,17 @@ tests/
 </section>
 <section id="docstring-format">
 <h2>Docstring format<a class="headerlink" href="#docstring-format" title="Link to this heading"></a></h2>
-<p>The Docstring format used within the code of the CorziliusNMR package is “NumPy”. For convenience, set your IDE accordingly.</p>
+<p>The Docstring format used within the code of the screamlab package is “NumPy”. For convenience, set your IDE accordingly.</p>
 <p>For PyCharm, the settings can be found in <code class="docutils literal notranslate"><span class="pre">Preferences</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">Tools</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">Python</span> <span class="pre">Integrated</span> <span class="pre">Tools</span></code>. Here, you find a section “Docstrings” where you can select the Docstring format from a number of different formats.</p>
 </section>
 <section id="unittests-and-test-driven-development">
 <h2>Unittests and test driven development<a class="headerlink" href="#unittests-and-test-driven-development" title="Link to this heading"></a></h2>
-<p>Developing the CorziliusNMR package code should be done test-driven wherever possible. The tests reside in the <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory in the respective subpackage directory (see above).</p>
+<p>Developing the screamlab package code should be done test-driven wherever possible. The tests reside in the <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory in the respective subpackage directory (see above).</p>
 <p>Tests should be written using the Python <a class="reference external" href="https://docs.python.org/3/library/unittest.html#module-unittest" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">unittest</span></code></a> framework. Make sure that tests are independent of the respective local environment and clean up afterwards (using appropriate <code class="docutils literal notranslate"><span class="pre">teardown</span></code> methods).</p>
 </section>
 <section id="metacode-conveniently-adding-features">
 <h2>Metacode: Conveniently adding features<a class="headerlink" href="#metacode-conveniently-adding-features" title="Link to this heading"></a></h2>
-<p>The CorziliusNMR package is maintained using the <a class="reference external" href="https://python.docs.meta-co.de/">pymetacode Python package</a>. In short, use the pymetacode <code class="docutils literal notranslate"><span class="pre">pymeta</span></code> command from the command line/terminal whenever you want to add modules, classes, or functions. This will ensure both a consistent overall style and organisation and automatically create the respective unittest stubs for you.</p>
+<p>The screamlab package is maintained using the <a class="reference external" href="https://python.docs.meta-co.de/">pymetacode Python package</a>. In short, use the pymetacode <code class="docutils literal notranslate"><span class="pre">pymeta</span></code> command from the command line/terminal whenever you want to add modules, classes, or functions. This will ensure both a consistent overall style and organisation and automatically create the respective unittest stubs for you.</p>
 </section>
 <section id="setting-up-the-documentation-build-system">
 <h2>Setting up the documentation build system<a class="headerlink" href="#setting-up-the-documentation-build-system" title="Link to this heading"></a></h2>
@@ -178,11 +178,11 @@ pip<span class="w"> </span>install<span class="w"> </span>sphinx-rtd-theme
 pip<span class="w"> </span>install<span class="w"> </span>sphinx-multiversion
 </pre></div>
 </div>
-<p>Alternatively, you may simply install CorziliusNMR with the required dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>CorziliusNMR<span class="o">[</span>docs<span class="o">]</span>
+<p>Alternatively, you may simply install screamlab with the required dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>screamlab<span class="o">[</span>docs<span class="o">]</span>
 </pre></div>
 </div>
-<p>In case you are installing the CorziliusNMR package in editable fashion (as usual for development purposes), use the following command from <em>within</em> the package directory (<em>i.e.</em>, the one containing the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file):</p>
+<p>In case you are installing the screamlab package in editable fashion (as usual for development purposes), use the following command from <em>within</em> the package directory (<em>i.e.</em>, the one containing the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">docs</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -203,7 +203,7 @@ pip<span class="w"> </span>install<span class="w"> </span>sphinx-multiversion
 </section>
 <section id="static-code-analysis-with-prospector">
 <span id="sec-prospector"></span><h2>Static code analysis with Prospector<a class="headerlink" href="#static-code-analysis-with-prospector" title="Link to this heading"></a></h2>
-<p>Static code analysis can be performed using <a class="reference external" href="http://prospector.landscape.io/en/master/">Prospector</a>. First, install the necessary tools into the virtual environment created for the CorziliusNMR package:</p>
+<p>Static code analysis can be performed using <a class="reference external" href="http://prospector.landscape.io/en/master/">Prospector</a>. First, install the necessary tools into the virtual environment created for the screamlab package:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>prospector<span class="o">[</span>with_pyroma<span class="o">]</span>
 </pre></div>
 </div>
@@ -227,7 +227,7 @@ pip<span class="w"> </span>install<span class="w"> </span>sphinx-multiversion
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Florian Taube.</p>
+    <p>&#169; Copyright 2024-25, Florian Taube.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

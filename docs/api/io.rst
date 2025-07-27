@@ -1,7 +1,7 @@
-CorziliusNMR.io module
+screamlab.io module
 ---------------------------
 
-.. automodule:: CorziliusNMR.io
+.. automodule:: screamlab.io
    :members:
    :undoc-members:
    :show-inheritance:

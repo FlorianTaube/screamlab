@@ -73,7 +73,7 @@ Before creating a release, make sure that the tests pass and that static code an
     make tests
     make check
 
-Developers should have setup automatic code formatting using Black as ``pre-commit`` git hook. To this end, a helper script ``./bin/formatPythonCode.sh`` is provided. See the :doc:`contributing` guide for further details. Just in case you would want to manually trigger the code formatting, run:
+Developers should have setup automatic code formatting using Black as ``pre-commit`` git hook. To this end, a helper script ``./bin/formatPythonCode.sh`` is provided. Just in case you would want to manually trigger the code formatting, run:
 
 .. code-block:: bash
 

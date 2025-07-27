@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Use cases &mdash; CorziliusNMR 0.1.0.dev80 documentation</title>
+  <title>Use cases &mdash; screamlab 0.1.0.dev83 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=cdeda9ff"></script>
+      <script src="_static/documentation_options.js?v=fa152395"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            CorziliusNMR
+            screamlab
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -59,7 +59,7 @@
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developer documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api/modules.html">CorziliusNMR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">API documentation</a></li>
 </ul>
 
         </div>
@@ -68,7 +68,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">CorziliusNMR</a>
+          <a href="index.html">screamlab</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -88,11 +88,11 @@
              
   <section id="use-cases">
 <span id="id1"></span><h1>Use cases<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h1>
-<p>This section provides several examples of how basic operations might be structured. A typical analysis routine is generally divided into two parts: first, the settings are defined using the <code class="xref py py-obj docutils literal notranslate"><span class="pre">CorziliusNMR.settings.Properties</span></code> class, followed by the determination of peak information using <code class="xref py py-obj docutils literal notranslate"><span class="pre">CorziliusNMR.datset.Dataset</span></code>.</p>
+<p>This section provides several examples of how basic operations might be structured. A typical analysis routine is generally divided into two parts: first, the settings are defined using the <code class="xref py py-obj docutils literal notranslate"><span class="pre">screamlab.settings.Properties</span></code> class, followed by the determination of peak information using <code class="xref py py-obj docutils literal notranslate"><span class="pre">screamlab.datset.Dataset</span></code>.</p>
 <section id="specifying-properties">
 <h2>Specifying properties<a class="headerlink" href="#specifying-properties" title="Link to this heading"></a></h2>
 <p>This Python code is configuring properties related to an experiment, specifically designed to handle SCREAM-DNP data provided from Bruker’s TopSpin software. Important in any cases is to specify the path to a folder where the experiments are saved, determine the experiments to be analyzed (using experiment numbers), and defines the output folder for the results. The experiments can be provided in two different formats. A list like [1,8] means that all experiments from 1 to 8 should be included, or it can be more specific by defining a list with all the experiments, e.g., [1,5,9,12,13,18].”</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">CorziliusNMR</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span><span class="p">,</span> <span class="n">dataset</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span><span class="w"> </span><span class="nn">screamlab</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span><span class="p">,</span> <span class="n">dataset</span>
 <span class="linenos">2</span>
 <span class="linenos">3</span><span class="n">props</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">Properties</span><span class="p">()</span>
 <span class="linenos">4</span><span class="n">props</span><span class="o">.</span><span class="n">path_to_experiment</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;/path/to/dataset&quot;</span>
@@ -143,7 +143,7 @@ Also it can be specified wich buildup model should be used for evaluation. There
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Florian Taube.</p>
+    <p>&#169; Copyright 2024-25, Florian Taube.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

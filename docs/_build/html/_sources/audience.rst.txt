@@ -2,7 +2,7 @@
 Target audience
 ===============
 
-Who is the target audience of the CorziliusNMR package? Is it interesting for me?
+Who is the target audience of the screamlab package? Is it interesting for me?
 
 People who are interested in performing SCREAM-DNP experiments
 ==============================================================

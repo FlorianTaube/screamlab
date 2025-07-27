@@ -1,5 +1,5 @@
-CorziliusNMR
-============
+API documentation
+=================
 
 .. toctree::
    :maxdepth: 2

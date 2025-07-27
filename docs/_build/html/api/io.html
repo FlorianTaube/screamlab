@@ -6,21 +6,21 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CorziliusNMR.io module &mdash; CorziliusNMR 0.1.0.dev80 documentation</title>
+  <title>screamlab.io module &mdash; screamlab 0.1.0.dev83 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=cdeda9ff"></script>
+      <script src="../_static/documentation_options.js?v=fa152395"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CorziliusNMR.settings module" href="settings.html" />
-    <link rel="prev" title="CorziliusNMR.functions module" href="functions.html" /> 
+    <link rel="next" title="screamlab.settings module" href="settings.html" />
+    <link rel="prev" title="screamlab.functions module" href="functions.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            CorziliusNMR
+            screamlab
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -55,12 +55,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CorziliusNMR</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="dataset.html">CorziliusNMR.dataset module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="functions.html">CorziliusNMR.functions module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">CorziliusNMR.io module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="settings.html">CorziliusNMR.settings module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.html">CorziliusNMR.utils module</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dataset.html">screamlab.dataset module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="functions.html">screamlab.functions module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">screamlab.io module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">screamlab.settings module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">screamlab.utils module</a></li>
 </ul>
 </li>
 </ul>
@@ -71,7 +71,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">CorziliusNMR</a>
+          <a href="../index.html">screamlab</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -79,8 +79,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">CorziliusNMR</a></li>
-      <li class="breadcrumb-item active">CorziliusNMR.io module</li>
+          <li class="breadcrumb-item"><a href="modules.html">API documentation</a></li>
+      <li class="breadcrumb-item active">screamlab.io module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/io.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -90,19 +90,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="corziliusnmr-io-module">
-<h1>CorziliusNMR.io module<a class="headerlink" href="#corziliusnmr-io-module" title="Link to this heading"></a></h1>
-<p>io module of the CorziliusNMR package.</p>
+  <section id="screamlab-io-module">
+<h1>screamlab.io module<a class="headerlink" href="#screamlab-io-module" title="Link to this heading"></a></h1>
+<p>io module of the screamlab package.</p>
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CorziliusNMR.io.</span></span><span class="sig-name descname"><span class="pre">TopspinImporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.io.</span></span><span class="sig-name descname"><span class="pre">TopspinImporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class for importing NMR data from Bruker’s TopSpin software.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CorziliusNMR.io.</span></span><span class="sig-name descname"><span class="pre">ScreamImporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.io.</span></span><span class="sig-name descname"><span class="pre">ScreamImporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TopspinImporter</span></code></p>
 <p>Class for importing and processing SCREAM DNP data.</p>
 <p>Automatically reads information about x- and y-axis (chemical shift and intensitys),
@@ -118,14 +118,14 @@ Automatically normalizes the  intensitys to the number of scans.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CorziliusNMR.io.</span></span><span class="sig-name descname"><span class="pre">Pseudo2DImporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.io.</span></span><span class="sig-name descname"><span class="pre">Pseudo2DImporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TopspinImporter</span></code></p>
 <p>Not implemented yet.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CorziliusNMR.io.</span></span><span class="sig-name descname"><span class="pre">Exporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.io.</span></span><span class="sig-name descname"><span class="pre">Exporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A class to handle exporting and printing ds information.</p>
 <dl class="py attribute">
@@ -133,7 +133,7 @@ Automatically normalizes the  intensitys to the number of scans.</p>
 <span class="sig-name descname"><span class="pre">dataset</span></span></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CorziliusNMR.ds.Dataset</span></code> with all information aquired during fitting.</p>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">screamlab.ds.Dataset</span></code> with all information aquired during fitting.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -185,7 +185,7 @@ and normalizing by the number of scans. Additionally, outputs them in CSV format
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CorziliusNMR.io.</span></span><span class="sig-name descname"><span class="pre">LmfitResultHandler</span></span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.io.</span></span><span class="sig-name descname"><span class="pre">LmfitResultHandler</span></span></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>A class to store the results of fitting operations.</p>
 <p>This class stores and manages the results from different types of fits:
@@ -239,14 +239,14 @@ for the various fit results to facilitate later analysis and processing.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="functions.html" class="btn btn-neutral float-left" title="CorziliusNMR.functions module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="settings.html" class="btn btn-neutral float-right" title="CorziliusNMR.settings module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="functions.html" class="btn btn-neutral float-left" title="screamlab.functions module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="settings.html" class="btn btn-neutral float-right" title="screamlab.settings module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Florian Taube.</p>
+    <p>&#169; Copyright 2024-25, Florian Taube.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

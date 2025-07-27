@@ -1,7 +1,7 @@
-CorziliusNMR.dataset module
+screamlab.dataset module
 ---------------------------
 
-.. automodule:: CorziliusNMR.dataset
+.. automodule:: screamlab.dataset
    :members:
    :undoc-members:
    :show-inheritance:

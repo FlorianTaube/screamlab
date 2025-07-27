@@ -22,7 +22,7 @@ with open(
     release_ = version_file.read().strip()
 
 project = "screamlab"
-copyright = "2024, Florian Taube"
+copyright = "2024-25, Florian Taube"
 author = "Florian Taube"
 
 # The short X.Y version
@@ -60,7 +60,7 @@ templates_path = ["_templates"]
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = [".rst", ".md"]
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext"}
 
 # The master toctree document.
 master_doc = "index"

@@ -2,7 +2,7 @@
 Developer documentation
 =======================
 
-Welcome to the developer documentation of the CorziliusNMR package. Unlike the :doc:`API documentation <index>`, this part gives some general background information for developers who want to actively contribute to the project.
+Welcome to the developer documentation of the screamlab package. Unlike the :doc:`API documentation <index>`, this part gives some general background information for developers who want to actively contribute to the project.
 
 
 Virtual environment
@@ -14,13 +14,13 @@ To create a new virtual python environment, open a terminal and change to a a di
 
 .. code-block:: bash
 
-    python3 -m venv CorziliusNMR
+    python3 -m venv screamlab
 
-This will create a virtual environment in the directory "CorziliusNMR". To activate this virtual environment, use:
+This will create a virtual environment in the directory "screamlab". To activate this virtual environment, use:
 
 .. code-block:: bash
 
-    source CorziliusNMR/bin/activate
+    source screamlab/bin/activate
 
 To deactivate, the command would simply be:
 
@@ -47,7 +47,7 @@ Make sure to set it to executable and have a line break (aka: new or empty line)
 Directory layout
 ================
 
-The CorziliusNMR package follows good practice of the Python community regarding directory layout. As there will be several subpackages available, these reside each in a separate directory containing its own ``__init__.py`` file. All packages/modules reside below the ``CorziliusNMR`` directory of the project root. The ``tests`` directory follows the same structure and contains all the module tests. Generally, the CorziliusNMR package should be developed test-driven (test-first) as much as possible.
+The screamlab package follows good practice of the Python community regarding directory layout. As there will be several subpackages available, these reside each in a separate directory containing its own ``__init__.py`` file. All packages/modules reside below the ``screamlab`` directory of the project root. The ``tests`` directory follows the same structure and contains all the module tests. Generally, the screamlab package should be developed test-driven (test-first) as much as possible.
 
 (This) documentation resides inside the ``docs`` directory of the project root. The auto-generated :doc:`API documentation <index>` is in its own directory.
 
@@ -56,7 +56,7 @@ A general overview of the overall package structure:
 .. code-block:: bash
 
     bin/
-    CorziliusNMR/
+    screamlab/
     api/
     tests/
 
@@ -74,13 +74,13 @@ To use Black, it needs to be installed. Either install it separately
 
     pip install black
 
-or install the CorziliusNMR package with the appropriate dependencies:
+or install the screamlab package with the appropriate dependencies:
 
 .. code-block:: bash
 
-    pip install CorziliusNMR[dev]
+    pip install screamlab[dev]
 
-In case you are installing the CorziliusNMR package in editable fashion (as usual for development purposes), use the following command from *within* the package directory (*i.e.*, the one containing the ``setup.py`` file):
+In case you are installing the screamlab package in editable fashion (as usual for development purposes), use the following command from *within* the package directory (*i.e.*, the one containing the ``setup.py`` file):
 
 .. code-block::
 
@@ -98,7 +98,7 @@ For static code analysis using Prospector, see the respective :ref:`section <sec
 Docstring format
 ================
 
-The Docstring format used within the code of the CorziliusNMR package is "NumPy". For convenience, set your IDE accordingly.
+The Docstring format used within the code of the screamlab package is "NumPy". For convenience, set your IDE accordingly.
 
 For PyCharm, the settings can be found in ``Preferences`` > ``Tools`` > ``Python Integrated Tools``. Here, you find a section "Docstrings" where you can select the Docstring format from a number of different formats.
 
@@ -106,7 +106,7 @@ For PyCharm, the settings can be found in ``Preferences`` > ``Tools`` > ``Python
 Unittests and test driven development
 =====================================
 
-Developing the CorziliusNMR package code should be done test-driven wherever possible. The tests reside in the ``tests`` directory in the respective subpackage directory (see above).
+Developing the screamlab package code should be done test-driven wherever possible. The tests reside in the ``tests`` directory in the respective subpackage directory (see above).
 
 Tests should be written using the Python :mod:`unittest` framework. Make sure that tests are independent of the respective local environment and clean up afterwards (using appropriate ``teardown`` methods).
 
@@ -114,7 +114,7 @@ Tests should be written using the Python :mod:`unittest` framework. Make sure th
 Metacode: Conveniently adding features
 ======================================
 
-The CorziliusNMR package is maintained using the `pymetacode Python package <https://python.docs.meta-co.de/>`_. In short, use the pymetacode ``pymeta`` command from the command line/terminal whenever you want to add modules, classes, or functions. This will ensure both a consistent overall style and organisation and automatically create the respective unittest stubs for you.
+The screamlab package is maintained using the `pymetacode Python package <https://python.docs.meta-co.de/>`_. In short, use the pymetacode ``pymeta`` command from the command line/terminal whenever you want to add modules, classes, or functions. This will ensure both a consistent overall style and organisation and automatically create the respective unittest stubs for you.
 
 
 Setting up the documentation build system
@@ -132,13 +132,13 @@ To install the necessary Python dependencies, create a virtual environment, e.g.
     pip install sphinx-multiversion
 
 
-Alternatively, you may simply install CorziliusNMR with the required dependencies:
+Alternatively, you may simply install screamlab with the required dependencies:
 
 .. code-block:: bash
 
-    pip install CorziliusNMR[docs]
+    pip install screamlab[docs]
 
-In case you are installing the CorziliusNMR package in editable fashion (as usual for development purposes), use the following command from *within* the package directory (*i.e.*, the one containing the ``setup.py`` file):
+In case you are installing the screamlab package in editable fashion (as usual for development purposes), use the following command from *within* the package directory (*i.e.*, the one containing the ``setup.py`` file):
 
 .. code-block::
 
@@ -162,7 +162,7 @@ To build the documentation for all releases and the current master branch:
 Static code analysis with Prospector
 ====================================
 
-Static code analysis can be performed using `Prospector <http://prospector.landscape.io/en/master/>`_. First, install the necessary tools into the virtual environment created for the CorziliusNMR package:
+Static code analysis can be performed using `Prospector <http://prospector.landscape.io/en/master/>`_. First, install the necessary tools into the virtual environment created for the screamlab package:
 
 .. code-block:: bash
 
