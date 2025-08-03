@@ -56,7 +56,7 @@ class TopspinImporter:
         """
         ranges = {}
         with open(
-            f"{self.file}\\pdata\\{self._dataset.props.procno}\\procs",
+            rf"{self.file}/pdata/{self._dataset.props.procno}/procs",
             "r",
             encoding="utf-8",
         ) as procs_file:
@@ -76,7 +76,7 @@ class TopspinImporter:
         """
         datapoints = None
         with open(
-            f"{self.file}\\pdata\\{self._dataset.props.procno}\\procs",
+            rf"{self.file}/pdata/{self._dataset.props.procno}/procs",
             "r",
             encoding="utf-8",
         ) as procs_file:
@@ -129,7 +129,7 @@ class ScreamImporter(TopspinImporter):
 
     def _set_number_of_scans(self):
         """Set the number of scans for the last spectrum in the ds."""
-        with open(f"{self.file}\\acqu", "r", encoding="utf-8") as acqu_file:
+        with open(rf"{self.file}/acqu", "r", encoding="utf-8") as acqu_file:
             for acqu_line in acqu_file:
                 if "##$NS=" in acqu_line:
                     self._dataset.spectra[-1].number_of_scans = int(
@@ -155,7 +155,7 @@ class ScreamImporter(TopspinImporter):
         flag = False
         param_line = ""
         param = None
-        with open(f"{self.file}\\acqus", "r", encoding="utf-8") as acqus_file:
+        with open(rf"{self.file}/acqus", "r", encoding="utf-8") as acqus_file:
             for acqus_line in acqus_file:
                 if "##" in acqus_line:
                     flag = False
@@ -202,7 +202,7 @@ class ScreamImporter(TopspinImporter):
     def _set_y_data(self):
         """Set the y-axis data for the last spectrum in the ds."""
         dic, y_data = ng.bruker.read_pdata(
-            f"{self.file}\\pdata\\" f"{self._dataset.props.procno}"
+            rf"{self.file}/pdata/" f"{self._dataset.props.procno}"
         )
         udic = ng.bruker.guess_udic(dic, y_data)
         uc = ng.fileiobase.uc_from_udic(udic)

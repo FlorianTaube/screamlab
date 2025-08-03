@@ -1,6 +1,7 @@
 import unittest
 import screamlab.dataset
 from screamlab import io, dataset
+from pathlib import Path
 import os
 
 
@@ -15,13 +16,16 @@ class TestDataset(unittest.TestCase):
         self.scream_importer._dataset.spectra.append(
             screamlab.dataset.Spectra()
         )
-        self.scream_importer.file = r"..\tests\SCREAM_Test_Files\Alanin\8"
+
+        test_dir = Path(__file__).parent
+        self.scream_importer.file = rf"{test_dir}/SCREAM_Test_Files/Alanin/8"
 
     def set_up_real_dataset(self):
+        test_dir = Path(__file__).parent
         self.scream_importer._dataset.props.procno = 103
         self.scream_importer._dataset.props.expno = [1, 8]
         self.scream_importer._dataset.props.path_to_experiment = (
-            r"..\tests\SCREAM_Test_Files/Alanin"
+            rf"{test_dir}/SCREAM_Test_Files/Alanin"
         )
 
     def test_scream_init_set_dataset(self):

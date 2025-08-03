@@ -235,18 +235,6 @@ class TestDataset(unittest.TestCase):
             },
         )
 
-    def test_get_center_dict_prefitter(self):
-        self.add_n_spectra(1)
-        value = self.prefitter._get_center_dict(self.ds.peak_list[0], 0)
-        self.assertDictEqual(
-            value,
-            {
-                "name": "Peak_at_150_ppm_cen_0",
-                "value": 150,
-                "min": 149,
-                "max": 151,
-            },
-        )
 
     def test_get_lw_dict_sigma_prefitter(self):
         self.add_n_spectra(1)

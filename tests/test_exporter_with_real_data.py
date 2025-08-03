@@ -2,6 +2,7 @@ import unittest
 import os
 import lmfit
 import shutil
+from pathlib import Path
 from screamlab import settings, dataset
 
 
@@ -11,7 +12,8 @@ from screamlab import settings, dataset
 class TestDataset(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        output_folder = r"..\tests\SCREAM_Test_Files\Alanin\result"
+        test_dir = Path(__file__).parent
+        output_folder = rf"{test_dir}\SCREAM_Test_Files\Alanin\result"
         if os.path.exists(output_folder):
             shutil.rmtree(output_folder)
         self.props = settings.Properties()
@@ -27,8 +29,8 @@ class TestDataset(unittest.TestCase):
         self.props.spectrum_fit_type = "global"
         self.props.expno = [1, 8]
         self.props.procno = 103
-        self.props.path_to_experiment = r"..\tests\SCREAM_Test_Files\Alanin"
-        self.props.output_folder = r"..\tests\SCREAM_Test_Files\Alanin\result"
+        self.props.path_to_experiment = rf"{test_dir}/SCREAM_Test_Files/Alanin"
+        self.props.output_folder = rf"{test_dir}/SCREAM_Test_Files/Alanin/result"
         self.ds = dataset.Dataset()
         self.ds.props = self.props
         self.ds.add_peak(-16.5, peak_sign="+", fitting_type="lorentz")
@@ -39,51 +41,51 @@ class TestDataset(unittest.TestCase):
 
     def test_buildup_plot_exists(self):
         self.assertTrue(
-            os.path.exists(f"{self.props.output_folder}\\buildup_plots")
+            os.path.exists(rf"{self.props.output_folder}/buildup_plots")
         )
 
     def test_lmfit_reports_exists(self):
         self.assertTrue(
-            os.path.exists(f"{self.props.output_folder}\\lmfit_reports")
+            os.path.exists(rf"{self.props.output_folder}/lmfit_reports")
         )
 
     def test_spectra_exists(self):
         self.assertTrue(
-            os.path.exists(f"{self.props.output_folder}\\spectra")
+            os.path.exists(rf"{self.props.output_folder}/spectra")
         )
 
     def test_spec_deconv_exists(self):
         self.assertTrue(
             os.path.exists(
-                f"{self.props.output_folder}\\spectral_deconvolution_plots"
+                rf"{self.props.output_folder}/spectral_deconvolution_plots"
             )
         )
 
     def test_tabular_results_exists(self):
         self.assertTrue(
-            os.path.exists(f"{self.props.output_folder}\\tabular_results")
+            os.path.exists(rf"{self.props.output_folder}/tabular_results")
         )
 
     def test_buildup_plots_contains_correct_number_of_files(self):
         self.assertEqual(
-            len(os.listdir(f"{self.props.output_folder}\\buildup_plots")), 10
+            len(os.listdir(rf"{self.props.output_folder}/buildup_plots")), 10
         )
 
     def test_lmfit_reports_contains_correct_number_of_files(self):
         self.assertEqual(
-            len(os.listdir(f"{self.props.output_folder}\\lmfit_reports")), 6
+            len(os.listdir(rf"{self.props.output_folder}/lmfit_reports")), 6
         )
 
     def test_spectra_contains_correct_number_of_files(self):
         self.assertEqual(
-            len(os.listdir(f"{self.props.output_folder}\\spectra")), 3
+            len(os.listdir(rf"{self.props.output_folder}/spectra")), 3
         )
 
     def test_spec_deconv_contains_correct_number_of_files(self):
         self.assertEqual(
             len(
                 os.listdir(
-                    f"{self.props.output_folder}\\spectral_deconvolution_plots"
+                    rf"{self.props.output_folder}/spectral_deconvolution_plots"
                 )
             ),
             19,
@@ -91,5 +93,5 @@ class TestDataset(unittest.TestCase):
 
     def test_spec_deconv_contains_correct_number_of_files(self):
         self.assertEqual(
-            len(os.listdir(f"{self.props.output_folder}\\tabular_results")), 6
+            len(os.listdir(rf"{self.props.output_folder}/tabular_results")), 6
         )
