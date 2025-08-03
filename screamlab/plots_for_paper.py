@@ -1,5 +1,66 @@
 from screamlab import settings, dataset
 import sys
+props = settings.Properties()
+props.path_to_experiment = r"F:\ssNMR\20250724_S65F"
+props.expno = [23, 32]
+props.prefit = True
+props.spectrum_for_prefit = -1
+props.buildup_types = ["exponential","biexponential", "biexponential_with_offset"]
+props.output_folder = r"C:\Users\Florian Taube\Desktop\Test\S65F"
+
+
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(148, peak_sign="+", fitting_type="voigt")
+ds.add_peak(43, peak_sign="+", fitting_type="voigt")
+ds.add_peak(33, peak_sign="+", fitting_type="voigt")
+ds.add_peak(18, peak_sign="+")
+ds.add_peak(2, peak_sign="+")
+ds.add_peak(-3, peak_sign="+")
+ds.start_analysis()
+
+
+props = settings.Properties()
+props.path_to_experiment = r"F:\ssNMR\20250724_S64F"
+props.expno = [23, 32]
+props.prefit = True
+props.spectrum_for_prefit = -1
+props.buildup_types = ["biexponential", "biexponential_with_offset"]
+props.output_folder = r"C:\Users\Florian Taube\Desktop\Test\S64F"
+
+
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(148, peak_sign="+", fitting_type="voigt")
+ds.add_peak(43, peak_sign="+", fitting_type="voigt")
+ds.add_peak(33, peak_sign="+", fitting_type="voigt")
+ds.add_peak(18, peak_sign="+")
+ds.add_peak(1, peak_sign="+")
+ds.add_peak(-4, peak_sign="+")
+ds.start_analysis()
+sys.exit()
+
+
+props = settings.Properties()
+props.path_to_experiment = r"F:\ssNMR\20250422_S1"
+props.expno = [20,21,22,23,24,25,27]
+props.prefit = True
+props.spectrum_for_prefit = -1
+props.buildup_types = ["exponential"]
+props.output_folder = r"C:\Users\Florian Taube\Desktop\Test\Se"
+
+ds = dataset.Dataset()
+ds.props = props
+ds.add_peak(247, peak_sign="-",line_broadening={"sigma":{"min":10,"max":50}},fitting_type="gauss")
+ds.add_peak(111, peak_sign="-",line_broadening={"sigma":{"min":10,"max":50}},fitting_type="gauss")
+ds.add_peak(-15, peak_sign="-",line_broadening={"sigma":{"min":10,"max":50}},fitting_type="gauss")
+ds.add_peak(-148, peak_sign="-",line_broadening={"sigma":{"min":10,"max":50}},fitting_type="gauss")
+ds.add_peak(-284, peak_sign="-",line_broadening={"sigma":{"min":10,"max":50}},fitting_type="gauss")
+ds.start_analysis()
+
+
+sys.exit()
+
 
 props = settings.Properties()
 props.path_to_experiment = r"F:\ssNMR\20250120_S47F_150K"

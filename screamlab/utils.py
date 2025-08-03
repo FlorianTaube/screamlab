@@ -25,7 +25,7 @@ Classes:
 import copy
 import numpy as np
 import lmfit
-from pyDOE2 import lhs
+from pyDOE3 import lhs
 from screamlab import functions
 
 
@@ -194,8 +194,8 @@ class Fitter:
         return {
             "name": f"{peak.peak_label}_cen_{nr}",
             "value": peak.peak_center,
-            "min": peak.peak_center - 1,
-            "max": peak.peak_center + 1,
+            "min": peak.peak_center - 20,
+            "max": peak.peak_center + 20,
         }
 
     def _get_lw_dict(self, peak, nr, lw):

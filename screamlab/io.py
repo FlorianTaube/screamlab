@@ -291,17 +291,17 @@ class Exporter:
         Displays time delays (t_del) on the x-axis and intensity values on the y-axis.
 
         """
-        colormap = plt.cm.viridis
+        colormap = plt.cm.Blues
         colors = [
             colormap(i / len(self.dataset.spectra))
-            for i in range(len(self.dataset.spectra))
+            for i in range(len(self.dataset.spectra)+2)
         ]
         for idx, spectrum in enumerate(self.dataset.spectra):
             plt.plot(
                 spectrum.x_axis,
                 spectrum.y_axis,
                 label=f"$t_{{\\mathrm{{pol}}}}$ = {spectrum.tpol} s",
-                color=colors[idx],
+                color=colors[idx+2],
             )
         plt.gca().invert_xaxis()
         plt.xlabel("$\\delta$ / ppm", fontsize=16)
