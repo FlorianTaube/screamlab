@@ -19,7 +19,7 @@ A list of features:
 
 And to make it even more convenient for users and future-proof:
 
-* Open source project written in Python (>= 3.7)
+* Open source project written in Python (>= 3.10)
 
 * High test coverage
 
@@ -31,7 +31,6 @@ And to make it even more convenient for users and future-proof:
 .. warning::
     screamlab is currently under active development and still considered in Beta development state. Therefore, expect frequent changes in features and public APIs that may break your own code. Nevertheless, feedback as well as feature requests are highly welcome.
 
-
 Installation
 ============
 
@@ -41,6 +40,25 @@ To install the screamlab package on your computer (sensibly within a Python virt
 
     pip install screamlab
 
+Quickstart
+==========
+This section shows how to set up and run a basic analysis workflow using Screamlab with just a few lines of code.
+
+.. code-block:: python
+    :linenos:
+
+    from screamlab import settings, dataset
+
+    props = settings.Properties()
+    props.path_to_experiment=r'..\path\to\experiments'
+    props.expno = [1,5]
+    props.output_folder = r'path/to/output_folder'
+
+    ds = dataset.Dataset()
+    ds.props= props
+
+    ds.add_peak(175)
+    ds.start_analysis()
 
 License
 =======

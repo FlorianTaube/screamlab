@@ -83,7 +83,7 @@ class Dataset:
         center_of_peak,
         peak_label="",
         fitting_type="voigt",
-        peak_sign="+",
+        peak_sign="-",
         line_broadening=None,
     ):
         """

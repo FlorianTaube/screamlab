@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Use cases &mdash; screamlab 0.1.0.dev83 documentation</title>
+  <title>Use cases &mdash; screamlab 0.1.0.dev88 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=fa152395"></script>
+      <script src="_static/documentation_options.js?v=ee7e9af0"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -123,12 +123,40 @@ Also it can be specified wich buildup model should be used for evaluation. There
 <span class="linenos">2</span><span class="n">ds</span><span class="o">.</span><span class="n">props</span> <span class="o">=</span> <span class="n">props</span>
 </pre></div>
 </div>
-<p>The <code class="xref py py-obj docutils literal notranslate"><span class="pre">add_peak()</span></code> function adds a single peak to a dataset. The only required argument is the peak center, which must be specified with an accuracy of ±1 ppm. In addition to this, there is the option to include a peak label (the default is “Peak_at_xxx_ppm”), specify the peak sign (the default is “-“)-</p>
+<p>The <code class="xref py py-obj docutils literal notranslate"><span class="pre">add_peak()</span></code> function adds a single peak to a dataset. The only required argument is the peak center, which must be specified with an accuracy of ±1 ppm. Multiple peaks can be added by repeatedly calling the <code class="xref py py-obj docutils literal notranslate"><span class="pre">add_peak()</span></code> method.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">ds</span><span class="o">.</span><span class="n">add_peak</span><span class="p">(</span><span class="o">-</span><span class="mi">16</span><span class="p">)</span>
-<span class="linenos">2</span><span class="n">ds</span><span class="o">.</span><span class="n">start_buildup_fit_from_topspin</span><span class="p">()</span>
+<span class="linenos">2</span><span class="n">ds</span><span class="o">.</span><span class="n">start_analysis</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>T</p>
+<p>This section outlines the minimum required specifications for conducting a functional evaluation of SCREAM-DNP data.
+While default settings are provided, several parameters for each peak can be customized to refine the analysis:</p>
+<ul class="simple">
+<li><p>Peak label: By default, peaks are labeled as “Peak_at_&lt;xxx&gt;_ppm”, where &lt;xxx&gt; corresponds to the chemical shift in ppm. Custom labels can be assigned as needed.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">ds</span><span class="o">.</span><span class="n">add_peak</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="n">peak_label</span><span class="o">=</span><span class="s2">&quot;C_alpha&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Peak sign: The default sign is set to negative (“-“), but users may explicitly define the expected peak polarity.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">ds</span><span class="o">.</span><span class="n">add_peak</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="n">peak_sign</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Peak profile: Peaks are fitted using a Voigt profile (“voigt”) by default. Alternatively, a Gaussian (“gauss”) or Lorentzian (“lorentz”) line shape can be specified.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">ds</span><span class="o">.</span><span class="n">add_peak</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="n">fitting_type</span><span class="o">=</span><span class="s2">&quot;gauss&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Fitting interval for line broadening: The line broadening parameters — sigma (Gaussian width) and gamma (Lorentzian width) — are allowed to vary within a default interval of 0 to 3 ppm. This range can be adjusted to accommodate specific fitting requirements.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">ds</span><span class="o">.</span><span class="n">add_peak</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="n">fitting_type</span><span class="o">=</span><span class="s2">&quot;gauss&quot;</span><span class="p">,</span> <span class="n">line_broadening</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sigma&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}})</span>
+<span class="linenos">2</span><span class="n">ds</span><span class="o">.</span><span class="n">add_peak</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="n">fitting_type</span><span class="o">=</span><span class="s2">&quot;lorentz&quot;</span><span class="p">,</span> <span class="n">line_broadening</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;gamma&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">}})</span>
+<span class="linenos">3</span><span class="n">ds</span><span class="o">.</span><span class="n">add_peak</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="n">fitting_type</span><span class="o">=</span><span class="s2">&quot;voigt&quot;</span><span class="p">,</span> <span class="n">line_broadening</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sigma&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="s2">&quot;gamma&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}})</span>
+</pre></div>
+</div>
+<p>These options provide flexibility in tailoring the analysis to the characteristics of the measured data, ensuring accurate and reproducible spectral fitting.</p>
 </section>
 </section>
 

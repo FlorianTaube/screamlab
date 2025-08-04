@@ -41,6 +41,8 @@ Also it can be specified wich buildup model should be used for evaluation. There
     #Performs three buildup fits using first an exponential model,
     #then an exponential wiht offset followd by a biexponential model.
 
+
+
 Adding peaks and start analysis
 ===============================
 In this code segment, a new dataset object is instantiated and assigned to the variable :obj:`ds`. Following this, the properties of the dataset are set by assigning the :obj:`props` object to :obj:`ds.props`, thereby configuring the dataset with parameters set in the paragraph before.
@@ -52,14 +54,45 @@ In this code segment, a new dataset object is instantiated and assigned to the v
     ds = dataset.Dataset()
     ds.props = props
 
-The :obj:`add_peak()` function adds a single peak to a dataset. The only required argument is the peak center, which must be specified with an accuracy of ±1 ppm. In addition to this, there is the option to include a peak label (the default is "Peak_at_xxx_ppm"), specify the peak sign (the default is "-")-
+The :obj:`add_peak()` function adds a single peak to a dataset. The only required argument is the peak center, which must be specified with an accuracy of ±1 ppm. Multiple peaks can be added by repeatedly calling the :obj:`add_peak()` method.
 
 .. code-block:: python
     :linenos:
 
     ds.add_peak(-16)
-    ds.start_buildup_fit_from_topspin()
+    ds.start_analysis()
 
-T
+This section outlines the minimum required specifications for conducting a functional evaluation of SCREAM-DNP data.
+While default settings are provided, several parameters for each peak can be customized to refine the analysis:
 
+- Peak label: By default, peaks are labeled as "Peak_at_<xxx>_ppm", where <xxx> corresponds to the chemical shift in ppm. Custom labels can be assigned as needed.
 
+.. code-block:: python
+    :linenos:
+
+    ds.add_peak(25, peak_label="C_alpha")
+
+- Peak sign: The default sign is set to negative ("-"), but users may explicitly define the expected peak polarity.
+
+.. code-block:: python
+    :linenos:
+
+    ds.add_peak(25, peak_sign="+")
+
+- Peak profile: Peaks are fitted using a Voigt profile ("voigt") by default. Alternatively, a Gaussian ("gauss") or Lorentzian ("lorentz") line shape can be specified.
+
+.. code-block:: python
+    :linenos:
+
+    ds.add_peak(25, fitting_type="gauss")
+
+- Fitting interval for line broadening: The line broadening parameters — sigma (Gaussian width) and gamma (Lorentzian width) — are allowed to vary within a default interval of 0 to 3 ppm. This range can be adjusted to accommodate specific fitting requirements.
+
+.. code-block:: python
+    :linenos:
+
+    ds.add_peak(25, fitting_type="gauss", line_broadening={"sigma": {"min": 1, "max": 5}})
+    ds.add_peak(25, fitting_type="lorentz", line_broadening={"gamma": {"min": 2, "max": 12}})
+    ds.add_peak(25, fitting_type="voigt", line_broadening={"sigma": {"min": 0, "max": 1}, "gamma": {"min": 1, "max": 2}})
+
+These options provide flexibility in tailoring the analysis to the characteristics of the measured data, ensuring accurate and reproducible spectral fitting.

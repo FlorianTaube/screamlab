@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>screamlab &mdash; screamlab 0.1.0.dev83 documentation</title>
+  <title>screamlab &mdash; screamlab 0.1.0.dev88 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=fa152395"></script>
+      <script src="_static/documentation_options.js?v=ee7e9af0"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -94,7 +94,7 @@
 </ul>
 <p>And to make it even more convenient for users and future-proof:</p>
 <ul class="simple">
-<li><p>Open source project written in Python (&gt;= 3.7)</p></li>
+<li><p>Open source project written in Python (&gt;= 3.10)</p></li>
 <li><p>High test coverage</p></li>
 <li><p>Extensive user and API documentation</p></li>
 </ul>
@@ -107,6 +107,24 @@
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
 <p>To install the screamlab package on your computer (sensibly within a Python virtual environment), open a terminal (activate your virtual environment), and type in the following:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>screamlab
+</pre></div>
+</div>
+</section>
+<section id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading"></a></h2>
+<p>This section shows how to set up and run a basic analysis workflow using Screamlab with just a few lines of code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">screamlab</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span><span class="p">,</span> <span class="n">dataset</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="n">props</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">Properties</span><span class="p">()</span>
+<span class="linenos"> 4</span><span class="n">props</span><span class="o">.</span><span class="n">path_to_experiment</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;..\path\to\experiments&#39;</span>
+<span class="linenos"> 5</span><span class="n">props</span><span class="o">.</span><span class="n">expno</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+<span class="linenos"> 6</span><span class="n">props</span><span class="o">.</span><span class="n">output_folder</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;path/to/output_folder&#39;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="n">ds</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+<span class="linenos"> 9</span><span class="n">ds</span><span class="o">.</span><span class="n">props</span><span class="o">=</span> <span class="n">props</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="n">ds</span><span class="o">.</span><span class="n">add_peak</span><span class="p">(</span><span class="mi">175</span><span class="p">)</span>
+<span class="linenos">12</span><span class="n">ds</span><span class="o">.</span><span class="n">start_analysis</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
