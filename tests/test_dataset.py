@@ -440,7 +440,7 @@ class TestDataset(unittest.TestCase):
     def test_update_line_broadening(self):
         self.ds.props.prefit = True
         self.add_n_spectra(1)
-        self.ds.add_peak(250,peak_sign="+")
+        self.ds.add_peak(250, peak_sign="+")
         self.ds._set_prefitter()
         result = self.ds.fitter.fit()
         self.ds._update_line_broadening(result)
@@ -467,7 +467,7 @@ class TestDataset(unittest.TestCase):
     def test_update_line_broadening_gauss(self):
         self.ds.props.prefit = True
         self.add_n_spectra(1, type=["gauss"])
-        self.ds.add_peak(150,peak_sign="+")
+        self.ds.add_peak(150, peak_sign="+")
         self.ds.peak_list[0].fitting_type = "gauss"
         self.ds._set_prefitter()
         result = self.ds.fitter.fit()
@@ -486,7 +486,7 @@ class TestDataset(unittest.TestCase):
     def test_update_line_broadening_lorentz(self):
         self.ds.props.prefit = True
         self.add_n_spectra(1, type=["lorentz"])
-        self.ds.add_peak(200,peak_sign="+")
+        self.ds.add_peak(200, peak_sign="+")
         self.ds.peak_list[0].fitting_type = "lorentz"
         self.ds._set_prefitter()
         result = self.ds.fitter.fit()
@@ -543,7 +543,7 @@ class TestDataset(unittest.TestCase):
 
     def test_buildup_list_set_intensity_one_peak_voigt(self):
         self.add_n_spectra(5)
-        self.ds.add_peak(250,peak_sign="+")
+        self.ds.add_peak(250, peak_sign="+")
         b_list = screamlab.dataset.BuildupList()
         b_list._set_tpol(self.ds.spectra)
         self.ds._set_single_fitter()

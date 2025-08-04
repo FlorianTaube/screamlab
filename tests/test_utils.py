@@ -235,7 +235,6 @@ class TestDataset(unittest.TestCase):
             },
         )
 
-
     def test_get_lw_dict_sigma_prefitter(self):
         self.add_n_spectra(1)
         value = self.prefitter._get_lw_dict(self.ds.peak_list[0], 0, "sigma")
@@ -394,11 +393,10 @@ class TestDataset(unittest.TestCase):
             },
         )
 
-
     def test_spectral_fitting_one_gauss_prefit(self):
         self.add_n_spectra(1, type=["gauss"])
         self.ds.peak_list[0].fitting_type = "gauss"
-        self.ds.peak_list[0].peak_sign="+"
+        self.ds.peak_list[0].peak_sign = "+"
         x_axis, y_axis = self.prefitter._generate_axis_list()
         params = self.prefitter._generate_params_list()
         params["Peak_at_150_ppm_sigma_0"].value = 3
@@ -417,7 +415,6 @@ class TestDataset(unittest.TestCase):
         params["Peak_at_150_ppm_cen_0"].value = 200
         residual = self.prefitter._spectral_fitting(params, x_axis, y_axis)
         self.assertAlmostEqual(sum(residual), 0, delta=5)
-
 
     def test_prefiter_fit_one_voigt(self):
         self.add_n_spectra(1)
@@ -444,8 +441,8 @@ class TestDataset(unittest.TestCase):
 
     def test_prefitter_fit_voigt_gauss(self):
         self.add_n_spectra(1, type=["voigt", "gauss", "lorentz"])
-        self.ds.add_peak(210, fitting_type="gauss",peak_sign="+")
-        self.ds.add_peak(200, fitting_type="lorentz",peak_sign="+")
+        self.ds.add_peak(210, fitting_type="gauss", peak_sign="+")
+        self.ds.add_peak(200, fitting_type="lorentz", peak_sign="+")
         self.prefitter.dataset.peak_list[0].peak_center = 250
         self.prefitter.dataset.peak_list[0].peak_sign = "+"
         self.prefitter.dataset.peak_list[1].peak_center = 150
@@ -482,8 +479,8 @@ class TestDataset(unittest.TestCase):
 
     def test_prefiter_fit_voigt_gauss_with_noise(self):
         self.add_n_spectra(1, type=["voigt", "gauss", "lorentz"])
-        self.ds.add_peak(210, fitting_type="gauss",peak_sign="+")
-        self.ds.add_peak(200, fitting_type="lorentz",peak_sign="+")
+        self.ds.add_peak(210, fitting_type="gauss", peak_sign="+")
+        self.ds.add_peak(200, fitting_type="lorentz", peak_sign="+")
         self.ds.spectra[0].y_axis = self.add_noise(self.ds.spectra[0].y_axis)
         self.prefitter.dataset.peak_list[0].peak_center = 250
         self.prefitter.dataset.peak_list[0].peak_sign = "+"
@@ -630,8 +627,6 @@ class TestDataset(unittest.TestCase):
             value_list, [200, 250, 2, 2, 400, 250, 2, 2, 600, 250, 2, 2]
         )
 
-
-
     def test_set_param_expr_global_fitter(self):
         self.add_n_spectra(2)
         params = self.globalfitter._generate_params_list()
@@ -652,7 +647,6 @@ class TestDataset(unittest.TestCase):
                 "Peak_at_150_ppm_gamma_0",
             ],
         )
-
 
     def test_buildup_fitter_init_type_exp(self):
         self.add_one_peak()

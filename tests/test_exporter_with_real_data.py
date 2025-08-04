@@ -29,8 +29,12 @@ class TestDataset(unittest.TestCase):
         self.props.spectrum_fit_type = "global"
         self.props.expno = [1, 8]
         self.props.procno = 103
-        self.props.path_to_experiment = rf"{test_dir}/SCREAM_Test_Files/Alanin"
-        self.props.output_folder = rf"{test_dir}/SCREAM_Test_Files/Alanin/result"
+        self.props.path_to_experiment = (
+            rf"{test_dir}/SCREAM_Test_Files/Alanin"
+        )
+        self.props.output_folder = (
+            rf"{test_dir}/SCREAM_Test_Files/Alanin/result"
+        )
         self.ds = dataset.Dataset()
         self.ds.props = self.props
         self.ds.add_peak(-16.5, peak_sign="+", fitting_type="lorentz")
