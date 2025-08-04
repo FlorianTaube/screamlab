@@ -41,6 +41,8 @@ Also it can be specified wich buildup model should be used for evaluation. There
     #Performs three buildup fits using first an exponential model,
     #then an exponential wiht offset followd by a biexponential model.
 
+
+
 Adding peaks and start analysis
 ===============================
 In this code segment, a new dataset object is instantiated and assigned to the variable :obj:`ds`. Following this, the properties of the dataset are set by assigning the :obj:`props` object to :obj:`ds.props`, thereby configuring the dataset with parameters set in the paragraph before.

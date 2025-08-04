@@ -1,6 +1,6 @@
-.. _GITLAB_REPO: https://gitlab.uni-rostock.de/<nutzername>/<PROJEKTNAME>
+.. _GITLAB_REPO: https://gitlab.uni-rostock.de/<nutzername>/screamlab
 
-.. _PYPI: https://pypi.org/project/<PROJEKTNAME>/
+.. _PYPI: https://pypi.org/project/screamlab/
 
 .. _ZENODO: https://doi.org/10.5281/zenodo.<id>
 
@@ -8,25 +8,25 @@
 Deploying
 =========
 
-This section documents the relevant details regarding the deployment of the <PROJEKTNAME> package. Focus is on automating all tasks as much as possible, to ease maintenance of the package.
+This section documents the relevant details regarding the deployment of the screamlab package. Focus is on automating all tasks as much as possible, to ease maintenance of the package.
 
 
 Versioning
 ==========
 
-The <PROJEKTNAME> package follows `Semantic Versioning (SemVer) <https://semver.org/>`_. The version number is contained in the file ``VERSION`` in the repository root directory and automatically imported into the ``setup.py`` file. Furthermore, a bash script ``./bin/incrementVersion.sh`` is provided to be added as git hook for developers. This increments the ``.dev#`` suffix of the version number of development versions residing in the ``master`` branch of the repository.
+The screamlab package follows `Semantic Versioning (SemVer) <https://semver.org/>`_. The version number is contained in the file ``VERSION`` in the repository root directory and automatically imported into the ``setup.py`` file. Furthermore, a bash script ``./bin/incrementVersion.sh`` is provided to be added as git hook for developers. This increments the ``.dev#`` suffix of the version number of development versions residing in the ``master`` branch of the repository.
 
 
 Versioning and git branches
 ===========================
 
-The <PROJEKTNAME> package is maintained in a `GitLab repository <GITLAB_REPO_>`_. Development takes place in the ``master`` branch, releases are set as tags with the version number (and additionally, for each minor version an additional tag in the form ``MAJOR.MINOR``) in the ``stable`` branch. Upon creating a release within GitLab (by the package maintainers), the package will automatically be built and uploaded to the `Python Package Index (PyPI) <PYPI_>`_. For details, see below.
+The screamlab package is maintained in a `GitLab repository <GITLAB_REPO_>`_. Development takes place in the ``master`` branch, releases are set as tags with the version number (and additionally, for each minor version an additional tag in the form ``MAJOR.MINOR``) in the ``stable`` branch. Upon creating a release within GitLab (by the package maintainers), the package will automatically be built and uploaded to the `Python Package Index (PyPI) <PYPI_>`_. For details, see below.
 
 
 When to increment which version number part
 ===========================================
 
-Given that the <PROJEKTNAME> package follows Semantic Versioning (SemVer, see above), below are criteria when to increment which part of the version number.
+Given that the screamlab package follows Semantic Versioning (SemVer, see above), below are criteria when to increment which part of the version number.
 
 
 PATCH: Bug fixes
@@ -61,7 +61,7 @@ Creating a release
 
     .. code-block:: bash
 
-        pip install <PROJEKTNAME>[dev,docs,deployment]
+        pip install screamlab[dev,docs,deployment]
 
     This will install a series of additional packages. For details, have a look at the ``setup.py`` file.
 

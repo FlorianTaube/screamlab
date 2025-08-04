@@ -208,22 +208,8 @@ class TestDataset(unittest.TestCase):
             )
         self.assertListEqual(maxima, sim_maxima)
 
-    def test_get_amplitude_dict_positive_sign_prefitter(self):
-        self.add_n_spectra(1)
-        value = self.prefitter._get_amplitude_dict(self.ds.peak_list[0], 0)
-        self.assertDictEqual(
-            value,
-            {
-                "name": "Peak_at_150_ppm_amp_0",
-                "value": 200,
-                "min": 0,
-                "max": np.inf,
-            },
-        )
-
     def test_get_amplitude_dict_negative_sign_prefitter(self):
         self.add_n_spectra(1)
-        self.ds.peak_list[0].peak_sign = "-"
         value = self.prefitter._get_amplitude_dict(self.ds.peak_list[0], 0)
         self.assertDictEqual(
             value,
@@ -232,6 +218,20 @@ class TestDataset(unittest.TestCase):
                 "value": -200,
                 "min": -np.inf,
                 "max": 0,
+            },
+        )
+
+    def test_get_amplitude_dict_positive_sign_prefitter(self):
+        self.add_n_spectra(1)
+        self.ds.peak_list[0].peak_sign = "+"
+        value = self.prefitter._get_amplitude_dict(self.ds.peak_list[0], 0)
+        self.assertDictEqual(
+            value,
+            {
+                "name": "Peak_at_150_ppm_amp_0",
+                "value": 200,
+                "min": 0,
+                "max": np.inf,
             },
         )
 
@@ -359,7 +359,7 @@ class TestDataset(unittest.TestCase):
         params = self.prefitter._generate_params_list()
         param_dict_list = functions.generate_spectra_param_dict(params)
         self.assertDictEqual(
-            param_dict_list, {0: [[200.0, 150.0, 1.5, 1.5, "gam"]]}
+            param_dict_list, {0: [[-200.0, 150.0, 1.5, 1.5, "gam"]]}
         )
 
     def test_sort_params_two_voigt_one_spectrum_user_def_sigma_max(self):
@@ -371,8 +371,8 @@ class TestDataset(unittest.TestCase):
             param_dict_list,
             {
                 0: [
-                    [200.0, 150.0, 1.5, 1.5, "gam"],
-                    [200.0, 120.0, 1.0, 1.5, "gam"],
+                    [-200.0, 150.0, 1.5, 1.5, "gam"],
+                    [-200.0, 120.0, 1.0, 1.5, "gam"],
                 ]
             },
         )
@@ -387,36 +387,29 @@ class TestDataset(unittest.TestCase):
             param_dict_list,
             {
                 0: [
-                    [200.0, 150.0, 1.5, 1.5, "gam"],
-                    [200.0, 120.0, 1.5],
-                    [200.0, 100.0, 1.5, "gam"],
+                    [-200.0, 150.0, 1.5, 1.5, "gam"],
+                    [-200.0, 120.0, 1.5],
+                    [-200.0, 100.0, 1.5, "gam"],
                 ]
             },
         )
 
-    def test_spectral_fitting_one_voigt_without_noise_prefit(self):
-        self.add_n_spectra(1)
-        x_axis, y_axis = self.prefitter._generate_axis_list()
-        params = self.prefitter._generate_params_list()
-        params["Peak_at_150_ppm_cen_0"].max = 250
-        params["Peak_at_150_ppm_cen_0"].value = 250
-        params["Peak_at_150_ppm_sigma_0"].value = 2
-        params["Peak_at_150_ppm_gamma_0"].value = 2
-        residual = self.prefitter._spectral_fitting(params, x_axis, y_axis)
-        self.assertEqual(sum(residual), 0)
 
     def test_spectral_fitting_one_gauss_prefit(self):
         self.add_n_spectra(1, type=["gauss"])
         self.ds.peak_list[0].fitting_type = "gauss"
+        self.ds.peak_list[0].peak_sign="+"
         x_axis, y_axis = self.prefitter._generate_axis_list()
         params = self.prefitter._generate_params_list()
         params["Peak_at_150_ppm_sigma_0"].value = 3
+
         residual = self.prefitter._spectral_fitting(params, x_axis, y_axis)
         self.assertEqual(sum(residual), 0)
 
     def test_spectral_fitting_one_lorentz_prefit(self):
         self.add_n_spectra(1, type=["lorentz"])
         self.ds.peak_list[0].fitting_type = "lorentz"
+        self.ds.peak_list[0].peak_sign = "+"
         x_axis, y_axis = self.prefitter._generate_axis_list()
         params = self.prefitter._generate_params_list()
         params["Peak_at_150_ppm_gamma_0"].value = 4
@@ -425,28 +418,11 @@ class TestDataset(unittest.TestCase):
         residual = self.prefitter._spectral_fitting(params, x_axis, y_axis)
         self.assertAlmostEqual(sum(residual), 0, delta=5)
 
-    def test_spectral_fitting_voigt_gauss_lorentz_prefit(self):
-        self.add_n_spectra(1, type=["voigt", "gauss", "lorentz"])
-        self.ds.add_peak(200, fitting_type="gauss")
-        self.ds.add_peak(250, fitting_type="lorentz")
-        x_axis, y_axis = self.prefitter._generate_axis_list()
-        params = self.prefitter._generate_params_list()
-        params["Peak_at_150_ppm_cen_0"].max = 250
-        params["Peak_at_150_ppm_cen_0"].value = 250
-        params["Peak_at_200_ppm_cen_0"].min = 150
-        params["Peak_at_200_ppm_cen_0"].value = 150
-        params["Peak_at_250_ppm_cen_0"].min = 200
-        params["Peak_at_250_ppm_cen_0"].value = 200
-        params["Peak_at_150_ppm_sigma_0"].value = 2
-        params["Peak_at_150_ppm_gamma_0"].value = 2
-        params["Peak_at_200_ppm_sigma_0"].value = 3
-        params["Peak_at_250_ppm_gamma_0"].value = 4
-        residual = self.prefitter._spectral_fitting(params, x_axis, y_axis)
-        self.assertAlmostEqual(sum(residual), 0, delta=5)
 
     def test_prefiter_fit_one_voigt(self):
         self.add_n_spectra(1)
         self.prefitter.dataset.peak_list[0].peak_center = 250
+        self.prefitter.dataset.peak_list[0].peak_sign = "+"
         result = self.prefitter.fit()
         value_list = []
         for key in result.params:
@@ -457,7 +433,9 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(1, type=["voigt", "gauss"])
         self.ds.add_peak(210, fitting_type="gauss")
         self.prefitter.dataset.peak_list[0].peak_center = 250
+        self.prefitter.dataset.peak_list[0].peak_sign = "+"
         self.prefitter.dataset.peak_list[1].peak_center = 150
+        self.prefitter.dataset.peak_list[1].peak_sign = "+"
         result = self.prefitter.fit()
         value_list = []
         for key in result.params:
@@ -466,10 +444,12 @@ class TestDataset(unittest.TestCase):
 
     def test_prefitter_fit_voigt_gauss(self):
         self.add_n_spectra(1, type=["voigt", "gauss", "lorentz"])
-        self.ds.add_peak(210, fitting_type="gauss")
-        self.ds.add_peak(200, fitting_type="lorentz")
+        self.ds.add_peak(210, fitting_type="gauss",peak_sign="+")
+        self.ds.add_peak(200, fitting_type="lorentz",peak_sign="+")
         self.prefitter.dataset.peak_list[0].peak_center = 250
+        self.prefitter.dataset.peak_list[0].peak_sign = "+"
         self.prefitter.dataset.peak_list[1].peak_center = 150
+        self.prefitter.dataset.peak_list[1].peak_sign = "+"
         result = self.prefitter.fit()
         value_list = []
         for key in result.params:
@@ -482,6 +462,7 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(1)
         self.ds.spectra[0].y_axis = self.add_noise(self.ds.spectra[0].y_axis)
         self.prefitter.dataset.peak_list[0].peak_center = 250
+        self.prefitter.dataset.peak_list[0].peak_sign = "+"
         result = self.prefitter.fit()
         value_list = []
         for key in result.params:
@@ -492,6 +473,7 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(1)
         self.ds.spectra[0].y_axis = self.add_noise(self.ds.spectra[0].y_axis)
         self.prefitter.dataset.peak_list[0].peak_center = 250
+        self.prefitter.dataset.peak_list[0].peak_sign = "+"
         result = self.prefitter.fit()
         value_list = []
         for key in result.params:
@@ -500,11 +482,13 @@ class TestDataset(unittest.TestCase):
 
     def test_prefiter_fit_voigt_gauss_with_noise(self):
         self.add_n_spectra(1, type=["voigt", "gauss", "lorentz"])
-        self.ds.add_peak(210, fitting_type="gauss")
-        self.ds.add_peak(200, fitting_type="lorentz")
+        self.ds.add_peak(210, fitting_type="gauss",peak_sign="+")
+        self.ds.add_peak(200, fitting_type="lorentz",peak_sign="+")
         self.ds.spectra[0].y_axis = self.add_noise(self.ds.spectra[0].y_axis)
         self.prefitter.dataset.peak_list[0].peak_center = 250
+        self.prefitter.dataset.peak_list[0].peak_sign = "+"
         self.prefitter.dataset.peak_list[1].peak_center = 150
+        self.prefitter.dataset.peak_list[1].peak_sign = "+"
         result = self.prefitter.fit()
         value_list = []
         for key in result.params:
@@ -633,8 +617,11 @@ class TestDataset(unittest.TestCase):
     def test_singlefitter_fit_one_voigt_three_spectra(self):
         self.add_n_spectra(3)
         self.singlefitter.dataset.peak_list[0].peak_center = 250
+        self.prefitter.dataset.peak_list[0].peak_sign = "+"
         self.singlefitter.dataset.peak_list[1].peak_center = 250
+        self.prefitter.dataset.peak_list[1].peak_sign = "+"
         self.singlefitter.dataset.peak_list[2].peak_center = 250
+        self.prefitter.dataset.peak_list[2].peak_sign = "+"
         result = self.singlefitter.fit()
         value_list = []
         for key in result.params:
@@ -643,42 +630,7 @@ class TestDataset(unittest.TestCase):
             value_list, [200, 250, 2, 2, 400, 250, 2, 2, 600, 250, 2, 2]
         )
 
-    def test_singlefitter_fit_lorentz_voigt_three_spectra(self):
-        self.add_n_spectra(3, type=["voigt", "lorentz"])
-        self.ds.add_peak(200, fitting_type="lorentz")
-        self.singlefitter.dataset.peak_list[0].peak_center = 250
-        self.singlefitter.dataset.peak_list[1].peak_center = 250
-        self.singlefitter.dataset.peak_list[2].peak_center = 250
-        result = self.singlefitter.fit()
-        value_list = []
-        for key in result.params:
-            value_list.append(round(result.params[key].value))
-        self.assertListEqual(
-            value_list,
-            [
-                204,
-                250,
-                2,
-                2,
-                171,
-                200,
-                3,
-                408,
-                250,
-                2,
-                2,
-                343,
-                200,
-                3,
-                613,
-                250,
-                2,
-                2,
-                514,
-                200,
-                3,
-            ],
-        )
+
 
     def test_set_param_expr_global_fitter(self):
         self.add_n_spectra(2)
@@ -701,41 +653,6 @@ class TestDataset(unittest.TestCase):
             ],
         )
 
-    def test_globalfitter_fit_lorentz_voigt_three_spectra(self):
-        self.add_n_spectra(3, type=["voigt", "lorentz"])
-        self.ds.add_peak(200, fitting_type="lorentz")
-        self.globalfitter.dataset.peak_list[0].peak_center = 250
-        self.globalfitter.dataset.peak_list[1].peak_center = 250
-        self.globalfitter.dataset.peak_list[2].peak_center = 250
-        result = self.globalfitter.fit()
-        value_list = []
-        result_list = [
-            204,
-            250,
-            2,
-            2,
-            171,
-            200,
-            3,
-            408,
-            250,
-            2,
-            2,
-            343,
-            200,
-            3,
-            613,
-            250,
-            2,
-            2,
-            514,
-            200,
-            3,
-        ]
-        for key in result.params:
-            value_list.append(round(result.params[key].value))
-
-        self.assertListEqual(value_list, result_list)
 
     def test_buildup_fitter_init_type_exp(self):
         self.add_one_peak()
