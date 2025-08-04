@@ -8,4 +8,4 @@ include VERSION
 include LICENSE*
 
 # Include package data
-recursive-include CorziliusNMR *
+recursive-include screamlab *

@@ -1,18 +1,24 @@
 Messages
 ========
 
-CorziliusNMR (CorziliusNMR\__init__.py):
-    L1:- None: pylint - invalid-name
-    Module name "CorziliusNMR" doesn't conform to snake_case naming style
+setup.py
+  Line: None
+    pyroma: PYRUNKNOWN / Your project does not have a pyproject.toml file, which is highly recommended.
+You probably want to create one with the following configuration:
+
+    [build-system]
+    requires = ["setuptools>=42"]
+    build-backend = "setuptools.build_meta"
+
 
 
 
 Check Information
 =================
-         Started: 2025-04-18 23:05:24.211488
-        Finished: 2025-04-18 23:05:39.805264
-      Time Taken: 15.59 seconds
-       Formatter: text
+         Started: 2025-08-04 12:21:44.530998
+        Finished: 2025-08-04 12:22:07.292473
+      Time Taken: 22.76 seconds
+       Formatter: grouped
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 

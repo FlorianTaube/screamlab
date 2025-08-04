@@ -13,7 +13,7 @@ setuptools.setup(
     version=read("VERSION").strip(),
     description="Package for reproducible evaluation of SCREAM-DNP data.",
     long_description=read("README.rst"),
-    long_description_content_type="text/x_data-rst",
+    long_description_content_type='text/x-rst',
     author="Florian Taube",
     author_email="florian.taube@uni-rostock.de",
     url="",

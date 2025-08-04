@@ -371,7 +371,7 @@ class BuildupFitter:
                     best_result, best_chisqr = self._check_result_quality(
                         best_result, best_chisqr, result
                     )
-                except:
+                except (ValueError, RuntimeError):  # nosec B110
                     pass
             result_list.append(best_result)
         return result_list

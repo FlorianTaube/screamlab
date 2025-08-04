@@ -44,3 +44,4 @@ pyroma:
 
 bandit:
   run: true
+

@@ -22,11 +22,11 @@ docs:
 
 tests:
 	@echo "Run unittests"
-	cd tests && python -m unittest discover -s . -t .
+	python -m unittest discover -s tests -t tests
 
 check:
 	@echo "Check code using prospector... this may take a while"
-	prospector
+	prospector > prospector_result.txt
 
 black:
 	@echo "Automatically format code using Black"

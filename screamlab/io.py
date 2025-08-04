@@ -26,7 +26,6 @@ class TopspinImporter:
         """Set internal values including scans, buildup time, x and y data."""
         self._set_number_of_scans()
         self._set_buildup_time()
-        self._set_x_data()
         self._set_y_data()
         self._normalize_y_values_to_number_of_scans()
         if len(self._dataset.props.subspec) == 2:
@@ -34,10 +33,8 @@ class TopspinImporter:
 
     def _sort_xy_lists(self):
         t_pol_list = []
-        for nr, spectrum in enumerate(self._dataset.spectra):
-
+        for spectrum in self._dataset.spectra:
             t_pol_list.append(spectrum.tpol)
-
         sorted_lists = sorted(
             zip(t_pol_list, self._dataset.spectra)
         )  # sortiert nach den Werten in liste1
@@ -190,15 +187,6 @@ class ScreamImporter(TopspinImporter):
                     flag = True
         return param
 
-    def _set_x_data(self):
-        """Set the x-axis data for the last spectrum in the ds."""
-        """physical_range = self._get_physical_range()
-        number_of_datapoints = self._get_num_of_datapoints()
-        self._dataset.spectra[-1].x_axis = self._calc_x_axis(
-            physical_range, number_of_datapoints
-        )"""
-        pass
-
     def _set_y_data(self):
         """Set the y-axis data for the last spectrum in the ds."""
         dic, y_data = ng.bruker.read_pdata(
@@ -294,14 +282,14 @@ class Exporter:
         colormap = plt.cm.Blues
         colors = [
             colormap(i / len(self.dataset.spectra))
-            for i in range(len(self.dataset.spectra)+2)
+            for i in range(len(self.dataset.spectra) + 2)
         ]
         for idx, spectrum in enumerate(self.dataset.spectra):
             plt.plot(
                 spectrum.x_axis,
                 spectrum.y_axis,
                 label=f"$t_{{\\mathrm{{pol}}}}$ = {spectrum.tpol} s",
-                color=colors[idx+2],
+                color=colors[idx + 2],
             )
         plt.gca().invert_xaxis()
         plt.xlabel("$\\delta$ / ppm", fontsize=16)
