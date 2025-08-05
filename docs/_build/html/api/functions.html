@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>screamlab.functions module &mdash; screamlab 0.2.0.dev6 documentation</title>
+  <title>screamlab.functions module &mdash; screamlab 0.2.0.dev7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../_static/Logo_32_32.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=7cfb4775"></script>
+      <script src="../_static/documentation_options.js?v=d883c36c"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -94,6 +94,314 @@
              
   <section id="screamlab-functions-module">
 <h1>screamlab.functions module<a class="headerlink" href="#screamlab-functions-module" title="Link to this heading"></a></h1>
+<p>Provides general-purpose utility functions used across various models.</p>
+<p>Functions are independent and stateless, designed to be reusable throughout the codebase.</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">voigt_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute the Voigt profile, a convolution of a Gaussian and Lorentzian function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – Array of x values.</p></li>
+<li><p><strong>center</strong> – Center of the peak.</p></li>
+<li><p><strong>sigma</strong> – Standard deviation of the Gaussian component.</p></li>
+<li><p><strong>gamma</strong> – Half-width at half-maximum (HWHM) of the Lorentzian component.</p></li>
+<li><p><strong>amplitude</strong> – Peak amplitude.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Voigt profile evaluated at x.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">gauss_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute a Gaussian profile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – Array of x values.</p></li>
+<li><p><strong>center</strong> – Center of the peak.</p></li>
+<li><p><strong>sigma</strong> – Standard deviation of the Gaussian distribution.</p></li>
+<li><p><strong>amplitude</strong> – Peak amplitude.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Gaussian profile evaluated at x.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">lorentz_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute a Lorentzian profile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – Array of x values.</p></li>
+<li><p><strong>center</strong> – Center of the peak.</p></li>
+<li><p><strong>gamma</strong> – Half-width at half-maximum (HWHM) of the Lorentzian function.</p></li>
+<li><p><strong>amplitude</strong> – Peak amplitude.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Lorentzian profile evaluated at x.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">fwhm_gaussian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute the Full Width at Half Maximum (FWHM) of a Gaussian function.</p>
+<dl class="simple">
+<dt>It is calculated using the formula:</dt><dd><p>FWHM = 2 * sqrt(2 * ln(2)) * sigma</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sigma</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The standard deviation of the Gaussian function.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The full width at half maximum (FWHM) of the Gaussian.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">fwhm_lorentzian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute the Full Width at Half Maximum (FWHM) of a Lorentzian function.</p>
+<dl class="simple">
+<dt>For a Lorentzian distribution, the FWHM is:</dt><dd><p>FWHM = 2 * gamma</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>gamma</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The half-width at half-maximum (HWHM) parameter of the Lorentzian function.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The full width at half maximum (FWHM) of the Lorentzian.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">fwhm_voigt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute the full width at half maximum (FWHM) of a Voigt profile.</p>
+<dl class="simple">
+<dt>The Voigt profile is a convolution of a Gaussian and a Lorentzian function:</dt><dd><p>FWHM ≈ 0.5346 * (2 * gamma) + sqrt(0.2166 * (2 * gamma)^2 + 4 * ln(2) * sigma^2)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Standard deviation of the Gaussian component.</p></li>
+<li><p><strong>gamma</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Half-width at half-maximum (HWHM) of the Lorentzian component.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The approximate FWHM of the Voigt profile.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">calc_exponential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute values of an exponential growth function over time.</p>
+<dl class="simple">
+<dt>The function models the equation:</dt><dd><p>I(t) = A * (1 - exp(-t / tf))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>I(t)  : The output value at time t</p></li>
+<li><p>A     : Amplitude (maximum value the function approaches)</p></li>
+<li><p>tf    : Time constant (controls the rate of growth)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>list</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Exponential profile evaluated at t.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">calc_stretched_exponential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute values of a stretched exponential growth function over time.</p>
+<dl class="simple">
+<dt>The function models the equation:</dt><dd><p>I(t) = A * (1 - exp(-t / tf)^beta)</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>I(t)  : The output value at time t</p></li>
+<li><p>A     : Amplitude (maximum value the function approaches)</p></li>
+<li><p>tf    : Time constant (controls the rate of growth)</p></li>
+<li><p>beta  : stretching exponent</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>list</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Stretched exponential profile evaluated at t.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">calc_biexponential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute values of a biexponential growth function over time.</p>
+<dl class="simple">
+<dt>The function models the equation:</dt><dd><p>I(t) = Af * (1 - exp(-t / tf)) + As * (1 - exp(-t / ts))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>I(t)  : The output value at time t</p></li>
+<li><p>Af, As: Amplitudes (maximum value the function approaches)</p></li>
+<li><p>tf, ts: Time constants (controls the rate of growth)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>list</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Biexponential profile evaluated at t.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">calc_exponential_with_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute values of an exponential growth function with time offset over time.</p>
+<dl class="simple">
+<dt>The function models the equation:</dt><dd><p>I(t) = Af * (1 - exp(-(t-t0) / tf))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>I(t)  : The output value at time t</p></li>
+<li><p>Af    : Amplitudes (maximum value the function approaches)</p></li>
+<li><p>tf    : Time constants (controls the rate of growth)</p></li>
+<li><p>t0    : Time offset</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>list</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Exponential profile with time offset evaluated at t.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">calc_biexponential_with_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute values of a biexponential growth function with time offset over time.</p>
+<dl class="simple">
+<dt>The function models the equation:</dt><dd><p>I(t) = Af * (1 - exp(-(t - t0) / tf)) + As * (1 - exp(-(t - t0) / ts))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>I(t)  : The output value at time t</p></li>
+<li><p>Af, As: Amplitudes (maximum value the function approaches)</p></li>
+<li><p>tf, ts: Time constants (controls the rate of growth)</p></li>
+<li><p>t0    : Time offset</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>list</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Biexponential profile with time offset evaluated at t.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">generate_spectra_param_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Generate a dictionary of spectral parameters from a list of parameter names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>params</strong> – Dictionary of parameter names and values.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of structured parameter values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">calc_peak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simspec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Simulates spectra based on given parameters.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">format_mapping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Maps each buildup function type to its parameter names.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">buildup_header</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Returns a list of headers for the buildup analysis table.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">spectrum_fit_header</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Returns a list of headers for the spectrum fitting results table.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">return_func_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Returns a dictionary mapping function types to their corresponding fitting functions.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">generate_subspec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spectrum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subspec</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Extract a subspectrum of a spectrum based on a given x-axis range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple containing two arrays:
+The sliced x- and y-axis values specified range.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a> of ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
