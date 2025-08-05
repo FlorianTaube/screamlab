@@ -2,17 +2,9 @@
 # See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
 
 # Required
-version: 2
-
-build:
-  os: ubuntu-22.04  # 24.04 ist neu, 22.04 ist stabiler
-  tools:
-    python: "3.10"  # lieber eine LTS Version
-  dir: docs
-
 sphinx:
-  configuration: conf.py
+  configuration: docs/conf.py
 
 python:
   install:
-    - requirements: requirements.txt
+    - requirements: docs/requirements.txt
