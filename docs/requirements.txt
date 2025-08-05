@@ -2,3 +2,8 @@ sphinx
 sphinx-rtd-theme
 sphinx-multiversion
 numpy==1.24.2
+matplotlib
+lmfit
+scipy
+nmrglue
+pyDOE3
