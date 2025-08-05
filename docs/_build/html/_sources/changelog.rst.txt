@@ -9,7 +9,7 @@ Version 0.1.0
 
 Released 2025-08-05
 
-* First public release
+* First public pre-release on Zenodo
 
 Version 0.1.0.rc1
 =================
