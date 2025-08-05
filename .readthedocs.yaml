@@ -8,10 +8,11 @@ build:
   os: ubuntu-22.04  # 24.04 ist neu, 22.04 ist stabiler
   tools:
     python: "3.10"  # lieber eine LTS Version
+  dir: docs
 
 sphinx:
-  configuration: docs/conf.py
+  configuration: conf.py
 
 python:
   install:
-    - requirements: docs/requirements.txt
+    - requirements: requirements.txt
