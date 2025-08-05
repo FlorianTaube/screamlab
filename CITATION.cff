@@ -2,6 +2,10 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using these metadata.
 title: screamlab
 abstract: >
+    Welcome! This is screamlab, a Python package for the evaluation of
+    relaxation processes in multi-spin system observed by SCREAM-DNP
+    (Specific Cross Relaxation Enhancement by Active Motions under
+    Dynamic Nuclear Polarization).
     
 authors:
   - family-names: Taube
@@ -15,8 +19,9 @@ keywords:
   - "DNP"
   - "SCREAM_DNP"
   - "TopspinExport"
-# Highly recommended starting with the first release: DOI via Zenodo
-#identifiers:
-#  - description: "The concept DOI of the work."
-#    type: doi
-#    value: 10.5281/zenodo.########
+version: 0.1.0
+date-released: 2025-08-05
+identifiers:
+  - description: "DOI of the software release on Zenodo"
+    type: doi
+    value: 10.5281/zenodo.16748661
