@@ -7,3 +7,4 @@ lmfit
 scipy
 nmrglue
 pyDOE3
+screamlab
