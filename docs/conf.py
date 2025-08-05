@@ -53,6 +53,7 @@ extensions = [
 ]
 
 
+
 # Add any paths that contain code here, relative to this directory.
 templates_path = ["_templates"]
 

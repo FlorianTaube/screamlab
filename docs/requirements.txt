@@ -1,3 +1,4 @@
 sphinx
 sphinx-rtd-theme
 sphinx-multiversion
+numpy>=1.25
