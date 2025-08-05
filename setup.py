@@ -16,10 +16,10 @@ setuptools.setup(
     long_description_content_type="text/x-rst",
     author="Florian Taube",
     author_email="florian.taube@uni-rostock.de",
-    url="",
+    url="https://github.com/FlorianTaube/screamlab",
     project_urls={
-        "Documentation": "",
-        "Source": "",
+        "Documentation": "https://github.com/FlorianTaube/screamlab/docs",
+        "Source": "https://github.com/FlorianTaube/screamlab/screamlab",
     },
     packages=setuptools.find_packages(exclude=("tests", "docs")),
     license="BSD",
@@ -46,9 +46,8 @@ setuptools.setup(
         "numpy",
         "lmfit",
         "scipy",
-        "pyDOE3",
         "nmrglue",
-        "pathlib",
+        "pyDOE3",
     ],
     extras_require={
         "dev": [
