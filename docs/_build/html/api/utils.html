@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>screamlab.utils module &mdash; screamlab 0.2.0.dev12 documentation</title>
+  <title>screamlab.utils module &mdash; screamlab 0.2.0.dev17 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../_static/Logo_32_32.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=2db30f47"></script>
+      <script src="../_static/documentation_options.js?v=75ba91f9"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -93,6 +93,249 @@
              
   <section id="screamlab-utils-module">
 <h1>screamlab.utils module<a class="headerlink" href="#screamlab-utils-module" title="Link to this heading"></a></h1>
+<p>Spectral Analysis/Fitting Module</p>
+<p>This module provides tools for fitting spectral data and analyzing buildup behaviors
+using the <cite>lmfit</cite> package. It includes several classes designed for spectral deconvolution
+and dynamic nuclear polarization (DNP) buildup kinetic analysis.</p>
+<dl class="simple">
+<dt>Classes:</dt><dd><dl class="simple">
+<dt>Spectral Fitting/Deconvolution Classes:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Fitter: The base class for fitting spectral data.</dt><dd><ul>
+<li><p>Prefitter: A specialized fitter that fits a preselected spectrum.</p></li>
+<li><p>GlobalFitter: A fitter that applies parameter constraints across multiple spectra.</p></li>
+<li><p>IndependentFitter: A simple extension of <cite>Fitter</cite> with no additional functionality.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>DNP Buildup Kinetic Fitting Classes:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>BuildupFitter: The parent class for fitting DNP buildup kinetics.</dt><dd><ul>
+<li><p>ExpFitter: A fitter for single-exponential buildup behavior.</p></li>
+<li><p>ExpFitterWithOffset: A variant of <cite>ExpFitter</cite> with an additional offset parameter.</p></li>
+<li><p>BiexpFitter: A fitter for biexponential buildup behavior.</p></li>
+<li><p>BiexpFitterWithOffset: A variant of <cite>BiexpFitter</cite>
+with an additional offset parameter.</p></li>
+<li><p>StretchedExponentialFitter: A fitter for stretched exponential buildup behavior.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">Fitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class for spectral fitting using <cite>lmfit</cite>.</p>
+<p>This class handles parameter initialization and spectral fitting for a ds.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">dataset</span></span></dt>
+<dd><p>Containing spectra and peak information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">screamlab.ds.Dataset</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Performs spectral fitting using the <cite>lmfit.minimize</cite> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The result of the fitting process.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>lmfit.MinimizerResult</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">Prefitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Fitter</span></code></p>
+<p>A subclass of Fitter that performs a preliminary fit on a preselected spectrum.</p>
+<p>By fitting the spectrum first, it estimates optimal parameters, particularly for
+linewidths, and narrows down the parameter intervals. The pre-fit parameters define bounds
+(±10%) for the linewidths. These refined intervals are then used in the global fit,
+significantly reducing computational time by limiting the parameter range.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">GlobalFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Fitter</span></code></p>
+<p>Global fit over all spectra at different polarization times.</p>
+<p>For SCREAM-DNP data, it can be assumed that the line broadening did not vary over all
+polarization times in cases where a homogeneous polarization buildup on protons exists.</p>
+<p>Same goes for the center of each peak since the chemical shift is not depending on the
+polarization time. For this, it is recommended to carefully reference all spectra during
+post-processing. With this, the number of fitting parameters can drastically be reduced,
+yielding a shorter calculation time. In this case, all spectra from a SCREAM-DNP buildup
+series can be described by two lineshape parameters (sigma and gamma), one variable for
+the peak center (µ), and n amplitude variables per resonance, where n stands for the
+number of spectra within one series.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">IndependentFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Fitter</span></code></p>
+<p>Fit of each spectrum with individual parameter set.</p>
+<p>In some cases it might be necessary to simulate each spectrum from one series with its own
+parameter set.</p>
+<p>This option is also provided. Each resonance in each spectrum will be fitted to two
+lineshape parameters, an amplitude and a globally determined peak center. Note that this
+yields higher run times. A prefit can be combined with this case to save time. However, it
+must be ensured that all spectra can be fitted by conditions given in point two.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">BuildupFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class for fitting buildup data using <cite>lmfit</cite>.</p>
+<p>This class is responsible for performing a fitting procedure on a ds
+of peaks with time-dependent intensities.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">dataset</span></span></dt>
+<dd><p>intensity and polarization time information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">screamlab.ds.Dataset</span></code> containing peak</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">perform_fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Perform the fitting procedure on the ds’s peak list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of best fit results for each peak.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">BiexpFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BuildupFitter</span></code></p>
+<p>Class for fitting biexponential models to buildup data.</p>
+<p>The biexponential model fits buildup curves using two exponential terms
+characterized by amplitudes (Af, As) and time constants (tf, ts).</p>
+<dl class="simple">
+<dt>The model function is defined as:</dt><dd><p>I(t) = Af * (1 - exp(-t_pol / tf)) + As * (1 - exp(-t_pol / ts))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>Af, As   : amplitudes of the exponential components</p></li>
+<li><p>tf, ts   : time constants of the exponential components (tf, ts &gt; 0)</p></li>
+<li><p>t_pol    : polarization time (independent variable)</p></li>
+<li><p>I(t_pol) : peak intensity at polarization time t_pol</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">BiexpFitterWithOffset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BuildupFitter</span></code></p>
+<p>Class for fitting biexponential models with offset to buildup data.</p>
+<p>This fits buildup curves using two exponential terms
+characterized by amplitudes (Af, As), time constants (tf, ts) and offset (t_off).</p>
+<dl class="simple">
+<dt>The model function is defined as:</dt><dd><p>I(t) = Af * (1 - exp(-(t_pol-t_off) / tf)) + As * (1 - exp(-(t_pol-t_off) / ts))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>Af, As   : amplitudes of the exponential components</p></li>
+<li><p>tf, ts   : time constants of the exponential components (tf, ts &gt; 0)</p></li>
+<li><p>t_off       : offset in polarization time</p></li>
+<li><p>t_pol    : polarization time (independent variable)</p></li>
+<li><p>I(t_pol) : peak intensity at polarization time t_pol</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">ExpFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BuildupFitter</span></code></p>
+<p>Class for fitting exponential models to buildup data.</p>
+<p>This fits buildup curves using an exponential term
+characterized by amplitude (Af) and time constant (tf).</p>
+<dl class="simple">
+<dt>The model function is defined as:</dt><dd><p>I(t) = Af * (1 - exp(-t_pol / tf))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>Af       : amplitudes of the exponential components</p></li>
+<li><p>tf       : time constants of the exponential components (tf &gt; 0)</p></li>
+<li><p>t_pol    : polarization time (independent variable)</p></li>
+<li><p>I(t_pol) : peak intensity at polarization time t_pol</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">ExpFitterWithOffset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BuildupFitter</span></code></p>
+<p>Class for fitting exponential models with offset to buildup data.</p>
+<p>This fits buildup curves using an exponential term
+characterized by amplitude (Af), time constant (tf) and offset (t_off).</p>
+<dl class="simple">
+<dt>The model function is defined as:</dt><dd><p>I(t) = Af * (1 - exp(-(t_pol-t_off) / tf))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>Af       : amplitudes of the exponential components</p></li>
+<li><p>tf       : time constants of the exponential components (tf &gt; 0)</p></li>
+<li><p>t_off       : offset in polarization time</p></li>
+<li><p>t_pol    : polarization time (independent variable)</p></li>
+<li><p>I(t_pol) : peak intensity at polarization time t_pol</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">StrechedExponentialFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BuildupFitter</span></code></p>
+<p>Class for fitting streched exponential models to buildup data.</p>
+<p>This fits buildup curves using an streched exponential term
+characterized by amplitude (Af), time constant (tf), and stretching factor (beta)..</p>
+<dl class="simple">
+<dt>The model function is defined as:</dt><dd><p>I(t) = Af * (1 - exp(-(t_pol / tf)^beta))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>Af       : amplitudes of the exponential components</p></li>
+<li><p>tf       : time constants of the exponential components (tf &gt; 0)</p></li>
+<li><p>beta     : stretching factor (beta &gt; 0, controls deviation from a simple exponential)</p></li>
+<li><p>t_pol    : polarization time (independent variable)</p></li>
+<li><p>I(t_pol): peak intensity at polarization time t_pol</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

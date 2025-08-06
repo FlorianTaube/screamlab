@@ -1,11 +1,12 @@
+.. image:: images/zenodo.16748661.svg
+  :target: https://doi.org/10.5281/zenodo.16748661
+  :align: right
+
 ============
 screamlab
 ============
 
-
-
 Welcome! This is screamlab, a Python package for the evaluation of relaxation processes in multi-spin system observed by  SCREAM-DNP (Specific Cross Relaxation Enhancement by Active Motions under Dynamic Nuclear Polarization).
-
 
 Features
 ========
