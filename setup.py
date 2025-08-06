@@ -18,7 +18,7 @@ setuptools.setup(
     author_email="florian.taube@uni-rostock.de",
     url="https://github.com/FlorianTaube/screamlab",
     project_urls={
-        "Documentation": "https://github.com/FlorianTaube/screamlab/docs",
+        "Documentation": "https://screamlab.readthedocs.io",
         "Source": "https://github.com/FlorianTaube/screamlab/screamlab",
     },
     packages=setuptools.find_packages(exclude=("tests", "docs")),
