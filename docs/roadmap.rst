@@ -12,3 +12,4 @@ For version 0.2
 * Allowing SCREAM-DNP buildup fitting to be performed under the assumption of Solomon equations.
 * Expanding the area of application to other kinetic experiments, such as saturation recovery or REDOR.
 
+

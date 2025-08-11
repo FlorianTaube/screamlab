@@ -15,9 +15,9 @@ You probably want to create one with the following configuration:
 
 Check Information
 =================
-         Started: 2025-08-05 22:47:06.624413
-        Finished: 2025-08-05 22:47:27.038141
-      Time Taken: 20.41 seconds
+         Started: 2025-08-11 09:54:30.186573
+        Finished: 2025-08-11 09:54:47.007137
+      Time Taken: 16.82 seconds
        Formatter: grouped
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
