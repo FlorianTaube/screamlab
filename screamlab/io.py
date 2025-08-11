@@ -126,12 +126,13 @@ class ScreamImporter(TopspinImporter):
 
     def _set_number_of_scans(self):
         """Set the number of scans for the last spectrum in the ds."""
-        with open(rf"{self.file}/acqu", "r", encoding="utf-8") as acqu_file:
+        with open(rf"{self.file}/acqus", "r", encoding="utf-8") as acqu_file:
             for acqu_line in acqu_file:
                 if "##$NS=" in acqu_line:
                     self._dataset.spectra[-1].number_of_scans = int(
                         acqu_line.strip().split(" ")[-1]
                     )
+                    print(int(acqu_line.strip().split(" ")[-1]))
 
     def import_topspin_data(self):
         """Import NMR data from TopSpin and process it."""

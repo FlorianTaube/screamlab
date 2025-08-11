@@ -1,0 +1,10 @@
+sphinx
+sphinx-rtd-theme
+sphinx-multiversion
+numpy
+matplotlib
+lmfit
+scipy
+nmrglue
+pyDOE3
+

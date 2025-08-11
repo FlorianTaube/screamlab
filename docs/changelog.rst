@@ -4,6 +4,16 @@ Changelog
 
 This page contains a summary of changes between the official screamlab releases. Only the biggest changes are listed here.
 
+Version 0.1.1
+=============
+
+Released 2025-08-11
+
+The following bugs have been fixed:
+
+* Fixed issues in default option assignment
+* Resolved error in reading the correct number of scans
+
 Version 0.1.0
 =============
 
