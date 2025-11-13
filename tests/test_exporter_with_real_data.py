@@ -21,10 +21,10 @@ class TestDataset(unittest.TestCase):
         self.props.spectrum_for_prefit = -2
         self.props.buildup_types = [
             "exponential",
-            "exponential_with_offset",
             "biexponential",
-            "streched_exponential",
             "biexponential_with_offset",
+            "exponential_with_offset",
+            "streched_exponential",
         ]
         self.props.spectrum_fit_type = "global"
         self.props.expno = [1, 8]
@@ -37,7 +37,9 @@ class TestDataset(unittest.TestCase):
         )
         self.ds = dataset.Dataset()
         self.ds.props = self.props
-        self.ds.add_peak(-16.5, peak_sign="+", fitting_type="lorentz")
+        self.ds.add_peak(
+            -16.5, peak_sign="+", integration_range=[-13.5, -19.5]
+        )
         self.ds.start_analysis()
 
     def test_results_folder_exists(self):

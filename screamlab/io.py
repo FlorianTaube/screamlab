@@ -132,7 +132,6 @@ class ScreamImporter(TopspinImporter):
                     self._dataset.spectra[-1].number_of_scans = int(
                         acqu_line.strip().split(" ")[-1]
                     )
-                    print(int(acqu_line.strip().split(" ")[-1]))
 
     def import_topspin_data(self):
         """Import NMR data from TopSpin and process it."""
@@ -259,18 +258,29 @@ class Exporter:
         """
         self._print_report()
         self._plot_topspin_data()
-        self._plot_global_all_together()
-        if self.dataset.props.prefit:
+        if self.dataset.props.spectrum_fit_type != "numint":
+            self._plot_global_all_together()
+        if (
+            self.dataset.props.prefit
+            and self.dataset.props.spectrum_fit_type != "numint"
+        ):
             self._plot_prefit()
             self._print_lmfit_prefit_report()
-        if "global" in self.dataset.props.spectrum_fit_type:
+        if (
+            "global" in self.dataset.props.spectrum_fit_type
+            and self.dataset.props.spectrum_fit_type != "numint"
+        ):
             self._plot_global_each_individual()
-        if "individual" in self.dataset.props.spectrum_fit_type:
+        if (
+            "individual" in self.dataset.props.spectrum_fit_type
+            and self.dataset.props.spectrum_fit_type != "numint"
+        ):
             self._plot_global_each_individual()
         for buildup_type in self.dataset.props.buildup_types:
             self._plot_buildup(buildup_type)
-        self._write_global_fit_results_to_semicolon_separated_file()
-        self._write_buildup_fit_to_semicolon_separated_file()
+        if self.dataset.props.spectrum_fit_type != "numint":
+            self._write_global_fit_results_to_semicolon_separated_file()
+            self._write_buildup_fit_to_semicolon_separated_file()
         self._csv_output()
 
     def _plot_topspin_data(self):
@@ -573,15 +583,22 @@ class Exporter:
             f.write("[[Peaks]]\n")
             for peak_nr, peak in enumerate(self.dataset.peak_list):
                 f.write(f"[Peak {peak_nr + 1}]\n")
-                f.write(str(peak))
+                f.write(peak.to_string(self.dataset.props.spectrum_fit_type))
             f.write("[[Prefit]]\n")
-            if self.dataset.props.prefit:
+            if (
+                self.dataset.props.prefit
+                and self.dataset.props.spectrum_fit_type != "numint"
+            ):
                 self._get_prefit_string(f)
             else:
                 f.write("No prefit performed.\n")
 
-            f.write("[[Global fit results]]\n")
-            self._print_global_fit_results(f)
+            if self.dataset.props.spectrum_fit_type != "numint":
+                f.write("[[Spectral deconvolution results]]\n")
+                self._print_global_fit_results(f)
+            else:
+                f.write("[[Numerical integration results]]\n")
+                self._print_global_fit_results_numint(f)
             f.write("[[Buildup fit results]]\n")
             self._print_buildup(f)
 
@@ -612,6 +629,28 @@ class Exporter:
                     "".join(
                         h.ljust(w) for h, w in zip(row_data, column_widths)
                     )
+                    + "\n"
+                )
+
+    def _print_global_fit_results_numint(self, f):
+        header = ["Label", "Time", "Integral"]
+        column_widths = [25, 12, 10]
+        f.write(
+            "".join(f"{h:<{w}}" for h, w in zip(header, column_widths)) + "\n"
+        )
+        for peak_nr, peak in enumerate(self.dataset.peak_list):
+            for integral_nr, integral in enumerate(
+                peak.buildup_vals.intensity
+            ):
+                line = []
+                if integral_nr == 0:
+                    line.append(peak.peak_label)
+                else:
+                    line.append(" ")
+                line.append(peak.buildup_vals.tpol[integral_nr])
+                line.append(round(integral, 4))
+                f.write(
+                    "".join(f"{h:<{w}}" for h, w in zip(line, column_widths))
                     + "\n"
                 )
 

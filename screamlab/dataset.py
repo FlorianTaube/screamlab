@@ -12,6 +12,7 @@ Classes:
 
 """
 
+import sys
 from datetime import datetime
 import numpy as np
 from screamlab import io, utils, settings, functions
@@ -66,6 +67,7 @@ class Dataset:
         print(
             f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start buildup fit."
         )
+
         self._start_buildup_fit()
         print(
             f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: "
@@ -86,6 +88,7 @@ class Dataset:
         fitting_type="voigt",
         peak_sign="-",
         line_broadening=None,
+        integration_range=None,
     ):
         """
         Adds a peak to the ds.
@@ -94,7 +97,7 @@ class Dataset:
         ----------
             center_of_peak (float): Peak position in ppm (chemical shift).
             peak_label (str, optional): Custom label. Defaults to "Peak_at_<ppm>_ppm".
-            fitting_type (str, optional): Peak shape: "gauss", "lorentz", or "voigt" (default).
+            fitting_type (str, optional): Peak shape:  "gauss", "lorentz", or "voigt" (default).
             peak_sign (str, optional): "+" for upward, "-" for downward peaks. Defaults to "+".
             line_broadening (dict, optional): Dict with "sigma" and "gamma" keys for line width.
                 Defaults to {"sigma": {"min": 0, "max": 3}, "gamma": {"min": 0, "max": 3}}.
@@ -109,6 +112,7 @@ class Dataset:
         peak.fitting_type = fitting_type
         peak.peak_sign = peak_sign
         peak.line_broadening = line_broadening
+        peak.integration_range = integration_range
 
     def _read_in_data_from_topspin(self):
         """Reads and imports data from TopSpin."""
@@ -132,7 +136,7 @@ class Dataset:
 
     def _calculate_peak_intensities(self):
         """Calculates peak intensities based on fitting methods."""
-        if self.props.prefit:
+        if self.props.prefit and self.props.spectrum_fit_type != "numint":
             print(
                 f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start prefit."
             )
@@ -148,7 +152,7 @@ class Dataset:
             result = self.fitter.fit()
             self.lmfit_result_handler.global_fit = result
             self._get_intensities(result)
-        if "global" == self.props.spectrum_fit_type:
+        elif "global" == self.props.spectrum_fit_type:
             print(
                 f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start global fit."
             )
@@ -156,6 +160,15 @@ class Dataset:
             result = self.fitter.fit()
             self.lmfit_result_handler.global_fit = result
             self._get_intensities(result)
+        elif "numint" == self.props.spectrum_fit_type:
+            print(
+                f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start integration."
+            )
+            self._set_integration_calc()
+            result = self.fitter.fit()
+            self._get_intensities(result)
+        else:
+            sys.exit()
 
     def _start_buildup_fit(self):
         """Performs buildup fitting using the appropriate fitter classes."""
@@ -187,10 +200,18 @@ class Dataset:
         """Sets up a global fitter for all spectra."""
         self.fitter = utils.GlobalFitter(self)
 
+    def _set_integration_calc(self):
+        self.fitter = utils.NumericalIntegration(self)
+
     def _get_intensities(self, result):
         """Extracts intensity values from the fitting results."""
         if isinstance(
-            self.fitter, (utils.IndependentFitter, utils.GlobalFitter)
+            self.fitter,
+            (
+                utils.IndependentFitter,
+                utils.GlobalFitter,
+                utils.NumericalIntegration,
+            ),
         ):
             for peak in self.peak_list:
                 peak.buildup_vals = (result, self.spectra)
@@ -257,6 +278,7 @@ class Peak:
         self._line_broadening = None
         self._line_broadening_init = None
         self._buildup_vals = None
+        self._integration_range = None
 
     def __str__(self):
         """
@@ -264,6 +286,7 @@ class Peak:
 
         :return: A string describing the peak's attributes.
         """
+
         return (
             f"Peak center: {self.peak_center}\n"
             f"Peak label: {self.peak_label}\n"
@@ -276,6 +299,17 @@ class Peak:
             f"within the following ranges:\n"
             f" {self._format_fitting_range('')}"
         )
+
+    def to_string(self, spectrum_fit_type):
+        if spectrum_fit_type == "numint":
+            return (
+                f"Peak center: {self.peak_center} ppm\n"
+                f"Peak label: {self.peak_label}\n"
+                f"Peak sign: {self.peak_sign}\n"
+                f"Numerical integration range: {self.integration_range} ppm\n"
+            )
+        else:
+            return str(self)
 
     def _format_fitting_range(self, fit_type):
         a_max = "0 and inf" if self.peak_sign == "+" else "-inf and 0"
@@ -298,6 +332,34 @@ class Peak:
         )
 
     @property
+    def integration_range(self) -> list:
+        """
+        Gets the integration range.
+
+        :return:
+        """
+        return self._integration_range
+
+    @integration_range.setter
+    def integration_range(self, args):
+        """
+        Sets the integration range.
+
+        :param args: List containing the integration range for numerical integragtion.
+        """
+        if args is not None:
+            if (
+                not isinstance(args, list)
+                or len(args) != 2
+                or not all(isinstance(e, (int, float)) for e in args)
+            ):
+                raise TypeError(
+                    "Integration range must be a list of two numbers or None."
+                )
+
+        self._integration_range = args
+
+    @property
     def buildup_vals(self) -> list:
         """
         Gets the buildup values.
@@ -314,8 +376,14 @@ class Peak:
         :param args: Tuple containing result and spectra.
         """
         result, spectra = args
+
         self._buildup_vals = BuildupList()
-        self._buildup_vals.set_vals(result, spectra, self.peak_label)
+        if isinstance(result, dict):
+            self._buildup_vals.set_num_int_vals(
+                result[self], spectra, self.peak_label
+            )
+        else:
+            self._buildup_vals.set_vals(result, spectra, self.peak_label)
 
     @property
     def line_broadening(self) -> str:
@@ -598,6 +666,21 @@ class BuildupList:
         """
         self._set_tpol(spectra)
         self._set_intensity(result, label, spectra)
+        self._sort_lists()
+
+    def set_num_int_vals(self, result, spectra, label):
+        """
+        Sets buildup values from numerical integration.
+
+        Attributes
+        ----------
+            result (list): Intensity values
+            spectra (list): Spectrum objects used with result to compute buildup.
+            label (str): Peak label used to filter relevant parameters in result.
+
+        """
+        self._set_tpol(spectra)
+        self.intensity = result
         self._sort_lists()
 
     def _set_tpol(self, spectra):
