@@ -83,6 +83,8 @@ class Properties:
     def subspec(self, value: Any):
         """Sets list for subspectrum"""
         if value is not None:
+            if len(value) != 2:
+                sys.exit("Error: subspec requires two floats")
             self._subspec = value
         else:
             self._subspec = []
@@ -181,7 +183,7 @@ class Properties:
         """
         str, optional: A list specifying the spectrum fit type
 
-        Options supporded: "global","independent".
+        Options supporded: "global","independent, "numint".
 
         """
         return self._spectrum_fit_type
@@ -189,10 +191,7 @@ class Properties:
     @spectrum_fit_type.setter
     def spectrum_fit_type(self, value: Any):
         """Sets the spectrum fit type"""
-        allowed_values = {
-            "global",
-            "individual",
-        }
+        allowed_values = {"global", "individual", "numint"}
         if not isinstance(value, str):
             raise TypeError(
                 f"Expected 'spectrum_fit_type' to be of type 'str', got"

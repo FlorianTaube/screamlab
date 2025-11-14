@@ -33,7 +33,7 @@ class Fitter:
     """
     Base class for spectral fitting using `lmfit`.
 
-    This class handles parameter initialization and spectral fitting for a ds.
+    This class handles parameter initialization and spectral fitting for a dataset.
 
     Attributes
     ----------
@@ -44,7 +44,7 @@ class Fitter:
 
     def __init__(self, dataset):
         """
-        Initializes the Fitter with a ds.
+        Initializes the Fitter with a dataset.
 
         Args
         ----
@@ -279,6 +279,36 @@ class Prefitter(Fitter):
             self._spectral_fitting, params, args=(x_axis, y_axis)
         )
         return result
+
+
+class NumericalIntegration(Fitter):
+
+    def fit(self):
+        integrals = dict()
+        for spectrum in self.dataset.spectra:
+            for peak in self.dataset.peak_list:
+                if peak not in integrals:
+                    integrals[peak] = []
+                self._check_integration_range_in_spectra(spectrum, peak)
+                subspec_x_axis, subspec_y_axis = functions.generate_subspec(
+                    spectrum, peak.integration_range
+                )
+                integrals[peak].append(
+                    np.trapz(subspec_y_axis[::-1], subspec_x_axis[::-1])
+                )
+        return integrals
+
+    def _check_integration_range_in_spectra(self, spectrum, peak):
+        for integration_boundary in peak.integration_range:
+            if not (
+                min(spectrum.x_axis)
+                <= integration_boundary
+                <= max(spectrum.x_axis)
+            ):
+                raise ValueError(
+                    f"Integration boundary {integration_boundary} is outside the spectrum "
+                    f"range ({min(spectrum.x_axis)} – {max(spectrum.x_axis)})."
+                )
 
 
 class GlobalFitter(Fitter):
