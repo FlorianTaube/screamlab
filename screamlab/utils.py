@@ -66,7 +66,6 @@ class Fitter:
         x_axis, y_axis = self._generate_axis_list()
         params = self._generate_params_list()
         params = self._set_param_expr(params)
-
         return self._start_minimize(x_axis, y_axis, params)
 
     def _start_minimize(self, x_axis, y_axis, params):
@@ -358,6 +357,72 @@ class IndependentFitter(Fitter):
     yields higher run times. A prefit can be combined with this case to save time. However, it
     must be ensured that all spectra can be fitted by conditions given in point two.
     """
+
+    def _generate_params_list(self):
+        """
+        Generates initial fitting parameters based on peak information in the ds.
+
+        Returns
+        -------
+        lmfit.Parameters
+            The initialized parameters for fitting.
+
+        """
+        params_list = []
+        spectra = self._get_spectra_list()
+        lw_types = {
+            "voigt": ["sigma", "gamma"],
+            "gauss": ["sigma"],
+            "lorentz": ["gamma"],
+        }
+        for spectrum_nr, _ in enumerate(spectra):
+            params = lmfit.Parameters()
+            for peak in self.dataset.peak_list:
+                params.add(**self._get_amplitude_dict(peak, spectrum_nr))
+                params.add(**self._get_center_dict(peak, spectrum_nr))
+
+                for lw_type in lw_types.get(peak.fitting_type, []):
+                    params.add(
+                        **self._get_lw_dict(peak, spectrum_nr, lw_type)
+                    )
+            params_list.append(params)
+        return params_list
+
+    def _start_minimize(self, x_axis, y_axis, params):
+        all_results = []
+        for spectrum_nr, spectrum in enumerate(x_axis):
+            all_results.append(
+                lmfit.minimize(
+                    self._spectral_fitting,
+                    params[spectrum_nr],
+                    args=(x_axis[spectrum_nr], y_axis[spectrum_nr]),
+                )
+            )
+        return all_results
+
+    def _spectral_fitting(self, params, x_axis, y_axis):
+        """
+        Computes the residual between the fitted and experimental spectra.
+
+        Args
+        ----
+            params (lmfit.Parameters): The fitting parameters.
+            x_axis (list): List of x-axis values.
+            y_axis (list): List of y-axis values.
+
+        Returns
+        -------
+            np.ndarray: The residual between the fitted and experimental spectra.
+
+        """
+        residual = y_axis
+        params_dict_list = functions.generate_spectra_param_dict(params)
+        for key, val_list in params_dict_list.items():
+            for val in val_list:
+                simspec = [0 for _ in range(len(x_axis))]
+                simspec = functions.calc_peak(x_axis, simspec, val)
+                residual -= simspec
+        return residual
 
 
 class BuildupFitter:

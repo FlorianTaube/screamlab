@@ -332,7 +332,7 @@ class Exporter:
             self.dataset.props.spectrum_for_prefit
         ]
         x_axis, y_axis = spectrum.x_axis, spectrum.y_axis
-        valdict = screamlab.functions.generate_spectra_param_dict(
+        valdict = screamlab.functions.generate_spectra_param_dict_global(
             self.dataset.lmfit_result_handler.prefit.params
         )
         simspec = [0] * len(y_axis)
@@ -441,7 +441,7 @@ class Exporter:
 
     def _plot_global_each_individual(self):
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
-        param_dict = screamlab.functions.generate_spectra_param_dict(
+        param_dict = screamlab.functions.generate_spectra_param_dict_global(
             self.dataset.lmfit_result_handler.global_fit.params
         )
 
@@ -496,7 +496,7 @@ class Exporter:
     def _plot_global_all_together(self):
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
 
-        param_dict = screamlab.functions.generate_spectra_param_dict(
+        param_dict = screamlab.functions.generate_spectra_param_dict_global(
             self.dataset.lmfit_result_handler.global_fit.params
         )
 
@@ -596,6 +596,7 @@ class Exporter:
             if self.dataset.props.spectrum_fit_type != "numint":
                 f.write("[[Spectral deconvolution results]]\n")
                 self._print_global_fit_results(f)
+
             else:
                 f.write("[[Numerical integration results]]\n")
                 self._print_global_fit_results_numint(f)
@@ -655,9 +656,16 @@ class Exporter:
                 )
 
     def _print_global_fit_results(self, f):
-        valdict = screamlab.functions.generate_spectra_param_dict(
-            self.dataset.lmfit_result_handler.global_fit.params
-        )
+        if self.dataset.props.spectrum_fit_type == "global":
+            valdict = screamlab.functions.generate_spectra_param_dict_global(
+                self.dataset.lmfit_result_handler.global_fit.params
+            )
+        elif self.dataset.props.spectrum_fit_type == "individual":
+            valdict = (
+                screamlab.functions.generate_spectra_param_dict_individual(
+                    self.dataset.lmfit_result_handler.global_fit.params
+                )
+            )
         header = screamlab.functions.spectrum_fit_header()
         column_widths = [25, 12, 15, 20, 15, 15, 22, 20, 20, 10]
         f.write(
@@ -673,7 +681,7 @@ class Exporter:
                 )
 
     def _get_prefit_string(self, f):
-        valdict = screamlab.functions.generate_spectra_param_dict(
+        valdict = screamlab.functions.generate_spectra_param_dict_global(
             self.dataset.lmfit_result_handler.prefit.params
         )
         widths = [25, 18, 20, 15, 15]
@@ -804,7 +812,7 @@ class Exporter:
         )
 
         with open(output_file_path, "w", encoding="utf-8") as f:
-            valdict = screamlab.functions.generate_spectra_param_dict(
+            valdict = screamlab.functions.generate_spectra_param_dict_global(
                 self.dataset.lmfit_result_handler.global_fit.params
             )
             header = screamlab.functions.spectrum_fit_header()

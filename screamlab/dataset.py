@@ -15,6 +15,7 @@ Classes:
 import sys
 from datetime import datetime
 import numpy as np
+from lmfit import Parameters
 from screamlab import io, utils, settings, functions
 
 
@@ -234,6 +235,21 @@ class Dataset:
                 if f"{peak.peak_label}_{lw}_0" in result.params
             }
 
+    def _transform_result_format(self, results):
+        print(results)
+        params_new = Parameters()
+        for result in results:
+            for name, par in result.params.items():
+                params_new.add(
+                    name,
+                    value=par.value,
+                    vary=par.vary,
+                    min=par.min,
+                    max=par.max,
+                    expr=par.expr,
+                )
+        return params_new
+
 
 class Spectra:
     """
@@ -376,7 +392,6 @@ class Peak:
         :param args: Tuple containing result and spectra.
         """
         result, spectra = args
-
         self._buildup_vals = BuildupList()
         if isinstance(result, dict):
             self._buildup_vals.set_num_int_vals(
@@ -690,23 +705,29 @@ class BuildupList:
         last_digid = None
         self.intensity = []
         val_list = []
-        for param in result.params:
-            if label in param:
-                if last_digid != param.split("_")[-1]:
-                    if val_list:
-                        self.intensity.append(
-                            self._calc_integral(
-                                val_list, spectra[int(last_digid)]
+        res_list = []
+        if not isinstance(result, list):
+            res_list.append(result)
+        else:
+            res_list = result
+        for single_result in res_list:
+            for param in single_result.params:
+                if label in param:
+                    if last_digid != param.split("_")[-1]:
+                        if val_list:
+                            self.intensity.append(
+                                self._calc_integral(
+                                    val_list, spectra[int(last_digid)]
+                                )
                             )
-                        )
-                    last_digid = param.split("_")[-1]
-                    val_list = []
-                val_list.append(float(result.params[param].value))
-                if param.split("_")[-2] == "gamma":
-                    val_list.append("gamma")
-        self.intensity.append(
-            self._calc_integral(val_list, spectra[int(last_digid)])
-        )
+                        last_digid = param.split("_")[-1]
+                        val_list = []
+                    val_list.append(float(single_result.params[param].value))
+                    if param.split("_")[-2] == "gamma":
+                        val_list.append("gamma")
+            self.intensity.append(
+                self._calc_integral(val_list, spectra[int(last_digid)])
+            )
 
     def _calc_integral(self, val_list, spectrum):
         """
