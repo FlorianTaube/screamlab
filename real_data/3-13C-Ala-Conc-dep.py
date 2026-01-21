@@ -37,10 +37,10 @@ ds.add_peak(
 ds.start_analysis()
 
 props = settings.Properties()
-props.prefit = True
+props.prefit = False
 props.spectrum_for_prefit = -1
-props.buildup_types = ["exponential", "biexponential"]
-props.spectrum_fit_type = "global"
+props.buildup_types = ["exponential"]
+props.spectrum_fit_type = "individual"
 props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_0.5_103"
 props.path_to_experiment = rf"F:\ssNMR\20260112_SAlaF_0.5M_Ala"
 props.procno = 103
@@ -78,7 +78,7 @@ props.prefit = False
 props.spectrum_for_prefit = -5
 props.buildup_types = ["exponential", "biexponential"]
 props.spectrum_fit_type = "individual"
-props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\_0.4_102"
+props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_0.4_102"
 props.path_to_experiment = rf"F:\ssNMR\20260113_SAlaF_0.4M_Ala"
 props.procno = 102
 props.expno = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14]
@@ -109,10 +109,10 @@ ds.add_peak(
 ds.start_analysis()
 
 props = settings.Properties()
-props.prefit = True
+props.prefit = False
 props.spectrum_for_prefit = -1
 props.buildup_types = ["exponential", "biexponential"]
-props.spectrum_fit_type = "global"
+props.spectrum_fit_type = "individual"
 props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_0.4_103"
 props.path_to_experiment = rf"F:\ssNMR\20260113_SAlaF_0.4M_Ala"
 props.procno = 103
@@ -180,10 +180,10 @@ ds.add_peak(
 ds.start_analysis()
 
 props = settings.Properties()
-props.prefit = True
+props.prefit = False
 props.spectrum_for_prefit = -1
 props.buildup_types = ["exponential", "biexponential"]
-props.spectrum_fit_type = "global"
+props.spectrum_fit_type = "individual"
 props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_0.3_103"
 props.path_to_experiment = rf"F:\ssNMR\20260113_SAlaF_0.3M_Ala"
 props.procno = 103
@@ -252,10 +252,10 @@ ds.add_peak(
 ds.start_analysis()
 
 props = settings.Properties()
-props.prefit = True
+props.prefit = False
 props.spectrum_for_prefit = -1
 props.buildup_types = ["exponential", "biexponential"]
-props.spectrum_fit_type = "global"
+props.spectrum_fit_type = "individual"
 props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_0.2_103"
 props.path_to_experiment = rf"F:\ssNMR\20260113_SAlaF_0.2M_Ala"
 props.procno = 103
@@ -324,10 +324,10 @@ ds.add_peak(
 ds.start_analysis()
 
 props = settings.Properties()
-props.prefit = True
+props.prefit = False
 props.spectrum_for_prefit = -1
 props.buildup_types = ["exponential", "biexponential"]
-props.spectrum_fit_type = "global"
+props.spectrum_fit_type = "individual"
 props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_0.1_103"
 props.path_to_experiment = rf"F:\ssNMR\20260113_SAlaF_0.1M_Ala"
 props.procno = 103
@@ -392,10 +392,10 @@ ds.add_peak(
 ds.start_analysis()
 
 props = settings.Properties()
-props.prefit = True
+props.prefit = False
 props.spectrum_for_prefit = -1
 props.buildup_types = ["exponential", "biexponential"]
-props.spectrum_fit_type = "global"
+props.spectrum_fit_type = "individual"
 props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_0.05_103"
 props.path_to_experiment = rf"F:\ssNMR\20260112_SAlaF_0.05M_Ala"
 props.procno = 103

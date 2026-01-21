@@ -26,8 +26,8 @@ import copy
 import numpy as np
 import lmfit
 from pyDOE3 import lhs
+from datetime import datetime
 from screamlab import functions
-import sys
 
 
 class Fitter:
@@ -394,6 +394,10 @@ class IndependentFitter(Fitter):
     def _start_minimize(self, x_axis, y_axis, params):
         all_results = []
         for spectrum_nr, spectrum in enumerate(x_axis):
+            print(
+                f"\t{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: "
+                f"Start fitting spectrum number {spectrum_nr+1}/{len(x_axis)}"
+            )
             result = lmfit.minimize(
                 self._spectral_fitting,
                 params[spectrum_nr],
