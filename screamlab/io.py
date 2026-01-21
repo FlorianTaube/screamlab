@@ -441,9 +441,18 @@ class Exporter:
 
     def _plot_global_each_individual(self):
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
-        param_dict = screamlab.functions.generate_spectra_param_dict_global(
-            self.dataset.lmfit_result_handler.global_fit.params
-        )
+        if self.dataset.props.spectrum_fit_type == "global":
+            param_dict = (
+                screamlab.functions.generate_spectra_param_dict_global(
+                    self.dataset.lmfit_result_handler.global_fit.params
+                )
+            )
+        elif self.dataset.props.spectrum_fit_type == "individual":
+            param_dict = (
+                screamlab.functions.generate_spectra_param_dict_individual(
+                    self.dataset.lmfit_result_handler.global_fit
+                )
+            )
 
         for key, param_list in param_dict.items():
             spectrum = self.dataset.spectra[key]
@@ -496,9 +505,18 @@ class Exporter:
     def _plot_global_all_together(self):
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
 
-        param_dict = screamlab.functions.generate_spectra_param_dict_global(
-            self.dataset.lmfit_result_handler.global_fit.params
-        )
+        if self.dataset.props.spectrum_fit_type == "global":
+            param_dict = (
+                screamlab.functions.generate_spectra_param_dict_global(
+                    self.dataset.lmfit_result_handler.global_fit.params
+                )
+            )
+        elif self.dataset.props.spectrum_fit_type == "individual":
+            param_dict = (
+                screamlab.functions.generate_spectra_param_dict_individual(
+                    self.dataset.lmfit_result_handler.global_fit
+                )
+            )
 
         num_spectra = len(param_dict)
         cols = 3
@@ -663,7 +681,7 @@ class Exporter:
         elif self.dataset.props.spectrum_fit_type == "individual":
             valdict = (
                 screamlab.functions.generate_spectra_param_dict_individual(
-                    self.dataset.lmfit_result_handler.global_fit.params
+                    self.dataset.lmfit_result_handler.global_fit
                 )
             )
         header = screamlab.functions.spectrum_fit_header()
@@ -812,9 +830,18 @@ class Exporter:
         )
 
         with open(output_file_path, "w", encoding="utf-8") as f:
-            valdict = screamlab.functions.generate_spectra_param_dict_global(
-                self.dataset.lmfit_result_handler.global_fit.params
-            )
+            valdict = None
+            if self.dataset.props.spectrum_fit_type == "global":
+                valdict = (
+                    screamlab.functions.generate_spectra_param_dict_global(
+                        self.dataset.lmfit_result_handler.global_fit.params
+                    )
+                )
+            elif self.dataset.props.spectrum_fit_type == "individual":
+                valdict = screamlab.functions.generate_spectra_param_dict_individual(
+                    self.dataset.lmfit_result_handler.global_fit
+                )
+
             header = screamlab.functions.spectrum_fit_header()
             f.write(";".join(str(item) for item in header) + "\n")
             for delay_time in range(0, len(valdict[0])):
@@ -907,6 +934,7 @@ class Exporter:
         return row
 
     def _gen_voigt_output(self, values, delay_time, val_nr):
+
         return [
             (
                 self.dataset.peak_list[delay_time].peak_label

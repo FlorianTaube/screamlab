@@ -725,9 +725,9 @@ class BuildupList:
                     val_list.append(float(single_result.params[param].value))
                     if param.split("_")[-2] == "gamma":
                         val_list.append("gamma")
-            self.intensity.append(
-                self._calc_integral(val_list, spectra[int(last_digid)])
-            )
+        self.intensity.append(
+            self._calc_integral(val_list, spectra[int(last_digid)])
+        )
 
     def _calc_integral(self, val_list, spectrum):
         """
@@ -745,6 +745,7 @@ class BuildupList:
         """
         simspec = [0 for _ in range(len(spectrum.x_axis))]
         simspec = functions.calc_peak(spectrum.x_axis, simspec, val_list)
+
         return np.trapz(simspec)
 
     def _sort_lists(self):

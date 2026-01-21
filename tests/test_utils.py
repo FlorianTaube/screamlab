@@ -356,7 +356,7 @@ class TestDataset(unittest.TestCase):
     def test_sort_params_one_voigt_one_spectrum(self):
         self.add_n_spectra(1)
         params = self.prefitter._generate_params_list()
-        param_dict_list = functions.generate_spectra_param_dict(params)
+        param_dict_list = functions.generate_spectra_param_dict_global(params)
         self.assertDictEqual(
             param_dict_list, {0: [[-200.0, 150.0, 1.5, 1.5, "gam"]]}
         )
@@ -365,7 +365,7 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(1)
         self.ds.add_peak(120, line_broadening={"sigma": {"max": 2}})
         params = self.prefitter._generate_params_list()
-        param_dict_list = functions.generate_spectra_param_dict(params)
+        param_dict_list = functions.generate_spectra_param_dict_global(params)
         self.assertDictEqual(
             param_dict_list,
             {
@@ -381,7 +381,7 @@ class TestDataset(unittest.TestCase):
         self.ds.add_peak(120, fitting_type="gauss")
         self.ds.add_peak(100, fitting_type="lorentz")
         params = self.prefitter._generate_params_list()
-        param_dict_list = functions.generate_spectra_param_dict(params)
+        param_dict_list = functions.generate_spectra_param_dict_global(params)
         self.assertDictEqual(
             param_dict_list,
             {
@@ -568,8 +568,9 @@ class TestDataset(unittest.TestCase):
         self.add_n_spectra(2)
         params = self.singlefitter._generate_params_list()
         keylist = []
-        for keys in params.keys():
-            keylist.append(keys)
+        for param in params:
+            for keys in param.keys():
+                keylist.append(keys)
         self.assertListEqual(
             keylist,
             [
@@ -589,8 +590,9 @@ class TestDataset(unittest.TestCase):
         self.ds.add_peak(120, fitting_type="gauss")
         params = self.singlefitter._generate_params_list()
         keylist = []
-        for keys in params.keys():
-            keylist.append(keys)
+        for param in params:
+            for keys in param.keys():
+                keylist.append(keys)
         self.assertListEqual(
             keylist,
             [
@@ -621,8 +623,9 @@ class TestDataset(unittest.TestCase):
         self.prefitter.dataset.peak_list[2].peak_sign = "+"
         result = self.singlefitter.fit()
         value_list = []
-        for key in result.params:
-            value_list.append(round(result.params[key].value))
+        for params in result:
+            for key in params.params:
+                value_list.append(round(params.params[key].value))
         self.assertListEqual(
             value_list, [200, 250, 2, 2, 400, 250, 2, 2, 600, 250, 2, 2]
         )

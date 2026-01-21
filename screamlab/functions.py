@@ -245,7 +245,7 @@ def calc_biexponential_with_offset(time_vals, param):
     )
 
 
-def generate_spectra_param_dict(params):
+def generate_spectra_param_dict_global(params):
     """
     Generate a dictionary of spectral parameters from a list of parameter names.
 
@@ -275,6 +275,40 @@ def generate_spectra_param_dict(params):
         if parts[1] == "gamma":
             param_value_list.append("gam")
     param_dict[dict_index].append(param_value_list)
+    return param_dict
+
+
+def generate_spectra_param_dict_individual(params):
+    """
+    Generate a dictionary of spectral parameters from a list of parameter names.
+
+    :param params: Dictionary of parameter names and values.
+    :return: Dictionary of structured parameter values.
+    """
+    param_dict = {}
+    dict_index = -1
+    for list_element in params:
+        prefix, lastfix = None, None
+        param_value_list = []
+        for param in list_element.params:
+            parts = re.split(r"_(cen|amp|sigma|gamma)_", param)
+            if prefix != parts[0]:
+                if param_value_list:
+                    param_dict[dict_index].append(param_value_list)
+                prefix = parts[0]
+                param_value_list = []
+            if lastfix != parts[2]:
+                if param_value_list:
+                    param_dict[dict_index].append(param_value_list)
+                    param_value_list = []
+                lastfix = parts[2]
+                dict_index += 1
+            if dict_index not in param_dict:
+                param_dict[dict_index] = []
+            param_value_list.append(float(list_element.params[param].value))
+            if parts[1] == "gamma":
+                param_value_list.append("gam")
+        param_dict[dict_index].append(param_value_list)
     return param_dict
 
 

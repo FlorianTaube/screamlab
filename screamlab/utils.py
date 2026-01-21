@@ -27,6 +27,7 @@ import numpy as np
 import lmfit
 from pyDOE3 import lhs
 from screamlab import functions
+import sys
 
 
 class Fitter:
@@ -239,7 +240,9 @@ class Fitter:
 
         """
         residual = copy.deepcopy(y_axis)
-        params_dict_list = functions.generate_spectra_param_dict(params)
+        params_dict_list = functions.generate_spectra_param_dict_global(
+            params
+        )
         for key, val_list in params_dict_list.items():
             for val in val_list:
                 simspec = [0 for _ in range(len(x_axis[key]))]
@@ -391,13 +394,12 @@ class IndependentFitter(Fitter):
     def _start_minimize(self, x_axis, y_axis, params):
         all_results = []
         for spectrum_nr, spectrum in enumerate(x_axis):
-            all_results.append(
-                lmfit.minimize(
-                    self._spectral_fitting,
-                    params[spectrum_nr],
-                    args=(x_axis[spectrum_nr], y_axis[spectrum_nr]),
-                )
+            result = lmfit.minimize(
+                self._spectral_fitting,
+                params[spectrum_nr],
+                args=(x_axis[spectrum_nr], y_axis[spectrum_nr]),
             )
+            all_results.append(result)
         return all_results
 
     def _spectral_fitting(self, params, x_axis, y_axis):
@@ -415,8 +417,10 @@ class IndependentFitter(Fitter):
             np.ndarray: The residual between the fitted and experimental spectra.
 
         """
-        residual = y_axis
-        params_dict_list = functions.generate_spectra_param_dict(params)
+        residual = y_axis.copy()
+        params_dict_list = functions.generate_spectra_param_dict_global(
+            params
+        )
         for key, val_list in params_dict_list.items():
             for val in val_list:
                 simspec = [0 for _ in range(len(x_axis))]
