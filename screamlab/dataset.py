@@ -75,6 +75,10 @@ class Dataset:
             f"Start generating result files. ({self.props.output_folder})"
         )
         self._print_all()
+        print(
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: "
+            f"Finished with {self.props.path_to_experiment}"
+        )
 
     def _start_buildup_fit_from_spectra(self):
         """Starts buildup fitting using data imported from spectra CSV files."""

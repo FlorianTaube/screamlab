@@ -1,77 +1,94 @@
 from screamlab import settings, dataset
 import sys
 
-props = settings.Properties()
-props.prefit = False
-props.spectrum_for_prefit = -5
-props.buildup_types = ["exponential", "biexponential"]
-props.spectrum_fit_type = "individual"
-props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_0.5_102"
-props.path_to_experiment = rf"F:\ssNMR\20260112_SAlaF_0.5M_Ala"
-props.procno = 102
-props.expno = [3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14]
-props.subspec = [0, 100]
+liste = [
+    "0.4",
+    "0.3",
+    "0.2",
+]
+liste = ["0.1", "0.05"]
+for i in liste:
+    props = settings.Properties()
+    props.prefit = False
+    props.spectrum_for_prefit = -1
+    props.buildup_types = ["exponential"]
+    props.spectrum_fit_type = "individual"
+    props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_{i}_103"
+    props.path_to_experiment = rf"F:\ssNMR\20260113_SAlaF_{i}M_Ala"
+    props.procno = 103
+    props.expno = [3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14]
+    props.subspec = [-40, 120]
 
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(
-    3,
-    peak_sign="+",
-    line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
-)
-ds.add_peak(
-    17,
-    peak_sign="+",
-    line_broadening={"gamma": {"max": 4}, "sigma": {"max": 4}},
-)
-ds.add_peak(
-    63,
-    peak_sign="+",
-    line_broadening={"gamma": {"max": 4}, "sigma": {"max": 4}},
-)
-ds.add_peak(
-    73,
-    peak_sign="+",
-    line_broadening={"gamma": {"max": 4}, "sigma": {"max": 4}},
-)
-ds.start_analysis()
+    ds = dataset.Dataset()
+    ds.props = props
+    ds.add_peak(
+        -6,
+        peak_sign="-",
+        line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
+    )
+    ds.add_peak(
+        3,
+        peak_sign="-",
+        line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
+    )
+    ds.add_peak(
+        17,
+        peak_sign="-",
+        line_broadening={"gamma": {"max": 4}, "sigma": {"max": 4}},
+    )
+    ds.add_peak(
+        63,
+        peak_sign="-",
+        line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
+    )
+    ds.add_peak(
+        73,
+        peak_sign="-",
+        line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
+    )
+    ds.start_analysis()
 
-props = settings.Properties()
-props.prefit = False
-props.spectrum_for_prefit = -1
-props.buildup_types = ["exponential"]
-props.spectrum_fit_type = "individual"
-props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_0.5_103"
-props.path_to_experiment = rf"F:\ssNMR\20260112_SAlaF_0.5M_Ala"
-props.procno = 103
-props.expno = [3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14]
-props.subspec = [0, 100]
+    props = settings.Properties()
+    props.prefit = False
+    props.spectrum_for_prefit = -5
+    props.buildup_types = ["exponential", "biexponential"]
+    props.spectrum_fit_type = "individual"
+    props.output_folder = rf"C:\Users\Florian Taube\Desktop\SAlaF\Ala_{i}_102"
+    props.path_to_experiment = rf"F:\ssNMR\20260113_SAlaF_{i}M_Ala"
+    props.procno = 102
+    props.expno = [3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14]
+    props.subspec = [-40, 120]
 
+    ds = dataset.Dataset()
+    ds.props = props
+    ds.add_peak(
+        -6,
+        peak_sign="+",
+        line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
+    )
+    ds.add_peak(
+        3,
+        peak_sign="+",
+        line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
+    )
+    ds.add_peak(
+        17,
+        peak_sign="+",
+        line_broadening={"gamma": {"max": 4}, "sigma": {"max": 4}},
+    )
+    ds.add_peak(
+        63,
+        peak_sign="+",
+        line_broadening={"gamma": {"max": 4}, "sigma": {"max": 4}},
+    )
+    ds.add_peak(
+        73,
+        peak_sign="+",
+        line_broadening={"gamma": {"max": 4}, "sigma": {"max": 4}},
+    )
+    ds.start_analysis()
 
-ds = dataset.Dataset()
-ds.props = props
-ds.add_peak(
-    3,
-    peak_sign="-",
-    line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
-)
-ds.add_peak(
-    17,
-    peak_sign="-",
-    line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
-)
-ds.add_peak(
-    63,
-    peak_sign="-",
-    line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
-)
-ds.add_peak(
-    73,
-    peak_sign="-",
-    line_broadening={"gamma": {"max": 2}, "sigma": {"max": 2}},
-)
-ds.start_analysis()
-
+sys.exit()
 #############################################
 props = settings.Properties()
 props.prefit = False
