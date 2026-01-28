@@ -1,0 +1,42 @@
+<svg id="molecule_icon" viewBox="-1405.0715171587926 -1405.0715171587926 2810.1430343175853 2810.1430343175853" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs>
+		<g id="O">
+			<circle cx="0" cy="0" r="100.0" fill="#FF0D0D" stroke="#580505" stroke-width="10.0" />
+			<path d="M70,-70 A90.0,90.0 0, 1, 1 -70,70 M-70,70 A120.0,120.0 0, 0,0 70, -70 Z" fill="#580505" stroke-width="0" />
+		</g>
+		<g id="C">
+			<circle cx="0" cy="0" r="100.0" fill="#909090" stroke="#323232" stroke-width="10.0" />
+			<path d="M70,-70 A90.0,90.0 0, 1, 1 -70,70 M-70,70 A120.0,120.0 0, 0,0 70, -70 Z" fill="#323232" stroke-width="0" />
+		</g>
+		<g id="N">
+			<circle cx="0" cy="0" r="100.0" fill="#3050F8" stroke="#111c56" stroke-width="10.0" />
+			<path d="M70,-70 A90.0,90.0 0, 1, 1 -70,70 M-70,70 A120.0,120.0 0, 0,0 70, -70 Z" fill="#111c56" stroke-width="0" />
+		</g>
+	</defs>
+	<line stroke="#343434" stroke-linecap="round" stroke-width="45.0" x1="-403.9707418684729" y1="241.57290889392473" x2="-540.6289370536965" y2="74.45274255496561" />
+	<line stroke="#979797" stroke-linecap="round" stroke-width="25.0" x1="-403.9707418684729" y1="241.57290889392473" x2="-540.6289370536965" y2="74.45274255496561" />
+	<use href="#O" xlink:href="#O" transform="translate(-540.6289370536965 74.45274255496561)" />
+	<line stroke="#343434" stroke-linecap="round" stroke-width="45.0" x1="-676.9975368181141" y1="392.71859390292525" x2="-403.9707418684729" y2="241.57290889392473" />
+	<line stroke="#979797" stroke-linecap="round" stroke-width="25.0" x1="-676.9975368181141" y1="392.71859390292525" x2="-403.9707418684729" y2="241.57290889392473" />
+	<line stroke="#343434" stroke-linecap="round" stroke-width="45.0" x1="-405.9707418684729" y1="278.5729088939247" x2="-43.73888680892678" y2="306.466079274178" />
+	<line stroke="#343434" stroke-linecap="round" stroke-width="45.0" x1="-401.9707418684729" y1="204.57290889392473" x2="-39.73888680892678" y2="232.466079274178" />
+	<line stroke="#979797" stroke-linecap="round" stroke-width="25.0" x1="-405.9707418684729" y1="278.5729088939247" x2="-43.73888680892678" y2="306.466079274178" />
+	<line stroke="#979797" stroke-linecap="round" stroke-width="25.0" x1="-401.9707418684729" y1="204.57290889392473" x2="-39.73888680892678" y2="232.466079274178" />
+	<use href="#C" xlink:href="#C" transform="translate(-403.9707418684729 241.57290889392473)" />
+	<line stroke="#343434" stroke-linecap="round" stroke-width="45.0" x1="-975.1137730561288" y1="1029.8765130936413" x2="-1205.0715171587926" y2="731.295452640027" />
+	<line stroke="#979797" stroke-linecap="round" stroke-width="25.0" x1="-975.1137730561288" y1="1029.8765130936413" x2="-1205.0715171587926" y2="731.295452640027" />
+	<line stroke="#343434" stroke-linecap="round" stroke-width="45.0" x1="-1205.0715171587926" y1="731.295452640027" x2="-1127.636101263694" y2="353.7840189480506" />
+	<line stroke="#979797" stroke-linecap="round" stroke-width="25.0" x1="-1205.0715171587926" y1="731.295452640027" x2="-1127.636101263694" y2="353.7840189480506" />
+	<use href="#C" xlink:href="#C" transform="translate(-1205.0715171587926 731.295452640027)" />
+	<use href="#O" xlink:href="#O" transform="translate(-41.73888680892678 269.466079274178)" />
+	<line stroke="#343434" stroke-linecap="round" stroke-width="45.0" x1="-676.9975368181141" y1="392.71859390292525" x2="-1127.636101263694" y2="353.7840189480506" />
+	<line stroke="#979797" stroke-linecap="round" stroke-width="25.0" x1="-676.9975368181141" y1="392.71859390292525" x2="-1127.636101263694" y2="353.7840189480506" />
+	<use href="#C" xlink:href="#C" transform="translate(-1127.636101263694 353.7840189480506)" />
+	<line stroke="#343434" stroke-linecap="round" stroke-width="45.0" x1="-975.1137730561288" y1="1029.8765130936413" x2="-602.2511426550623" y2="825.3790289035232" />
+	<line stroke="#979797" stroke-linecap="round" stroke-width="25.0" x1="-975.1137730561288" y1="1029.8765130936413" x2="-602.2511426550623" y2="825.3790289035232" />
+	<use href="#C" xlink:href="#C" transform="translate(-975.1137730561288 1029.8765130936413)" />
+	<line stroke="#343434" stroke-linecap="round" stroke-width="45.0" x1="-602.2511426550623" y1="825.3790289035232" x2="-676.9975368181141" y2="392.71859390292525" />
+	<line stroke="#979797" stroke-linecap="round" stroke-width="25.0" x1="-602.2511426550623" y1="825.3790289035232" x2="-676.9975368181141" y2="392.71859390292525" />
+	<use href="#C" xlink:href="#C" transform="translate(-676.9975368181141 392.71859390292525)" />
+	<use href="#N" xlink:href="#N" transform="translate(-602.2511426550623 825.3790289035232)" />
+</svg>
