@@ -5,7 +5,7 @@ Installing the screamlab package is as simple as installing any other Python pac
 
 .. code-block:: bash
 
-    pip install screamlab
+    pip install --upgrade screamlab
 
 This will install the screamlab package (and all its dependencies) on your computer.
 
