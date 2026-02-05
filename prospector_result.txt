@@ -1,32 +1,6 @@
 Messages
 ========
 
-screamlab\dataset.py
-  Line: 284
-    pydocstyle: D202 / No blank lines allowed after function docstring (found 1)
-  Line: 303
-    pydocstyle: D102 / Missing docstring in public method
-  Line: 304
-    pylint: no-else-return / Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (col 8)
-  Line: 671
-    pylint: unused-argument / Unused argument 'label' (col 48)
-
-screamlab\io.py
-  Line: 641
-    pylint: unused-variable / Unused variable 'peak_nr' (col 12)
-
-screamlab\settings.py
-  Line: 87
-    pylint: undefined-variable / Undefined variable 'sys' (col 16)
-
-screamlab\utils.py
-  Line: 284
-    pydocstyle: D101 / Missing docstring in public class
-  Line: 286
-    pydocstyle: D102 / Missing docstring in public method
-  Line: 287
-    pylint: use-dict-literal / Consider using '{}' instead of a call to 'dict'. (col 20)
-
 setup.py
   Line: None
     pyroma: PYRUNKNOWN / Your project does not have a pyproject.toml file, which is highly recommended.
@@ -41,13 +15,13 @@ You probably want to create one with the following configuration:
 
 Check Information
 =================
-         Started: 2026-02-04 11:29:37.767489
-        Finished: 2026-02-04 11:29:54.883704
-      Time Taken: 17.12 seconds
+         Started: 2026-02-05 22:25:11.623436
+        Finished: 2026-02-05 22:25:29.098028
+      Time Taken: 17.47 seconds
        Formatter: grouped
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 
        Tools Run: bandit, dodgy, mccabe, profile-validator, pycodestyle, pydocstyle, pyflakes, pylint, pyroma
-  Messages Found: 10
+  Messages Found: 1
 

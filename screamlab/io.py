@@ -481,6 +481,7 @@ class Exporter:
 
     def _plot_global_each_individual(self):
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
+        param_dict = None
         if self.dataset.props.spectrum_fit_type == "global":
             param_dict = (
                 screamlab.functions.generate_spectra_param_dict_global(
@@ -544,7 +545,7 @@ class Exporter:
 
     def _plot_global_all_together(self):
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
-
+        param_dict = None
         if self.dataset.props.spectrum_fit_type == "global":
             param_dict = (
                 screamlab.functions.generate_spectra_param_dict_global(
@@ -697,7 +698,7 @@ class Exporter:
         f.write(
             "".join(f"{h:<{w}}" for h, w in zip(header, column_widths)) + "\n"
         )
-        for peak_nr, peak in enumerate(self.dataset.peak_list):
+        for peak in self.dataset.peak_list:
             for integral_nr, integral in enumerate(
                 peak.buildup_vals.intensity
             ):
@@ -714,6 +715,7 @@ class Exporter:
                 )
 
     def _print_global_fit_results(self, f):
+        valdict = None
         if self.dataset.props.spectrum_fit_type == "global":
             valdict = screamlab.functions.generate_spectra_param_dict_global(
                 self.dataset.lmfit_result_handler.global_fit.params

@@ -308,7 +308,6 @@ class Peak:
 
         :return: A string describing the peak's attributes.
         """
-
         return (
             f"Peak center: {self.peak_center}\n"
             f"Peak label: {self.peak_label}\n"
@@ -323,6 +322,24 @@ class Peak:
         )
 
     def to_string(self, spectrum_fit_type):
+        """
+        Returns a string representation of the peak.
+
+        If `spectrum_fit_type` is "numint", detailed peak information
+        is returned, including center, label, sign, and integration range.
+        Otherwise, the default string representation of the object is returned.
+
+        Args:
+            spectrum_fit_type (str): The type of spectrum fitting.
+                Supports "numint" for numerical integration.
+
+        Returns
+        -------
+            str: A formatted string with peak information, or the default
+                string representation of the object.
+
+
+        """
         if spectrum_fit_type == "numint":
             return (
                 f"Peak center: {self.peak_center} ppm\n"
@@ -330,8 +347,7 @@ class Peak:
                 f"Peak sign: {self.peak_sign}\n"
                 f"Numerical integration range: {self.integration_range} ppm\n"
             )
-        else:
-            return str(self)
+        return str(self)
 
     def _format_fitting_range(self, fit_type):
         a_max = "0 and inf" if self.peak_sign == "+" else "-inf and 0"
@@ -400,9 +416,7 @@ class Peak:
         result, spectra = args
         self._buildup_vals = BuildupList()
         if isinstance(result, dict):
-            self._buildup_vals.set_num_int_vals(
-                result[self], spectra, self.peak_label
-            )
+            self._buildup_vals.set_num_int_vals(result[self], spectra)
         else:
             self._buildup_vals.set_vals(result, spectra, self.peak_label)
 
@@ -689,7 +703,7 @@ class BuildupList:
         self._set_intensity(result, label, spectra)
         self._sort_lists()
 
-    def set_num_int_vals(self, result, spectra, label):
+    def set_num_int_vals(self, result, spectra):
         """
         Sets buildup values from numerical integration.
 
@@ -751,10 +765,9 @@ class BuildupList:
         """
         simspec = [0 for _ in range(len(spectrum.x_axis))]
         simspec = functions.calc_peak(spectrum.x_axis, simspec, val_list)
-        try:
+        if hasattr(np, "trapezoid"):
             return np.trapezoid(simspec)
-        except:
-            return np.trapz(simspec)
+        return np.trapz(simspec)
 
     def _sort_lists(self):
         """

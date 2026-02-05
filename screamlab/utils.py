@@ -23,10 +23,10 @@ Classes:
 """
 
 import copy
+from datetime import datetime
 import numpy as np
 import lmfit
 from pyDOE3 import lhs
-from datetime import datetime
 from screamlab import functions
 
 
@@ -284,9 +284,28 @@ class Prefitter(Fitter):
 
 
 class NumericalIntegration(Fitter):
+    """
+    Subclass of Fitter that calculates spectral signal intensities via numerical integration.
+
+    This class is designed for applications where the area under a curve
+    in a given spectral window is of interest, such as quantifying peak
+    intensities in spectroscopy or other analytical measurements.
+    By integrating over a defined region, it provides a robust measure
+    of signal strength that accounts for variations in peak shape
+    and baseline fluctuations.
+    """
 
     def fit(self):
-        integrals = dict()
+        """
+        Performs spectral numerical integration using numpy trapz or trapezoid function.
+
+        Returns
+        -------
+        dict
+            The result of the integration process.
+
+        """
+        integrals = {}
         for spectrum in self.dataset.spectra:
             for peak in self.dataset.peak_list:
                 if peak not in integrals:
@@ -295,13 +314,13 @@ class NumericalIntegration(Fitter):
                 subspec_x_axis, subspec_y_axis = functions.generate_subspec(
                     spectrum, peak.integration_range
                 )
-                try:
+                if hasattr(np, "trapezoid"):
                     integrals[peak].append(
                         np.trapezoid(
                             subspec_y_axis[::-1], subspec_x_axis[::-1]
                         )
                     )
-                except:
+                else:
                     integrals[peak].append(
                         np.trapz(subspec_y_axis[::-1], subspec_x_axis[::-1])
                     )
@@ -417,7 +436,7 @@ class IndependentFitter(Fitter):
             result = lmfit.minimize(
                 self._spectral_fitting,
                 params[spectrum_nr],
-                args=(x_axis[spectrum_nr], y_axis[spectrum_nr]),
+                args=(spectrum, y_axis[spectrum_nr]),
             )
             all_results.append(result)
         return all_results
@@ -441,7 +460,7 @@ class IndependentFitter(Fitter):
         params_dict_list = functions.generate_spectra_param_dict_global(
             params
         )
-        for key, val_list in params_dict_list.items():
+        for _, val_list in params_dict_list.items():
             for val in val_list:
                 simspec = [0 for _ in range(len(x_axis))]
                 simspec = functions.calc_peak(x_axis, simspec, val)
