@@ -295,12 +295,20 @@ class NumericalIntegration(Fitter):
                 subspec_x_axis, subspec_y_axis = functions.generate_subspec(
                     spectrum, peak.integration_range
                 )
-                integrals[peak].append(
-                    np.trapz(subspec_y_axis[::-1], subspec_x_axis[::-1])
-                )
+                try:
+                    integrals[peak].append(
+                        np.trapezoid(
+                            subspec_y_axis[::-1], subspec_x_axis[::-1]
+                        )
+                    )
+                except:
+                    integrals[peak].append(
+                        np.trapz(subspec_y_axis[::-1], subspec_x_axis[::-1])
+                    )
         return integrals
 
     def _check_integration_range_in_spectra(self, spectrum, peak):
+        self._check_if_integration_range_are_set(peak)
         for integration_boundary in peak.integration_range:
             if not (
                 min(spectrum.x_axis)
@@ -311,6 +319,14 @@ class NumericalIntegration(Fitter):
                     f"Integration boundary {integration_boundary} is outside the spectrum "
                     f"range ({min(spectrum.x_axis)} – {max(spectrum.x_axis)})."
                 )
+
+    def _check_if_integration_range_are_set(self, peak):
+        if peak.integration_range is None:
+            raise ValueError(
+                f"Peak '{peak.peak_label}' ({peak.peak_center:.3f} ppm): "
+                f"integration_range is not set. "
+                f"Call dataset.add_peak({peak.peak_center}, integration_range=(from_ppm, to_ppm))."
+            )
 
 
 class GlobalFitter(Fitter):
@@ -586,6 +602,27 @@ class BuildupFitter:
         """
         return [params[key].value for key in params]
 
+    def _get_intensity_offset_dict(self, peak):
+        """
+        Generate intensity offset parameter dictionary.
+
+        :param peak: Peak object containing buildup values.
+        :return: Dictionary with default intensity parameter values.
+        """
+        return (
+            {
+                "value": 10,
+                "min": max(peak.buildup_vals.intensity) * -3,
+                "max": max(peak.buildup_vals.intensity) * 3,
+            }
+            if peak.peak_sign == "+"
+            else {
+                "value": 10,
+                "max": min(peak.buildup_vals.intensity) * -3,
+                "min": min(peak.buildup_vals.intensity) * 3,
+            }
+        )
+
     def _get_intensity_dict(self, peak):
         """
         Generate intensity parameter dictionary.
@@ -660,6 +697,88 @@ class BiexpFitter(BuildupFitter):
         :return: Calculated intensity values.
         """
         return functions.calc_biexponential(tdel, param)
+
+
+class ExpDecayFitter(BuildupFitter):
+    """
+    Class for fitting exponential decay models to experimental data.
+
+    The exponential decay model fits decay curves using one exponential term
+    characterized by an amplitude (A) and a time constants (t).
+
+    The model function is defined as:
+        I(t_pol) = A *  exp(-t_pol / t))
+
+    where:
+        - A        : amplitudes of the exponential components
+        - t        : time constants of the exponential components (t > 0)
+        - t_pol    : polarization time (independent variable)
+        - I(t_pol) : peak intensity at polarization time t_pol
+    """
+
+    def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for exponential decay fitting.
+
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: A, t.
+        """
+        return {
+            "Af": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
+        }
+
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate exponential decay intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_expdecay(tdel, param)
+
+
+class ExpDecayFitterWithOffset(BuildupFitter):
+    """
+    Class for fitting exponential decay models to experimental data.
+
+    The exponential decay model fits decay curves using one exponential term
+    characterized by an amplitude (A), an intensity offset (I0) and a time constants (t).
+
+    The model function is defined as:
+        I(t_pol) = I0 + A *  exp(-t_pol / t))
+
+    where:
+        - A        : amplitudes of the exponential components
+        - t        : time constants of the exponential components (t > 0)
+        - t_pol    : polarization time (independent variable)
+        - I0       : Intensity offset
+        - I(t_pol) : peak intensity at polarization time t_pol
+    """
+
+    def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for exponential decay fitting with offset.
+
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: A, t, I0.
+        """
+        return {
+            "Af": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
+            "I0": self._get_intensity_offset_dict(peak),
+        }
+
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate exponential decay intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_expdecaywithoffset(tdel, param)
 
 
 class BiexpFitterWithOffset(BuildupFitter):

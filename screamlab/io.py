@@ -113,6 +113,13 @@ class TopspinImporter:
         ]
         return path_list
 
+    def _gen_subspectrum(self):
+        self._dataset.spectra[-1].x_axis, self._dataset.spectra[-1].y_axis = (
+            screamlab.functions.generate_subspec(
+                self._dataset.spectra[-1], self._dataset.props.subspec
+            )
+        )
+
 
 class ScreamImporter(TopspinImporter):
     """
@@ -124,15 +131,6 @@ class ScreamImporter(TopspinImporter):
 
     """
 
-    def _set_number_of_scans(self):
-        """Set the number of scans for the last spectrum in the ds."""
-        with open(rf"{self.file}/acqus", "r", encoding="utf-8") as acqu_file:
-            for acqu_line in acqu_file:
-                if "##$NS=" in acqu_line:
-                    self._dataset.spectra[-1].number_of_scans = int(
-                        acqu_line.strip().split(" ")[-1]
-                    )
-
     def import_topspin_data(self):
         """Import NMR data from TopSpin and process it."""
         files = self._generate_path_to_experiment()
@@ -141,6 +139,15 @@ class ScreamImporter(TopspinImporter):
             self._add_spectrum()
             self._set_values()
         self._sort_xy_lists()
+
+    def _set_number_of_scans(self):
+        """Set the number of scans for the last spectrum in the ds."""
+        with open(rf"{self.file}/acqus", "r", encoding="utf-8") as acqu_file:
+            for acqu_line in acqu_file:
+                if "##$NS=" in acqu_line:
+                    self._dataset.spectra[-1].number_of_scans = int(
+                        acqu_line.strip().split(" ")[-1]
+                    )
 
     def _set_buildup_time(self):
         """Set the buildup time for the last spectrum in the ds."""
@@ -204,16 +211,49 @@ class ScreamImporter(TopspinImporter):
             self._dataset.spectra[-1].number_of_scans,
         )
 
-    def _gen_subspectrum(self):
-        self._dataset.spectra[-1].x_axis, self._dataset.spectra[-1].y_axis = (
-            screamlab.functions.generate_subspec(
-                self._dataset.spectra[-1], self._dataset.props.subspec
-            )
-        )
-
 
 class Pseudo2DImporter(TopspinImporter):
-    """Not implemented yet."""
+    """
+    Class for importing and processing Pseudo2D data based on VD list.
+
+    Automatically reads information about x- and y-axis (chemical shift and intensitys),
+    polarization times (t_pol) and the number of scans used for the respective experiment.
+    Automatically normalizes the  intensitys to the number of scans.
+
+    """
+
+    def import_topspin_data(self):
+        """Import pseudo 2D NMR data from TopSpin and process it."""
+        files = self._generate_path_to_experiment()
+        self.file = files[0]
+        self._set_values()
+
+    def _set_values(self):
+        """Set internal values including scans, buildup time, x and y data."""
+        dic, data = ng.bruker.read_pdata(
+            f"{self.file}/pdata/{self._dataset.props.procno}"
+        )
+        uc = ng.bruker.guess_udic(dic, data)
+        vdlist = self._get_vdvals()
+        for spectrum_nr in range(data.shape[0]):
+            self._add_spectrum()
+            self._dataset.spectra[-1].number_of_scans = int(
+                dic.get("acqus", {}).get("NS", None)
+            )
+            self._dataset.spectra[-1].tpol = vdlist[spectrum_nr]
+            self._dataset.spectra[-1].x_axis = ng.fileiobase.uc_from_udic(
+                uc, dim=1
+            ).ppm_scale()
+            self._dataset.spectra[-1].y_axis = data[spectrum_nr, :]
+            if len(self._dataset.props.subspec) == 2:
+                self._gen_subspectrum()
+
+    def _get_vdvals(self):
+        vdvals = []
+        with open(rf"{self.file}/vdlist", "r", encoding="utf-8") as vdlist:
+            for vdline in vdlist:
+                vdvals.append(float(vdline.strip()))
+        return vdvals
 
 
 class Exporter:
@@ -625,7 +665,7 @@ class Exporter:
         for buildup_type in self.dataset.props.buildup_types:
             f.write(f"[{buildup_type}]\n")
             header = screamlab.functions.buildup_header()
-            column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35, 10]
+            column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35, 20, 15]
             f.write(
                 "".join(h.ljust(w) for h, w in zip(header, column_widths))
                 + "\n"
@@ -685,7 +725,7 @@ class Exporter:
                 )
             )
         header = screamlab.functions.spectrum_fit_header()
-        column_widths = [25, 12, 15, 20, 15, 15, 22, 20, 20, 10]
+        column_widths = [25, 12, 15, 20, 15, 15, 22, 20, 20, 20, 15]
         f.write(
             "".join(f"{h:<{w}}" for h, w in zip(header, column_widths)) + "\n"
         )

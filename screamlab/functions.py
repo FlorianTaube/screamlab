@@ -169,6 +169,48 @@ def calc_stretched_exponential(time_vals, param):
     )
 
 
+def calc_expdecay(time_vals, param):
+    """
+    Compute values of an exponential growth function over time.
+
+    The function models the equation:
+        I(t) = A * exp(-t / t)
+
+    where:
+        - I(t)  : The output value at time t
+        - A     : Amplitude (maximum value the function approaches)
+        - t    : Time constant (controls the rate of decay)
+
+    Returns
+    -------
+        list: Exponential profile evaluated at t.
+
+    """
+    return list(param[0] * np.exp(-np.asarray(time_vals) / param[1]))
+
+
+def calc_expdecaywithoffset(time_vals, param):
+    """
+    Compute values of an exponential growth function over time.
+
+    The function models the equation:
+        I(t) = A * exp(-t / t) + I0
+
+    where:
+        - I(t)  : The output value at time t
+        - A     : Amplitude (maximum value the function approaches)
+        - t    : Time constant (controls the rate of decay)
+
+    Returns
+    -------
+        list: Exponential profile evaluated at t.
+
+    """
+    return list(
+        param[0] * np.exp(-np.asarray(time_vals) / param[1]) + param[2]
+    )
+
+
 def calc_biexponential(time_vals, param):
     """
     Compute values of a biexponential growth function over time.
@@ -337,8 +379,9 @@ def format_mapping():
             "Sf",
             "---",
             "---",
+            "---",
         ],
-        "streched_exponential": [
+        "stretched_exponential": [
             "Af",
             "tf",
             "---",
@@ -349,6 +392,7 @@ def format_mapping():
             "Sf",
             "---",
             "beta",
+            "---",
         ],
         "exponential_with_offset": [
             "Af",
@@ -359,6 +403,7 @@ def format_mapping():
             "Rf",
             "---",
             "Sf",
+            "---",
             "---",
             "---",
         ],
@@ -373,6 +418,7 @@ def format_mapping():
             "Sf",
             "Ss",
             "---",
+            "---",
         ],
         "biexponential_with_offset": [
             "Af",
@@ -385,6 +431,33 @@ def format_mapping():
             "Sf",
             "Ss",
             "---",
+            "---",
+        ],
+        "exponential_decay": [
+            "Af",
+            "tf",
+            "---",
+            "---",
+            "---",
+            "Rf",
+            "---",
+            "Sf",
+            "---",
+            "---",
+            "---",
+        ],
+        "exponential_decay_with_offset": [
+            "Af",
+            "tf",
+            "---",
+            "---",
+            "---",
+            "Rf",
+            "---",
+            "Sf",
+            "---",
+            "---",
+            "I0",
         ],
     }
 
@@ -402,7 +475,8 @@ def buildup_header():
         "Rs / 1/s",
         "Sensitivity1 (Af/sqrt(tf))",
         "Sensitivity2 (As/sqrt(ts))",
-        "beta",
+        "beta / a.u.",
+        "I0 / a.u.",
     ]
 
 
@@ -429,7 +503,9 @@ def return_func_map():
         "biexponential": calc_biexponential,
         "exponential_with_offset": calc_exponential_with_offset,
         "biexponential_with_offset": calc_biexponential_with_offset,
-        "streched_exponential": calc_stretched_exponential,
+        "stretched_exponential": calc_stretched_exponential,
+        "exponential_decay": calc_expdecay,
+        "exponential_decay_with_offset": calc_expdecaywithoffset,
     }
 
 

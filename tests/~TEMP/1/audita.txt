@@ -1,0 +1,15 @@
+##TITLE= Audit trail, TopSpin 4.1.4
+##JCAMPDX= 5.01
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Florian Taube
+$$ C:/Users/Florian Taube/Documents/Programmierung/CorziliusNMR/tests/~TEMP/1/audita.txt
+##AUDIT TRAIL=  $$ (NUMBER, WHEN, WHO, WHERE, PROCESS, VERSION, WHAT)
+(   1,<2026-02-05 15:06:41.585 +0100>,<Florian Taube>,<Siavash>,<mvrow>,<TopSpin 4.1.4>,
+      <rser 16 from
+       1 "Pseudo2DTestFiles" "C:/Users/Florian Taube/Documents/Programmierung/CorziliusNMR/tests"
+       data hash MD5: 4K
+       04 F5 48 FD D5 F1 31 38 27 34 6B 2C 5A DA 05 62>)
+##END=
+
+$$ hash MD5
+$$ E4 FA 6A D1 9F 41 A4 64 44 F1 C3 A3 A1 91 DE CD

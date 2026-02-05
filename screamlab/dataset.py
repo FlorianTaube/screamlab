@@ -182,7 +182,9 @@ class Dataset:
             "biexponential_with_offset": utils.BiexpFitterWithOffset,
             "exponential": utils.ExpFitter,
             "exponential_with_offset": utils.ExpFitterWithOffset,
-            "streched_exponential": utils.StrechedExponentialFitter,
+            "stretched_exponential": utils.StrechedExponentialFitter,
+            "exponential_decay": utils.ExpDecayFitter,
+            "exponential_decay_with_offset": utils.ExpDecayFitterWithOffset,
         }
 
         for b_type in self.props.buildup_types:
@@ -749,8 +751,10 @@ class BuildupList:
         """
         simspec = [0 for _ in range(len(spectrum.x_axis))]
         simspec = functions.calc_peak(spectrum.x_axis, simspec, val_list)
-
-        return np.trapz(simspec)
+        try:
+            return np.trapezoid(simspec)
+        except:
+            return np.trapz(simspec)
 
     def _sort_lists(self):
         """

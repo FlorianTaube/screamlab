@@ -13,33 +13,22 @@ class TestDataset(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         test_dir = Path(__file__).parent
-        output_folder = rf"{test_dir}\SCREAM_Test_Files\Alanin\result"
+        output_folder = rf"{test_dir}\Pseudo2DTestFiles\result"
         if os.path.exists(output_folder):
             shutil.rmtree(output_folder)
         self.props = settings.Properties()
         self.props.prefit = True
         self.props.spectrum_for_prefit = -2
-        self.props.buildup_types = [
-            "exponential",
-            "exponential_with_offset",
-            "biexponential",
-            "biexponential_with_offset",
-            "stretched_exponential",
-        ]
+        self.props.buildup_types = ["exponential"]
+        self.props.subspec = [100, 200]
         self.props.spectrum_fit_type = "global"
-        self.props.expno = [1, 8]
-        self.props.procno = 103
-        self.props.path_to_experiment = (
-            rf"{test_dir}/SCREAM_Test_Files/Alanin"
-        )
-        self.props.output_folder = (
-            rf"{test_dir}/SCREAM_Test_Files/Alanin/result"
-        )
+        self.props.expno = [1]
+        self.props.procno = 1
+        self.props.path_to_experiment = rf"{test_dir}/Pseudo2DTestFiles"
+        self.props.output_folder = rf"{test_dir}\Pseudo2DTestFiles\result"
         self.ds = dataset.Dataset()
         self.ds.props = self.props
-        self.ds.add_peak(
-            -16.5, peak_sign="+", integration_range=[-13.5, -19.5]
-        )
+        self.ds.add_peak(174, peak_sign="+", integration_range=[-13.5, -19.5])
         self.ds.start_analysis()
 
     def test_results_folder_exists(self):
@@ -74,12 +63,12 @@ class TestDataset(unittest.TestCase):
 
     def test_buildup_plots_contains_correct_number_of_files(self):
         self.assertEqual(
-            len(os.listdir(rf"{self.props.output_folder}/buildup_plots")), 10
+            len(os.listdir(rf"{self.props.output_folder}/buildup_plots")), 2
         )
 
     def test_lmfit_reports_contains_correct_number_of_files(self):
         self.assertEqual(
-            len(os.listdir(rf"{self.props.output_folder}/lmfit_reports")), 6
+            len(os.listdir(rf"{self.props.output_folder}/lmfit_reports")), 2
         )
 
     def test_spectra_contains_correct_number_of_files(self):
@@ -94,10 +83,10 @@ class TestDataset(unittest.TestCase):
                     rf"{self.props.output_folder}/spectral_deconvolution_plots"
                 )
             ),
-            19,
+            36,
         )
 
-    def test_spec_deconv_contains_correct_number_of_files(self):
+    def test_spec_tab_results_contains_correct_number_of_files(self):
         self.assertEqual(
-            len(os.listdir(rf"{self.props.output_folder}/tabular_results")), 6
+            len(os.listdir(rf"{self.props.output_folder}/tabular_results")), 2
         )

@@ -183,7 +183,7 @@ class Properties:
         """
         str, optional: A list specifying the spectrum fit type
 
-        Options supporded: "global","independent, "numint".
+        Options supporded: "global", "independent, "numint".
 
         """
         return self._spectrum_fit_type
@@ -226,7 +226,9 @@ class Properties:
             "biexponential",
             "biexponential_with_offset",
             "exponential_with_offset",
-            "streched_exponential",
+            "stretched_exponential",
+            "exponential_decay",
+            "exponential_decay_with_offset",
         }
         if not isinstance(value, list):
             raise TypeError(
