@@ -15,6 +15,7 @@ Classes:
 import sys
 from datetime import datetime
 import numpy as np
+from lmfit import Parameters
 from screamlab import io, utils, settings, functions
 
 
@@ -74,6 +75,10 @@ class Dataset:
             f"Start generating result files. ({self.props.output_folder})"
         )
         self._print_all()
+        print(
+            f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: "
+            f"Finished with {self.props.path_to_experiment}"
+        )
 
     def _start_buildup_fit_from_spectra(self):
         """Starts buildup fitting using data imported from spectra CSV files."""
@@ -177,7 +182,9 @@ class Dataset:
             "biexponential_with_offset": utils.BiexpFitterWithOffset,
             "exponential": utils.ExpFitter,
             "exponential_with_offset": utils.ExpFitterWithOffset,
-            "streched_exponential": utils.StrechedExponentialFitter,
+            "stretched_exponential": utils.StrechedExponentialFitter,
+            "exponential_decay": utils.ExpDecayFitter,
+            "exponential_decay_with_offset": utils.ExpDecayFitterWithOffset,
         }
 
         for b_type in self.props.buildup_types:
@@ -234,6 +241,21 @@ class Dataset:
                 if f"{peak.peak_label}_{lw}_0" in result.params
             }
 
+    def _transform_result_format(self, results):
+        print(results)
+        params_new = Parameters()
+        for result in results:
+            for name, par in result.params.items():
+                params_new.add(
+                    name,
+                    value=par.value,
+                    vary=par.vary,
+                    min=par.min,
+                    max=par.max,
+                    expr=par.expr,
+                )
+        return params_new
+
 
 class Spectra:
     """
@@ -286,7 +308,6 @@ class Peak:
 
         :return: A string describing the peak's attributes.
         """
-
         return (
             f"Peak center: {self.peak_center}\n"
             f"Peak label: {self.peak_label}\n"
@@ -301,6 +322,24 @@ class Peak:
         )
 
     def to_string(self, spectrum_fit_type):
+        """
+        Returns a string representation of the peak.
+
+        If `spectrum_fit_type` is "numint", detailed peak information
+        is returned, including center, label, sign, and integration range.
+        Otherwise, the default string representation of the object is returned.
+
+        Args:
+            spectrum_fit_type (str): The type of spectrum fitting.
+                Supports "numint" for numerical integration.
+
+        Returns
+        -------
+            str: A formatted string with peak information, or the default
+                string representation of the object.
+
+
+        """
         if spectrum_fit_type == "numint":
             return (
                 f"Peak center: {self.peak_center} ppm\n"
@@ -308,8 +347,7 @@ class Peak:
                 f"Peak sign: {self.peak_sign}\n"
                 f"Numerical integration range: {self.integration_range} ppm\n"
             )
-        else:
-            return str(self)
+        return str(self)
 
     def _format_fitting_range(self, fit_type):
         a_max = "0 and inf" if self.peak_sign == "+" else "-inf and 0"
@@ -376,12 +414,9 @@ class Peak:
         :param args: Tuple containing result and spectra.
         """
         result, spectra = args
-
         self._buildup_vals = BuildupList()
         if isinstance(result, dict):
-            self._buildup_vals.set_num_int_vals(
-                result[self], spectra, self.peak_label
-            )
+            self._buildup_vals.set_num_int_vals(result[self], spectra)
         else:
             self._buildup_vals.set_vals(result, spectra, self.peak_label)
 
@@ -668,7 +703,7 @@ class BuildupList:
         self._set_intensity(result, label, spectra)
         self._sort_lists()
 
-    def set_num_int_vals(self, result, spectra, label):
+    def set_num_int_vals(self, result, spectra):
         """
         Sets buildup values from numerical integration.
 
@@ -690,20 +725,26 @@ class BuildupList:
         last_digid = None
         self.intensity = []
         val_list = []
-        for param in result.params:
-            if label in param:
-                if last_digid != param.split("_")[-1]:
-                    if val_list:
-                        self.intensity.append(
-                            self._calc_integral(
-                                val_list, spectra[int(last_digid)]
+        res_list = []
+        if not isinstance(result, list):
+            res_list.append(result)
+        else:
+            res_list = result
+        for single_result in res_list:
+            for param in single_result.params:
+                if label in param:
+                    if last_digid != param.split("_")[-1]:
+                        if val_list:
+                            self.intensity.append(
+                                self._calc_integral(
+                                    val_list, spectra[int(last_digid)]
+                                )
                             )
-                        )
-                    last_digid = param.split("_")[-1]
-                    val_list = []
-                val_list.append(float(result.params[param].value))
-                if param.split("_")[-2] == "gamma":
-                    val_list.append("gamma")
+                        last_digid = param.split("_")[-1]
+                        val_list = []
+                    val_list.append(float(single_result.params[param].value))
+                    if param.split("_")[-2] == "gamma":
+                        val_list.append("gamma")
         self.intensity.append(
             self._calc_integral(val_list, spectra[int(last_digid)])
         )
@@ -724,6 +765,8 @@ class BuildupList:
         """
         simspec = [0 for _ in range(len(spectrum.x_axis))]
         simspec = functions.calc_peak(spectrum.x_axis, simspec, val_list)
+        if hasattr(np, "trapezoid"):
+            return np.trapezoid(simspec)
         return np.trapz(simspec)
 
     def _sort_lists(self):

@@ -1,0 +1,31 @@
+##TITLE= List of Points
+##JCAMPDX= 5.0
+##DATA TYPE= Relaxation Data
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER= Florian Taube
+$$ 2026-02-05 15:02:52.310 +0100  Florian Taube@Siavash
+$$ C:/Users/Florian Taube/Documents/Programmierung/CorziliusNMR/tests/Pseudo2DTestFiles/1/pdata/1/t1t2.dx
+##XUNITS= sec
+##YUNITS= a.u.
+##MINX=   1.600000e-02
+##MAXX=   8.192000e+00
+##MINY=   0.000000e+00
+##MAXY=   5.256989e+08
+##NPOINTS= 15
+##XYPOINTS= (XY..XY)
+  1.600000e-02,  7.244418e+05
+  2.400000e-02,  1.236468e+06
+  3.800000e-02,  3.089506e+06
+  6.000000e-02,  6.076679e+06
+  9.400000e-02,  1.178632e+07
+  1.460000e-01,  2.123171e+07
+  2.290000e-01,  3.660767e+07
+  3.580000e-01,  5.974326e+07
+  5.600000e-01,  9.437319e+07
+  8.760000e-01,  1.437584e+08
+  1.369000e+00,  2.104696e+08
+  2.141000e+00,  2.933990e+08
+  3.349000e+00,  3.848364e+08
+  5.238000e+00,  4.681245e+08
+  8.192000e+00,  5.256989e+08
+##END= $$ End of List for Peak No. 1

@@ -23,6 +23,7 @@ Classes:
 """
 
 import copy
+from datetime import datetime
 import numpy as np
 import lmfit
 from pyDOE3 import lhs
@@ -66,7 +67,6 @@ class Fitter:
         x_axis, y_axis = self._generate_axis_list()
         params = self._generate_params_list()
         params = self._set_param_expr(params)
-
         return self._start_minimize(x_axis, y_axis, params)
 
     def _start_minimize(self, x_axis, y_axis, params):
@@ -240,7 +240,9 @@ class Fitter:
 
         """
         residual = copy.deepcopy(y_axis)
-        params_dict_list = functions.generate_spectra_param_dict(params)
+        params_dict_list = functions.generate_spectra_param_dict_global(
+            params
+        )
         for key, val_list in params_dict_list.items():
             for val in val_list:
                 simspec = [0 for _ in range(len(x_axis[key]))]
@@ -282,9 +284,28 @@ class Prefitter(Fitter):
 
 
 class NumericalIntegration(Fitter):
+    """
+    Subclass of Fitter that calculates spectral signal intensities via numerical integration.
+
+    This class is designed for applications where the area under a curve
+    in a given spectral window is of interest, such as quantifying peak
+    intensities in spectroscopy or other analytical measurements.
+    By integrating over a defined region, it provides a robust measure
+    of signal strength that accounts for variations in peak shape
+    and baseline fluctuations.
+    """
 
     def fit(self):
-        integrals = dict()
+        """
+        Performs spectral numerical integration using numpy trapz or trapezoid function.
+
+        Returns
+        -------
+        dict
+            The result of the integration process.
+
+        """
+        integrals = {}
         for spectrum in self.dataset.spectra:
             for peak in self.dataset.peak_list:
                 if peak not in integrals:
@@ -293,12 +314,20 @@ class NumericalIntegration(Fitter):
                 subspec_x_axis, subspec_y_axis = functions.generate_subspec(
                     spectrum, peak.integration_range
                 )
-                integrals[peak].append(
-                    np.trapz(subspec_y_axis[::-1], subspec_x_axis[::-1])
-                )
+                if hasattr(np, "trapezoid"):
+                    integrals[peak].append(
+                        np.trapezoid(
+                            subspec_y_axis[::-1], subspec_x_axis[::-1]
+                        )
+                    )
+                else:
+                    integrals[peak].append(
+                        np.trapz(subspec_y_axis[::-1], subspec_x_axis[::-1])
+                    )
         return integrals
 
     def _check_integration_range_in_spectra(self, spectrum, peak):
+        self._check_if_integration_range_are_set(peak)
         for integration_boundary in peak.integration_range:
             if not (
                 min(spectrum.x_axis)
@@ -309,6 +338,14 @@ class NumericalIntegration(Fitter):
                     f"Integration boundary {integration_boundary} is outside the spectrum "
                     f"range ({min(spectrum.x_axis)} – {max(spectrum.x_axis)})."
                 )
+
+    def _check_if_integration_range_are_set(self, peak):
+        if peak.integration_range is None:
+            raise ValueError(
+                f"Peak '{peak.peak_label}' ({peak.peak_center:.3f} ppm): "
+                f"integration_range is not set. "
+                f"Call dataset.add_peak({peak.peak_center}, integration_range=(from_ppm, to_ppm))."
+            )
 
 
 class GlobalFitter(Fitter):
@@ -358,6 +395,77 @@ class IndependentFitter(Fitter):
     yields higher run times. A prefit can be combined with this case to save time. However, it
     must be ensured that all spectra can be fitted by conditions given in point two.
     """
+
+    def _generate_params_list(self):
+        """
+        Generates initial fitting parameters based on peak information in the ds.
+
+        Returns
+        -------
+        lmfit.Parameters
+            The initialized parameters for fitting.
+
+        """
+        params_list = []
+        spectra = self._get_spectra_list()
+        lw_types = {
+            "voigt": ["sigma", "gamma"],
+            "gauss": ["sigma"],
+            "lorentz": ["gamma"],
+        }
+        for spectrum_nr, _ in enumerate(spectra):
+            params = lmfit.Parameters()
+            for peak in self.dataset.peak_list:
+                params.add(**self._get_amplitude_dict(peak, spectrum_nr))
+                params.add(**self._get_center_dict(peak, spectrum_nr))
+
+                for lw_type in lw_types.get(peak.fitting_type, []):
+                    params.add(
+                        **self._get_lw_dict(peak, spectrum_nr, lw_type)
+                    )
+            params_list.append(params)
+        return params_list
+
+    def _start_minimize(self, x_axis, y_axis, params):
+        all_results = []
+        for spectrum_nr, spectrum in enumerate(x_axis):
+            print(
+                f"\t{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: "
+                f"Start fitting spectrum number {spectrum_nr+1}/{len(x_axis)}"
+            )
+            result = lmfit.minimize(
+                self._spectral_fitting,
+                params[spectrum_nr],
+                args=(spectrum, y_axis[spectrum_nr]),
+            )
+            all_results.append(result)
+        return all_results
+
+    def _spectral_fitting(self, params, x_axis, y_axis):
+        """
+        Computes the residual between the fitted and experimental spectra.
+
+        Args
+        ----
+            params (lmfit.Parameters): The fitting parameters.
+            x_axis (list): List of x-axis values.
+            y_axis (list): List of y-axis values.
+
+        Returns
+        -------
+            np.ndarray: The residual between the fitted and experimental spectra.
+
+        """
+        residual = y_axis.copy()
+        params_dict_list = functions.generate_spectra_param_dict_global(
+            params
+        )
+        for _, val_list in params_dict_list.items():
+            for val in val_list:
+                simspec = [0 for _ in range(len(x_axis))]
+                simspec = functions.calc_peak(x_axis, simspec, val)
+                residual -= simspec
+        return residual
 
 
 class BuildupFitter:
@@ -513,6 +621,27 @@ class BuildupFitter:
         """
         return [params[key].value for key in params]
 
+    def _get_intensity_offset_dict(self, peak):
+        """
+        Generate intensity offset parameter dictionary.
+
+        :param peak: Peak object containing buildup values.
+        :return: Dictionary with default intensity parameter values.
+        """
+        return (
+            {
+                "value": 10,
+                "min": max(peak.buildup_vals.intensity) * -3,
+                "max": max(peak.buildup_vals.intensity) * 3,
+            }
+            if peak.peak_sign == "+"
+            else {
+                "value": 10,
+                "max": min(peak.buildup_vals.intensity) * -3,
+                "min": min(peak.buildup_vals.intensity) * 3,
+            }
+        )
+
     def _get_intensity_dict(self, peak):
         """
         Generate intensity parameter dictionary.
@@ -587,6 +716,88 @@ class BiexpFitter(BuildupFitter):
         :return: Calculated intensity values.
         """
         return functions.calc_biexponential(tdel, param)
+
+
+class ExpDecayFitter(BuildupFitter):
+    """
+    Class for fitting exponential decay models to experimental data.
+
+    The exponential decay model fits decay curves using one exponential term
+    characterized by an amplitude (A) and a time constants (t).
+
+    The model function is defined as:
+        I(t_pol) = A *  exp(-t_pol / t))
+
+    where:
+        - A        : amplitudes of the exponential components
+        - t        : time constants of the exponential components (t > 0)
+        - t_pol    : polarization time (independent variable)
+        - I(t_pol) : peak intensity at polarization time t_pol
+    """
+
+    def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for exponential decay fitting.
+
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: A, t.
+        """
+        return {
+            "Af": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
+        }
+
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate exponential decay intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_expdecay(tdel, param)
+
+
+class ExpDecayFitterWithOffset(BuildupFitter):
+    """
+    Class for fitting exponential decay models to experimental data.
+
+    The exponential decay model fits decay curves using one exponential term
+    characterized by an amplitude (A), an intensity offset (I0) and a time constants (t).
+
+    The model function is defined as:
+        I(t_pol) = I0 + A *  exp(-t_pol / t))
+
+    where:
+        - A        : amplitudes of the exponential components
+        - t        : time constants of the exponential components (t > 0)
+        - t_pol    : polarization time (independent variable)
+        - I0       : Intensity offset
+        - I(t_pol) : peak intensity at polarization time t_pol
+    """
+
+    def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for exponential decay fitting with offset.
+
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: A, t, I0.
+        """
+        return {
+            "Af": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
+            "I0": self._get_intensity_offset_dict(peak),
+        }
+
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate exponential decay intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_expdecaywithoffset(tdel, param)
 
 
 class BiexpFitterWithOffset(BuildupFitter):

@@ -113,6 +113,13 @@ class TopspinImporter:
         ]
         return path_list
 
+    def _gen_subspectrum(self):
+        self._dataset.spectra[-1].x_axis, self._dataset.spectra[-1].y_axis = (
+            screamlab.functions.generate_subspec(
+                self._dataset.spectra[-1], self._dataset.props.subspec
+            )
+        )
+
 
 class ScreamImporter(TopspinImporter):
     """
@@ -124,16 +131,6 @@ class ScreamImporter(TopspinImporter):
 
     """
 
-    def _set_number_of_scans(self):
-        """Set the number of scans for the last spectrum in the ds."""
-        with open(rf"{self.file}/acqus", "r", encoding="utf-8") as acqu_file:
-            for acqu_line in acqu_file:
-                if "##$NS=" in acqu_line:
-                    self._dataset.spectra[-1].number_of_scans = int(
-                        acqu_line.strip().split(" ")[-1]
-                    )
-                    print(int(acqu_line.strip().split(" ")[-1]))
-
     def import_topspin_data(self):
         """Import NMR data from TopSpin and process it."""
         files = self._generate_path_to_experiment()
@@ -142,6 +139,15 @@ class ScreamImporter(TopspinImporter):
             self._add_spectrum()
             self._set_values()
         self._sort_xy_lists()
+
+    def _set_number_of_scans(self):
+        """Set the number of scans for the last spectrum in the ds."""
+        with open(rf"{self.file}/acqus", "r", encoding="utf-8") as acqu_file:
+            for acqu_line in acqu_file:
+                if "##$NS=" in acqu_line:
+                    self._dataset.spectra[-1].number_of_scans = int(
+                        acqu_line.strip().split(" ")[-1]
+                    )
 
     def _set_buildup_time(self):
         """Set the buildup time for the last spectrum in the ds."""
@@ -205,16 +211,49 @@ class ScreamImporter(TopspinImporter):
             self._dataset.spectra[-1].number_of_scans,
         )
 
-    def _gen_subspectrum(self):
-        self._dataset.spectra[-1].x_axis, self._dataset.spectra[-1].y_axis = (
-            screamlab.functions.generate_subspec(
-                self._dataset.spectra[-1], self._dataset.props.subspec
-            )
-        )
-
 
 class Pseudo2DImporter(TopspinImporter):
-    """Not implemented yet."""
+    """
+    Class for importing and processing Pseudo2D data based on VD list.
+
+    Automatically reads information about x- and y-axis (chemical shift and intensitys),
+    polarization times (t_pol) and the number of scans used for the respective experiment.
+    Automatically normalizes the  intensitys to the number of scans.
+
+    """
+
+    def import_topspin_data(self):
+        """Import pseudo 2D NMR data from TopSpin and process it."""
+        files = self._generate_path_to_experiment()
+        self.file = files[0]
+        self._set_values()
+
+    def _set_values(self):
+        """Set internal values including scans, buildup time, x and y data."""
+        dic, data = ng.bruker.read_pdata(
+            f"{self.file}/pdata/{self._dataset.props.procno}"
+        )
+        uc = ng.bruker.guess_udic(dic, data)
+        vdlist = self._get_vdvals()
+        for spectrum_nr in range(data.shape[0]):
+            self._add_spectrum()
+            self._dataset.spectra[-1].number_of_scans = int(
+                dic.get("acqus", {}).get("NS", None)
+            )
+            self._dataset.spectra[-1].tpol = vdlist[spectrum_nr]
+            self._dataset.spectra[-1].x_axis = ng.fileiobase.uc_from_udic(
+                uc, dim=1
+            ).ppm_scale()
+            self._dataset.spectra[-1].y_axis = data[spectrum_nr, :]
+            if len(self._dataset.props.subspec) == 2:
+                self._gen_subspectrum()
+
+    def _get_vdvals(self):
+        vdvals = []
+        with open(rf"{self.file}/vdlist", "r", encoding="utf-8") as vdlist:
+            for vdline in vdlist:
+                vdvals.append(float(vdline.strip()))
+        return vdvals
 
 
 class Exporter:
@@ -333,7 +372,7 @@ class Exporter:
             self.dataset.props.spectrum_for_prefit
         ]
         x_axis, y_axis = spectrum.x_axis, spectrum.y_axis
-        valdict = screamlab.functions.generate_spectra_param_dict(
+        valdict = screamlab.functions.generate_spectra_param_dict_global(
             self.dataset.lmfit_result_handler.prefit.params
         )
         simspec = [0] * len(y_axis)
@@ -442,9 +481,19 @@ class Exporter:
 
     def _plot_global_each_individual(self):
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
-        param_dict = screamlab.functions.generate_spectra_param_dict(
-            self.dataset.lmfit_result_handler.global_fit.params
-        )
+        param_dict = None
+        if self.dataset.props.spectrum_fit_type == "global":
+            param_dict = (
+                screamlab.functions.generate_spectra_param_dict_global(
+                    self.dataset.lmfit_result_handler.global_fit.params
+                )
+            )
+        elif self.dataset.props.spectrum_fit_type == "individual":
+            param_dict = (
+                screamlab.functions.generate_spectra_param_dict_individual(
+                    self.dataset.lmfit_result_handler.global_fit
+                )
+            )
 
         for key, param_list in param_dict.items():
             spectrum = self.dataset.spectra[key]
@@ -496,10 +545,19 @@ class Exporter:
 
     def _plot_global_all_together(self):
         output_dir = self._generate_output_dir("spectral_deconvolution_plots")
-
-        param_dict = screamlab.functions.generate_spectra_param_dict(
-            self.dataset.lmfit_result_handler.global_fit.params
-        )
+        param_dict = None
+        if self.dataset.props.spectrum_fit_type == "global":
+            param_dict = (
+                screamlab.functions.generate_spectra_param_dict_global(
+                    self.dataset.lmfit_result_handler.global_fit.params
+                )
+            )
+        elif self.dataset.props.spectrum_fit_type == "individual":
+            param_dict = (
+                screamlab.functions.generate_spectra_param_dict_individual(
+                    self.dataset.lmfit_result_handler.global_fit
+                )
+            )
 
         num_spectra = len(param_dict)
         cols = 3
@@ -597,6 +655,7 @@ class Exporter:
             if self.dataset.props.spectrum_fit_type != "numint":
                 f.write("[[Spectral deconvolution results]]\n")
                 self._print_global_fit_results(f)
+
             else:
                 f.write("[[Numerical integration results]]\n")
                 self._print_global_fit_results_numint(f)
@@ -607,7 +666,7 @@ class Exporter:
         for buildup_type in self.dataset.props.buildup_types:
             f.write(f"[{buildup_type}]\n")
             header = screamlab.functions.buildup_header()
-            column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35, 10]
+            column_widths = [20, 15, 10, 15, 10, 15, 15, 15, 35, 35, 20, 15]
             f.write(
                 "".join(h.ljust(w) for h, w in zip(header, column_widths))
                 + "\n"
@@ -639,7 +698,7 @@ class Exporter:
         f.write(
             "".join(f"{h:<{w}}" for h, w in zip(header, column_widths)) + "\n"
         )
-        for peak_nr, peak in enumerate(self.dataset.peak_list):
+        for peak in self.dataset.peak_list:
             for integral_nr, integral in enumerate(
                 peak.buildup_vals.intensity
             ):
@@ -656,11 +715,19 @@ class Exporter:
                 )
 
     def _print_global_fit_results(self, f):
-        valdict = screamlab.functions.generate_spectra_param_dict(
-            self.dataset.lmfit_result_handler.global_fit.params
-        )
+        valdict = None
+        if self.dataset.props.spectrum_fit_type == "global":
+            valdict = screamlab.functions.generate_spectra_param_dict_global(
+                self.dataset.lmfit_result_handler.global_fit.params
+            )
+        elif self.dataset.props.spectrum_fit_type == "individual":
+            valdict = (
+                screamlab.functions.generate_spectra_param_dict_individual(
+                    self.dataset.lmfit_result_handler.global_fit
+                )
+            )
         header = screamlab.functions.spectrum_fit_header()
-        column_widths = [25, 12, 15, 20, 15, 15, 22, 20, 20, 10]
+        column_widths = [25, 12, 15, 20, 15, 15, 22, 20, 20, 20, 15]
         f.write(
             "".join(f"{h:<{w}}" for h, w in zip(header, column_widths)) + "\n"
         )
@@ -674,7 +741,7 @@ class Exporter:
                 )
 
     def _get_prefit_string(self, f):
-        valdict = screamlab.functions.generate_spectra_param_dict(
+        valdict = screamlab.functions.generate_spectra_param_dict_global(
             self.dataset.lmfit_result_handler.prefit.params
         )
         widths = [25, 18, 20, 15, 15]
@@ -805,9 +872,18 @@ class Exporter:
         )
 
         with open(output_file_path, "w", encoding="utf-8") as f:
-            valdict = screamlab.functions.generate_spectra_param_dict(
-                self.dataset.lmfit_result_handler.global_fit.params
-            )
+            valdict = None
+            if self.dataset.props.spectrum_fit_type == "global":
+                valdict = (
+                    screamlab.functions.generate_spectra_param_dict_global(
+                        self.dataset.lmfit_result_handler.global_fit.params
+                    )
+                )
+            elif self.dataset.props.spectrum_fit_type == "individual":
+                valdict = screamlab.functions.generate_spectra_param_dict_individual(
+                    self.dataset.lmfit_result_handler.global_fit
+                )
+
             header = screamlab.functions.spectrum_fit_header()
             f.write(";".join(str(item) for item in header) + "\n")
             for delay_time in range(0, len(valdict[0])):
@@ -900,6 +976,7 @@ class Exporter:
         return row
 
     def _gen_voigt_output(self, values, delay_time, val_nr):
+
         return [
             (
                 self.dataset.peak_list[delay_time].peak_label

@@ -80,14 +80,20 @@ class Properties:
         return self._subspec
 
     @subspec.setter
-    def subspec(self, value: Any):
-        """Sets list for subspectrum"""
-        if value is not None:
-            if len(value) != 2:
-                sys.exit("Error: subspec requires two floats")
-            self._subspec = value
-        else:
+    def subspec(self, value):
+        if value is None:
             self._subspec = []
+            return
+
+        try:
+            self._subspec = [float(v) for v in value]
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "subspec must be a sequence of two floats"
+            ) from exc
+
+        if len(self._subspec) != 2:
+            raise ValueError("subspec must contain exactly two values")
 
     @property
     def output_folder(self) -> str:
@@ -183,7 +189,7 @@ class Properties:
         """
         str, optional: A list specifying the spectrum fit type
 
-        Options supporded: "global","independent, "numint".
+        Options supporded: "global", "independent, "numint".
 
         """
         return self._spectrum_fit_type
@@ -226,7 +232,9 @@ class Properties:
             "biexponential",
             "biexponential_with_offset",
             "exponential_with_offset",
-            "streched_exponential",
+            "stretched_exponential",
+            "exponential_decay",
+            "exponential_decay_with_offset",
         }
         if not isinstance(value, list):
             raise TypeError(

@@ -21,10 +21,10 @@ class TestDataset(unittest.TestCase):
         self.props.spectrum_for_prefit = -2
         self.props.buildup_types = [
             "exponential",
+            "exponential_with_offset",
             "biexponential",
             "biexponential_with_offset",
-            "exponential_with_offset",
-            "streched_exponential",
+            "stretched_exponential",
         ]
         self.props.spectrum_fit_type = "global"
         self.props.expno = [1, 8]

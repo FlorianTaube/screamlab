@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>screamlab.io module &mdash; screamlab 0.2.0.dev22 documentation</title>
+  <title>screamlab.io module &mdash; screamlab 0.3.0.dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../_static/Logo_32_32.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=80e37f8b"></script>
+      <script src="../_static/documentation_options.js?v=6730d736"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -122,7 +122,16 @@ Automatically normalizes the  intensitys to the number of scans.</p>
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.io.</span></span><span class="sig-name descname"><span class="pre">Pseudo2DImporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TopspinImporter</span></code></p>
-<p>Not implemented yet.</p>
+<p>Class for importing and processing Pseudo2D data based on VD list.</p>
+<p>Automatically reads information about x- and y-axis (chemical shift and intensitys),
+polarization times (t_pol) and the number of scans used for the respective experiment.
+Automatically normalizes the  intensitys to the number of scans.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">import_topspin_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Import pseudo 2D NMR data from TopSpin and process it.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
