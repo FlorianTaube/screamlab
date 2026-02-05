@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>screamlab.utils module &mdash; screamlab 0.3.0.dev9 documentation</title>
+  <title>screamlab.utils module &mdash; screamlab 0.3.0.dev11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../_static/Logo_32_32.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=e82d4e38"></script>
+      <script src="../_static/documentation_options.js?v=6730d736"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -177,16 +177,23 @@ significantly reducing computational time by limiting the parameter range.</p>
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">NumericalIntegration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Fitter</span></code></p>
+<p>Subclass of Fitter that calculates spectral signal intensities via numerical integration.</p>
+<p>This class is designed for applications where the area under a curve
+in a given spectral window is of interest, such as quantifying peak
+intensities in spectroscopy or other analytical measurements.
+By integrating over a defined region, it provides a robust measure
+of signal strength that accounts for variations in peak shape
+and baseline fluctuations.</p>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
-<dd><p>Performs spectral fitting using the <cite>lmfit.minimize</cite> function.</p>
+<dd><p>Performs spectral numerical integration using numpy trapz or trapezoid function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The result of the fitting process.</p>
+<dd class="field-odd"><p>The result of the integration process.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>lmfit.MinimizerResult</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
