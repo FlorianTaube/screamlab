@@ -20,6 +20,9 @@ Classes:
             - BiexpFitterWithOffset: A variant of `BiexpFitter`
               with an additional offset parameter.
             - StretchedExponentialFitter: A fitter for stretched exponential buildup behavior.
+            - ExponentialDecayFitter: A fitter for exponential decay behaviour.
+            - StretchedExponentialDecayFitter: A fitter for stretched exponential decay behaviour.
+            - BiexponentialDecayFitter: A fitter for biexponential decay behaviour
 """
 
 import copy
@@ -718,6 +721,92 @@ class BiexpFitter(BuildupFitter):
         return functions.calc_biexponential(tdel, param)
 
 
+class StretchedExponentialDecayFitter(BuildupFitter):
+    """
+    Class for fitting streched exponential decay data.
+
+    This fits buildup curves using an streched exponential term
+    characterized by amplitude (Af), time constant (tf), and stretching factor (beta)..
+
+    The model function is defined as:
+         I(t) = Af * exp(-(t_pol / tf)^beta))
+
+    where:
+        - Af       : amplitudes of the exponential components
+        - tf       : time constants of the exponential components (tf > 0)
+        - beta     : stretching factor (beta > 0, controls deviation from a simple exponential)
+        - t_pol    : polarization time (independent variable)
+        - I(t_pol): peak intensity at polarization time t_pol
+
+
+    """
+
+    def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for strechted exponential fitting.
+
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: Af, tf, beta.
+        """
+        return {
+            "Af": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
+            "beta": self._get_beta_dict(),
+        }
+
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate exponential decay intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_stretchedexpdecay(tdel, param)
+
+
+class BiexponentialDecayFitter(BuildupFitter):
+    """
+    Class for fitting biexponential decay data.
+
+    The biexponential model fits buildup curves using two exponential terms
+    characterized by amplitudes (Af, As) and time constants (tf, ts).
+
+    The model function is defined as:
+        I(t) = Af * exp(-t_pol / tf)) + As * exp(-t_pol / ts))
+
+    where:
+        - Af, As   : amplitudes of the exponential components
+        - tf, ts   : time constants of the exponential components (tf, ts > 0)
+        - t_pol    : polarization time (independent variable)
+        - I(t_pol) : peak intensity at polarization time t_pol
+    """
+
+    def _get_default_param_dict(self, peak):
+        """
+        Define default parameters for biexponential fitting.
+
+        :param peak: Peak object containing peak_sign and buildup values.
+        :return: Dictionary of default parameters with keys: Af, As, tf, ts.
+        """
+        return {
+            "Af": self._get_intensity_dict(peak),
+            "As": self._get_intensity_dict(peak),
+            "tf": self._get_time_dict(peak),
+            "ts": self._get_time_dict(peak),
+        }
+
+    def _calc_intensity(self, tdel, param):
+        """
+        Calculate exponential decay intensity.
+
+        :param tdel: Time delays.
+        :param param: List of parameters.
+        :return: Calculated intensity values.
+        """
+        return functions.calc_biexpdecay(tdel, param)
+
+
 class ExpDecayFitter(BuildupFitter):
     """
     Class for fitting exponential decay models to experimental data.
@@ -726,7 +815,7 @@ class ExpDecayFitter(BuildupFitter):
     characterized by an amplitude (A) and a time constants (t).
 
     The model function is defined as:
-        I(t_pol) = A *  exp(-t_pol / t))
+        I(t_pol) = A *  exp(-t_pol / t)
 
     where:
         - A        : amplitudes of the exponential components
@@ -766,7 +855,7 @@ class ExpDecayFitterWithOffset(BuildupFitter):
     characterized by an amplitude (A), an intensity offset (I0) and a time constants (t).
 
     The model function is defined as:
-        I(t_pol) = I0 + A *  exp(-t_pol / t))
+        I(t_pol) = I0 + A *  exp(-t_pol / t)
 
     where:
         - A        : amplitudes of the exponential components
@@ -926,7 +1015,7 @@ class ExpFitterWithOffset(BuildupFitter):
         return functions.calc_exponential_with_offset(tdel, param)
 
 
-class StrechedExponentialFitter(BuildupFitter):
+class StretchedExponentialFitter(BuildupFitter):
     """
     Class for fitting streched exponential models to buildup data.
 

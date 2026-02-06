@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>screamlab.utils module &mdash; screamlab 0.3.0.dev11 documentation</title>
+  <title>screamlab.utils module &mdash; screamlab 0.3.1.dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../_static/Logo_32_32.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6730d736"></script>
+      <script src="../_static/documentation_options.js?v=54fce9ad"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -120,6 +120,9 @@ and dynamic nuclear polarization (DNP) buildup kinetic analysis.</p>
 <li><p>BiexpFitterWithOffset: A variant of <cite>BiexpFitter</cite>
 with an additional offset parameter.</p></li>
 <li><p>StretchedExponentialFitter: A fitter for stretched exponential buildup behavior.</p></li>
+<li><p>ExponentialDecayFitter: A fitter for exponential decay behaviour.</p></li>
+<li><p>StretchedExponentialDecayFitter: A fitter for stretched exponential decay behaviour.</p></li>
+<li><p>BiexponentialDecayFitter: A fitter for biexponential decay behaviour</p></li>
 </ul>
 </dd>
 </dl>
@@ -282,13 +285,54 @@ characterized by amplitudes (Af, As) and time constants (tf, ts).</p>
 
 <dl class="py class">
 <dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">StretchedExponentialDecayFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BuildupFitter</span></code></p>
+<p>Class for fitting streched exponential decay data.</p>
+<p>This fits buildup curves using an streched exponential term
+characterized by amplitude (Af), time constant (tf), and stretching factor (beta)..</p>
+<dl class="simple">
+<dt>The model function is defined as:</dt><dd><p>I(t) = Af * exp(-(t_pol / tf)^beta))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>Af       : amplitudes of the exponential components</p></li>
+<li><p>tf       : time constants of the exponential components (tf &gt; 0)</p></li>
+<li><p>beta     : stretching factor (beta &gt; 0, controls deviation from a simple exponential)</p></li>
+<li><p>t_pol    : polarization time (independent variable)</p></li>
+<li><p>I(t_pol): peak intensity at polarization time t_pol</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">BiexponentialDecayFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BuildupFitter</span></code></p>
+<p>Class for fitting biexponential decay data.</p>
+<p>The biexponential model fits buildup curves using two exponential terms
+characterized by amplitudes (Af, As) and time constants (tf, ts).</p>
+<dl class="simple">
+<dt>The model function is defined as:</dt><dd><p>I(t) = Af * exp(-t_pol / tf)) + As * exp(-t_pol / ts))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>Af, As   : amplitudes of the exponential components</p></li>
+<li><p>tf, ts   : time constants of the exponential components (tf, ts &gt; 0)</p></li>
+<li><p>t_pol    : polarization time (independent variable)</p></li>
+<li><p>I(t_pol) : peak intensity at polarization time t_pol</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">ExpDecayFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BuildupFitter</span></code></p>
 <p>Class for fitting exponential decay models to experimental data.</p>
 <p>The exponential decay model fits decay curves using one exponential term
 characterized by an amplitude (A) and a time constants (t).</p>
 <dl class="simple">
-<dt>The model function is defined as:</dt><dd><p>I(t_pol) = A *  exp(-t_pol / t))</p>
+<dt>The model function is defined as:</dt><dd><p>I(t_pol) = A *  exp(-t_pol / t)</p>
 </dd>
 <dt>where:</dt><dd><ul class="simple">
 <li><p>A        : amplitudes of the exponential components</p></li>
@@ -308,7 +352,7 @@ characterized by an amplitude (A) and a time constants (t).</p>
 <p>The exponential decay model fits decay curves using one exponential term
 characterized by an amplitude (A), an intensity offset (I0) and a time constants (t).</p>
 <dl class="simple">
-<dt>The model function is defined as:</dt><dd><p>I(t_pol) = I0 + A *  exp(-t_pol / t))</p>
+<dt>The model function is defined as:</dt><dd><p>I(t_pol) = I0 + A *  exp(-t_pol / t)</p>
 </dd>
 <dt>where:</dt><dd><ul class="simple">
 <li><p>A        : amplitudes of the exponential components</p></li>
@@ -385,7 +429,7 @@ characterized by amplitude (Af), time constant (tf) and offset (t_off).</p>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">StrechedExponentialFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.utils.</span></span><span class="sig-name descname"><span class="pre">StretchedExponentialFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BuildupFitter</span></code></p>
 <p>Class for fitting streched exponential models to buildup data.</p>
 <p>This fits buildup curves using an streched exponential term

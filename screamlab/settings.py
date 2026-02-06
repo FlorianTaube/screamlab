@@ -217,7 +217,8 @@ class Properties:
         List of str, optional: A list of buildup function types
 
         Options supporded: "exponential","biexponential", "exponential_with_offset",
-        "biexponential_with_offset", "stretched_exponential".
+        "biexponential_with_offset", "stretched_exponential",
+        "stretched_exponential_decay", "biexponential_decay".
 
         Default is ["exponential"].
 
@@ -235,6 +236,8 @@ class Properties:
             "stretched_exponential",
             "exponential_decay",
             "exponential_decay_with_offset",
+            "stretched_exponential_decay",
+            "biexponential_decay",
         }
         if not isinstance(value, list):
             raise TypeError(

@@ -169,6 +169,53 @@ def calc_stretched_exponential(time_vals, param):
     )
 
 
+def calc_stretchedexpdecay(time_vals, param):
+    """
+    Compute values of a stretched exponential decay function over time.
+
+    The function models the equation:
+        I(t) = Af * exp((-t / tf)^beta)
+
+    where:
+        - I(t)  : The output value at time t
+        - A     : Amplitude (maximum value the function approaches)
+        - tf    : Time constant (controls the rate of growth)
+        - beta  : stretching exponent
+
+    Returns
+    -------
+        list: Stretched exponential profile evaluated at t.
+
+    """
+    return list(
+        param[0] * np.exp(-((np.asarray(time_vals) / param[1]) ** param[2]))
+    )
+
+
+def calc_biexpdecay(time_vals, param):
+    """
+    Compute values of a biexponential decay function over time.
+
+    The function models the equation:
+        I(t) = Af * exp(-t / tf)) + As * exp(-t / ts))
+
+    where:
+        - I(t)  : The output value at time t
+        - Af, As: Amplitudes (maximum value the function approaches)
+        - tf, ts: Time constants (controls the rate of growth)
+
+
+    Returns
+    -------
+        list: Biexponential profile evaluated at t.
+
+    """
+    return list(
+        param[0] * np.exp(-np.asarray(time_vals) / param[2])
+        + param[1] * np.exp(-np.asarray(time_vals) / param[3])
+    )
+
+
 def calc_expdecay(time_vals, param):
     """
     Compute values of an exponential growth function over time.
@@ -459,6 +506,32 @@ def format_mapping():
             "---",
             "I0",
         ],
+        "stretched_exponential_decay": [
+            "Af",
+            "tf",
+            "---",
+            "---",
+            "---",
+            "Rf",
+            "---",
+            "Sf",
+            "---",
+            "beta",
+            "---",
+        ],
+        "biexponential_decay": [
+            "Af",
+            "tf",
+            "As",
+            "ts",
+            "---",
+            "Rf",
+            "Rs",
+            "Sf",
+            "Ss",
+            "---",
+            "---",
+        ],
     }
 
 
@@ -506,6 +579,8 @@ def return_func_map():
         "stretched_exponential": calc_stretched_exponential,
         "exponential_decay": calc_expdecay,
         "exponential_decay_with_offset": calc_expdecaywithoffset,
+        "stretched_exponential_decay": calc_stretchedexpdecay,
+        "biexponential_decay": calc_biexpdecay,
     }
 
 

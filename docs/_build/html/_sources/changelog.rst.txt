@@ -4,6 +4,20 @@ Changelog
 
 This page contains a summary of changes between the official screamlab releases. Only the biggest changes are listed here.
 
+Version 0.3.2
+=============
+
+Released 2026-02-06
+
+The following bugs have been fixed:
+
+* lmfit result files are saved again
+
+Implemented functionalities:
+* Fit experimental data to stretched exponential decay
+* Fit experimental data to biexponential decay
+
+
 Version 0.3.1
 =============
 
