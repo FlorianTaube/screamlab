@@ -320,7 +320,7 @@ class Exporter:
             self._plot_buildup(buildup_type)
         if self.dataset.props.spectrum_fit_type != "numint":
             self._write_global_fit_results_to_semicolon_separated_file()
-            self._write_buildup_fit_to_semicolon_separated_file()
+        self._write_buildup_fit_to_semicolon_separated_file()
         self._csv_output()
 
     def _plot_topspin_data(self):

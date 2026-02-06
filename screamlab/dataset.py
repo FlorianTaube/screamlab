@@ -182,9 +182,11 @@ class Dataset:
             "biexponential_with_offset": utils.BiexpFitterWithOffset,
             "exponential": utils.ExpFitter,
             "exponential_with_offset": utils.ExpFitterWithOffset,
-            "stretched_exponential": utils.StrechedExponentialFitter,
+            "stretched_exponential": utils.StretchedExponentialFitter,
             "exponential_decay": utils.ExpDecayFitter,
             "exponential_decay_with_offset": utils.ExpDecayFitterWithOffset,
+            "stretched_exponential_decay": utils.StretchedExponentialDecayFitter,
+            "biexponential_decay": utils.BiexponentialDecayFitter,
         }
 
         for b_type in self.props.buildup_types:

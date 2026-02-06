@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>screamlab.functions module &mdash; screamlab 0.3.0.dev11 documentation</title>
+  <title>screamlab.functions module &mdash; screamlab 0.3.1.dev1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../_static/Logo_32_32.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=6730d736"></script>
+      <script src="../_static/documentation_options.js?v=54fce9ad"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -265,6 +265,55 @@
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Stretched exponential profile evaluated at t.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">calc_stretchedexpdecay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute values of a stretched exponential decay function over time.</p>
+<dl class="simple">
+<dt>The function models the equation:</dt><dd><p>I(t) = Af * exp((-t / tf)^beta)</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>I(t)  : The output value at time t</p></li>
+<li><p>A     : Amplitude (maximum value the function approaches)</p></li>
+<li><p>tf    : Time constant (controls the rate of growth)</p></li>
+<li><p>beta  : stretching exponent</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>list</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Stretched exponential profile evaluated at t.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">screamlab.functions.</span></span><span class="sig-name descname"><span class="pre">calc_biexpdecay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute values of a biexponential decay function over time.</p>
+<dl class="simple">
+<dt>The function models the equation:</dt><dd><p>I(t) = Af * exp(-t / tf)) + As * exp(-t / ts))</p>
+</dd>
+<dt>where:</dt><dd><ul class="simple">
+<li><p>I(t)  : The output value at time t</p></li>
+<li><p>Af, As: Amplitudes (maximum value the function approaches)</p></li>
+<li><p>tf, ts: Time constants (controls the rate of growth)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>list</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Biexponential profile evaluated at t.</p>
 </dd>
 </dl>
 </dd></dl>
