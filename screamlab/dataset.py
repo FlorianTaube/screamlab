@@ -269,6 +269,8 @@ class Spectra:
         The number of scans performed in the NMR experiment.
     tpol : float or None
         The polarization time used in the experiment.
+    nucs : str or None
+        The nucleous measured.
     x_axis : array-like or None
         The x-axis values representing frequency domain data data.
     y_axis : array-like or None
@@ -282,6 +284,7 @@ class Spectra:
         self.tpol = None
         self.x_axis = None
         self.y_axis = None
+        self.nucs = None
 
 
 class Peak:
