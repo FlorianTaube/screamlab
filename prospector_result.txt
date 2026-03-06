@@ -1,6 +1,13 @@
 Messages
 ========
 
+screamlab\io.py
+  Line: 267
+    pylint: inconsistent-return-statements / Either all return statements in a function should return an expression, or none of them should. (col 4)
+  Line: 383
+    pylint: undefined-loop-variable / Using possibly undefined loop variable 'spectrum' (col 39)
+    pylint: undefined-loop-variable / Using possibly undefined loop variable 'spectrum' (col 60)
+
 setup.py
   Line: None
     pyroma: PYRUNKNOWN / Your project does not have a pyproject.toml file, which is highly recommended.
@@ -15,13 +22,13 @@ You probably want to create one with the following configuration:
 
 Check Information
 =================
-         Started: 2026-02-06 13:39:03.235420
-        Finished: 2026-02-06 13:39:19.317876
-      Time Taken: 16.08 seconds
+         Started: 2026-03-06 10:45:09.332520
+        Finished: 2026-03-06 10:45:29.692498
+      Time Taken: 20.36 seconds
        Formatter: grouped
         Profiles: .prospector.yaml, strictness_high, strictness_veryhigh, no_doc_warnings, no_member_warnings, no_test_warnings
       Strictness: from profile
   Libraries Used: 
        Tools Run: bandit, dodgy, mccabe, profile-validator, pycodestyle, pydocstyle, pyflakes, pylint, pyroma
-  Messages Found: 1
+  Messages Found: 4
 

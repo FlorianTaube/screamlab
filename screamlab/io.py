@@ -275,8 +275,7 @@ class Pseudo2DImporter(TopspinImporter):
                     while i >= 0 and nuc[i].isalpha():
                         i -= 1
                     nuclist = [int(nuc[: i + 1]), nuc[i + 1 :]]
-                    print(nuclist)
-                    return nuclist
+        return nuclist
 
     def _get_vdvals(self):
         vdvals = []
