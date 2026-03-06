@@ -4,6 +4,17 @@ Changelog
 
 This page contains a summary of changes between the official screamlab releases. Only the biggest changes are listed here.
 
+Version 0.3.3
+=============
+
+Released 2026-03-06
+
+The following bugs have been fixed:
+
+* Importer are able to deal with time values given with 'm' and 'u' for milie and micro
+* Importer automatically detects nucleus measured and adds this to labels in plots
+
+
 Version 0.3.2
 =============
 

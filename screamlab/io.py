@@ -25,6 +25,7 @@ class TopspinImporter:
     def _set_values(self):
         """Set internal values including scans, buildup time, x and y data."""
         self._set_number_of_scans()
+        self._set_nucs()
         self._set_buildup_time()
         self._set_y_data()
         self._normalize_y_values_to_number_of_scans()
@@ -149,6 +150,19 @@ class ScreamImporter(TopspinImporter):
                         acqu_line.strip().split(" ")[-1]
                     )
 
+    def _set_nucs(self):
+        with open(
+            rf"{self.file}/pdata/1/procs", "r", encoding="utf-8"
+        ) as procs_file:
+            for procs_line in procs_file:
+                if "##$AXNUC=" in procs_line:
+                    nuc = procs_line.strip().split("<")[1].split(">")[0]
+                    i = len(nuc) - 1
+                    while i >= 0 and nuc[i].isalpha():
+                        i -= 1
+                    nuclist = [int(nuc[: i + 1]), nuc[i + 1 :]]
+                    self._dataset.spectra[-1].nucs = nuclist
+
     def _set_buildup_time(self):
         """Set the buildup time for the last spectrum in the ds."""
         delay = self._extract_params_from_acqus("##$D= (0..63)", 64)
@@ -240,6 +254,8 @@ class Pseudo2DImporter(TopspinImporter):
             self._dataset.spectra[-1].number_of_scans = int(
                 dic.get("acqus", {}).get("NS", None)
             )
+            self._dataset.spectra[-1].nucs = self._get_nuc()
+
             self._dataset.spectra[-1].tpol = vdlist[spectrum_nr]
             self._dataset.spectra[-1].x_axis = ng.fileiobase.uc_from_udic(
                 uc, dim=1
@@ -248,11 +264,30 @@ class Pseudo2DImporter(TopspinImporter):
             if len(self._dataset.props.subspec) == 2:
                 self._gen_subspectrum()
 
+    def _get_nuc(self):
+        with open(
+            rf"{self.file}/pdata/1/procs", "r", encoding="utf-8"
+        ) as procs_file:
+            for procs_line in procs_file:
+                if "##$AXNUC=" in procs_line:
+                    nuc = procs_line.strip().split("<")[1].split(">")[0]
+                    i = len(nuc) - 1
+                    while i >= 0 and nuc[i].isalpha():
+                        i -= 1
+                    nuclist = [int(nuc[: i + 1]), nuc[i + 1 :]]
+        return nuclist
+
     def _get_vdvals(self):
         vdvals = []
-        with open(rf"{self.file}/vdlist", "r", encoding="utf-8") as vdlist:
-            for vdline in vdlist:
-                vdvals.append(float(vdline.strip()))
+        with open(f"{self.file}/vdlist", "r", encoding="utf-8") as vdlist:
+            for line in vdlist:
+                line = line.strip()
+                if line.endswith("m"):
+                    vdvals.append(float(line[:-1]) * 1e-3)
+                elif line.endswith("u"):
+                    vdvals.append(float(line[:-1]) * 1e-6)
+                else:
+                    vdvals.append(float(line))
         return vdvals
 
 
@@ -343,7 +378,11 @@ class Exporter:
                 color=colors[idx + 2],
             )
         plt.gca().invert_xaxis()
-        plt.xlabel("$\\delta$ / ppm", fontsize=16)
+
+        plt.xlabel(
+            rf"$chemical\ shift$ ($^{{{spectrum.nucs[0]}}}${spectrum.nucs[1]}) / ppm",
+            fontsize=16,
+        )
         plt.ylabel("$I$ / a.u.", fontsize=16)
         plt.xticks(fontsize=14)
         plt.yticks(fontsize=14)
@@ -390,7 +429,10 @@ class Exporter:
 
         residual = y_axis - simspec
         axs[1].plot(x_axis, residual, color="grey", label="Residual")
-        axs[1].set_xlabel("$\\delta$ / ppm", fontsize=16)
+        axs[1].set_xlabel(
+            rf"$chemical\ shift$ ($^{{{spectrum.nucs[0]}}}${spectrum.nucs[1]}) / ppm",
+            fontsize=16,
+        )
         axs[1].set_ylabel(r"$I_{\mathrm{resid}}$ / a.u.", fontsize=16)
         axs[0].set_xlim(max(x_axis), min(x_axis))
         axs[1].set_xlim(max(x_axis), min(x_axis))
@@ -522,7 +564,10 @@ class Exporter:
             axs[1].plot(x_axis, residual, color="grey", label="Residual")
 
             axs[0].set_ylabel("$I$ / a.u.", fontsize=16)
-            axs[1].set_xlabel("$\\delta$ / ppm", fontsize=16)
+            axs[1].set_xlabel(
+                rf"$chemical\ shift$ ($^{{{spectrum.nucs[0]}}}${spectrum.nucs[1]}) / ppm",
+                fontsize=16,
+            )
             axs[1].set_ylabel(r"$I_{\mathrm{resid}}$ / a.u.", fontsize=16)
             axs[0].tick_params(axis="both", labelsize=14)
             axs[1].tick_params(axis="both", labelsize=14)
@@ -600,7 +645,10 @@ class Exporter:
             ax_residual.plot(x_axis, residual, color="grey", label="Residual")
 
             ax_spectrum.set_ylabel("$I$ / a.u.", fontsize=14)
-            ax_residual.set_xlabel("$\\delta$ / ppm", fontsize=14)
+            ax_residual.set_xlabel(
+                rf"$chemical\ shift$ ($^{{{spectrum.nucs[0]}}}${spectrum.nucs[1]}) / ppm",
+                fontsize=14,
+            )
             ax_residual.set_ylabel(
                 r"$I_{\mathrm{resid}}$ / a.u.", fontsize=14
             )
