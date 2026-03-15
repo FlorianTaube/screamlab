@@ -31,6 +31,7 @@ docs/_build
 # Temporary files from tests
 tests/*tex
 tests/Pseudo2DTestFiles/*
+tests/Pseudo3DTestFiles/*
 tests/SCREAM_Test_Files/*
 
 # coverage
