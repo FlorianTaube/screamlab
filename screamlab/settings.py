@@ -18,6 +18,7 @@ class Properties:
         expno: list = None,
         output_folder: str = "",
         subspec=None,
+        scream3d=False,
     ):
         self.init_call = True
         if buildup_types is None:
@@ -48,15 +49,23 @@ class Properties:
         self._subspec = None
         self.subspec = subspec
         self.init_call = False
+        self._scream3d = None
+        self.scream3d = scream3d
 
     def __str__(self):
         """Returns string representation of Properties class"""
-        sub = (
+        subspec = (
             f"A subspectrum ranging from {self.subspec[0]} to {self.subspec[1]} "
             f"ppm has been extracted."
             if self.subspec
             else "No subspectrum has been extracted."
         )
+        if self.scream3d:
+            three_dimension = (
+                f"SCREAM DNP data were imported from pseudo 3D experiment."
+            )
+        else:
+            three_dimension = ""
         return (
             f"[[Settings]]\n"
             f"Experiment folder: {self.path_to_experiment}\n"
@@ -67,8 +76,22 @@ class Properties:
             f"Spectrum fitting type: {self.spectrum_fit_type}\n"
             f"Buildup evaluation: {self.buildup_types}\n"
             f"Wrote output to: {self.output_folder}\n"
-            f"{sub}"
+            f"{subspec}\n"
+            f"{three_dimension}"
         )
+
+    @property
+    def scream3d(self) -> bool:
+        """
+        bool: Whether the SCREAM DNP data were acquired using a pseudo-3D experiment.
+
+        Default is False.
+        """
+        return self._scream3d
+
+    @scream3d.setter
+    def scream3d(self, value):
+        self._scream3d = value
 
     @property
     def subspec(self) -> list:

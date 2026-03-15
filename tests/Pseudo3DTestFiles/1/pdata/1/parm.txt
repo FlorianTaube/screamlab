@@ -1,0 +1,83 @@
+
+Current Data Parameters
+NAME              Tests              
+EXPNO                10              
+PROCNO                1              
+
+F2 - Acquisition Parameters
+Date_          20260311              
+Time              16.19 h            
+INSTRUM           spect              
+PROBHD   H13707-05_0015              
+PULPROG  ft_scream_pseudo3d              
+TD                 4096              
+SOLVENT                              
+NS                    1              
+DS                    0              
+SWH           41666.668 Hz           
+FIDRES        20.345053 Hz           
+AQ            0.0491520 sec          
+RG               203.87              
+DW               12.000 usec         
+DE                15.73 usec         
+TE                 88.6 K            
+D1           0.10000000 sec          
+D4           0.00500000 sec          
+D20          0.25000000 sec          
+L4                   16              
+NBL                   2              
+VCLIST       scream_ILT              
+SFO1        100.7142084 MHz          
+NUC1                13C              
+P1                 4.16 usec         
+PLW1        50.00000000 W            
+SFO2        400.4987787 MHz          
+NUC2                 1H              
+CPDPRG[2       spinal64              
+P4                 2.27 usec         
+P20                4.54 usec         
+PCPD2              4.34 usec         
+PLW2     0 W            
+PLW3        48.50000000 W            
+PLW12       48.50000000 W            
+PLW20       48.50000000 W            
+PLW21    0 W            
+
+F1 - Acquisition parameters
+TD                    2              
+SFO1            400.495 MHz          
+FIDRES      4006.410156 Hz           
+SW               10.004 ppm          
+FnMODE        undefined              
+
+F3 - Acquisition parameters
+SW               10.003 ppm          
+SFO1           400.5019 MHz          
+HZpPT          0.489064 Hz           
+TD                    1              
+
+F2 - Processing parameters
+SI                 4096              
+SF          100.7028405 MHz          
+WDW                  EM              
+SSB      0              
+LB                50.00 Hz           
+GB       0              
+PC                 0.20              
+
+F1 - Processing parameters
+SI                    2              
+MC2                  QF              
+SF          400.5000000 MHz          
+WDW                  no              
+SSB      0              
+LB       0 Hz           
+GB       0              
+
+F3 - Processing parameters
+SI                 1024              
+SF          400.5000000 MHz          
+WDW                  no              
+SSB      0              
+LB       0 Hz           
+GB       0              

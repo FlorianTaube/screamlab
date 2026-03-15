@@ -1,0 +1,9 @@
+VTC_REG_PID_SET_CH2=\
+<pid_settings type="probehead">
+   <standard_pid proportional="9.254" integral="26.227" differential="4.371" />
+   <temperature selftune="255.000" min="205.000" max="305.000" />
+   <vta type="2" sensor="1" connected_sensors="1" />
+   <gasflow selftune="300.000" min="250.000" max="350.000" />
+   <pics checksum="" name=" PH PE 400WB SOL5 N-P/F-H PTFE" />
+   <checksum value="F21B6F09" />
+</pid_settings>

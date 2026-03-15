@@ -73,6 +73,13 @@ class TestDataset(unittest.TestCase):
             type(self.ds.importer), screamlab.io.Pseudo2DImporter
         )
 
+    def test_setup_correct_topspin_importer_scream_pseudo_3D(self):
+        self.ds.props.scream3d = True
+        self.ds._setup_correct_topspin_importer()
+        self.assertEqual(
+            type(self.ds.importer), screamlab.io.ScreamImporterPseudo3D
+        )
+
     def test_setup_correct_topspin_importer_set_properties_pseudo2D(self):
         self.ds.props.expno = [2]
         self.ds._setup_correct_topspin_importer()
@@ -86,7 +93,6 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(type(self.ds.importer), screamlab.io.ScreamImporter)
 
     def test_read_in_data_from_topspin_pseudo2D(self):
-        # TODO add some real parameters or fake spectrum
         self.ds._read_in_data_from_topspin
         self.assertIsNotNone(self.ds.spectra)
 

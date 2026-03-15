@@ -1,0 +1,31 @@
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 1420
+    # data points      = 2048
+    # variables        = 16
+    chi-square         = 5.5829e+11
+    reduced chi-square = 2.7475e+08
+    Akaike info crit   = 39811.3858
+    Bayesian info crit = 39901.3797
+##  Warning: uncertainties could not be estimated:
+    Peak_at_62_ppm_cen_0:    at boundary
+    Peak_at_75_ppm_cen_0:    at boundary
+    Peak_at_75_ppm_sigma_0:  at boundary
+    Peak_at_23_ppm_cen_0:    at boundary
+[[Variables]]
+    Peak_at_62_ppm_amp_0:   -3131202.69 (init = -200)
+    Peak_at_62_ppm_cen_0:    62.9999995 (init = 62)
+    Peak_at_62_ppm_sigma_0:  0.98339268 (init = 1.5)
+    Peak_at_62_ppm_gamma_0:  6.7735e-07 (init = 1.5)
+    Peak_at_75_ppm_amp_0:   -543507.381 (init = -200)
+    Peak_at_75_ppm_cen_0:    76.0000000 (init = 75)
+    Peak_at_75_ppm_sigma_0:  3.00000000 (init = 1.5)
+    Peak_at_75_ppm_gamma_0:  0.48608383 (init = 1.5)
+    Peak_at_67_ppm_amp_0:   -2223458.83 (init = -200)
+    Peak_at_67_ppm_cen_0:    66.0388998 (init = 67)
+    Peak_at_67_ppm_sigma_0:  2.38532317 (init = 1.5)
+    Peak_at_67_ppm_gamma_0:  2.8915e-08 (init = 1.5)
+    Peak_at_23_ppm_amp_0:   -3586027.83 (init = -200)
+    Peak_at_23_ppm_cen_0:    22.0000000 (init = 23)
+    Peak_at_23_ppm_sigma_0:  1.78099432 (init = 1.5)
+    Peak_at_23_ppm_gamma_0:  1.60238466 (init = 1.5)

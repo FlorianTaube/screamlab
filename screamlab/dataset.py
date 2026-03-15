@@ -126,8 +126,10 @@ class Dataset:
 
     def _setup_correct_topspin_importer(self):
         """Sets up the appropriate TopSpin importer based on experiment properties."""
-        if len(self.props.expno) == 1:
+        if len(self.props.expno) == 1 and not self.props.scream3d:
             self.importer = io.Pseudo2DImporter(self)
+        elif self.props.scream3d:
+            self.importer = io.ScreamImporterPseudo3D(self)
         else:
             self.importer = io.ScreamImporter(self)
 

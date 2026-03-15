@@ -10,6 +10,7 @@ class TestDataset(unittest.TestCase):
     def setUp(self):
         self.scream_importer = io.ScreamImporter(dataset.Dataset())
         self.pseudo_importer = io.Pseudo2DImporter(dataset.Dataset())
+        self.scream3d_importer = io.ScreamImporterPseudo3D(dataset.Dataset())
         self.lmfit_result = io.LmfitResultHandler()
 
     def set_up_one_real_spectrum(self):
@@ -20,6 +21,14 @@ class TestDataset(unittest.TestCase):
         test_dir = Path(__file__).parent
         self.scream_importer.file = rf"{test_dir}/SCREAM_Test_Files/Alanin/8"
 
+    def set_up_one_real3d_spectrum(self):
+        self.scream_importer._dataset.spectra.append(
+            screamlab.dataset.Spectra()
+        )
+
+        test_dir = Path(__file__).parent
+        self.scream_importer.file = rf"{test_dir}/Pseudo3DTestFiles/1"
+
     def set_up_real_dataset(self):
         test_dir = Path(__file__).parent
         self.scream_importer._dataset.props.procno = 103
@@ -28,29 +37,63 @@ class TestDataset(unittest.TestCase):
             rf"{test_dir}/SCREAM_Test_Files/Alanin"
         )
 
+    def set_up_real3d_dataset(self):
+        test_dir = Path(__file__).parent
+        self.scream3d_importer._dataset.props.procno = 1
+        self.scream3d_importer._dataset.props.expno = [1]
+        self.scream3d_importer._dataset.props.path_to_experiment = (
+            rf"{test_dir}/Pseudo3DTestFiles"
+        )
+
     def test_scream_init_set_dataset(self):
         self.assertEqual(
             type(self.scream_importer._dataset), screamlab.dataset.Dataset
         )
 
+    def test_scream3d_init_set_dataset(self):
+        self.assertEqual(
+            type(self.scream3d_importer._dataset), screamlab.dataset.Dataset
+        )
+
     def test_scream_init_path_is_none(self):
         self.assertIsNone(self.scream_importer._current_path_to_exp)
 
+    def test_scream3d_init_path_is_none(self):
+        self.assertIsNone(self.scream3d_importer._current_path_to_exp)
+
     def test_scream_init_nmr_data_is_none(self):
         self.assertIsNone(self.scream_importer._nmr_data)
+
+    def test_scream3d_init_nmr_data_is_none(self):
+        self.assertIsNone(self.scream3d_importer._nmr_data)
 
     def test_add_one_spectrum(self):
         self.scream_importer._add_spectrum()
         self.assertEqual(len(self.scream_importer._dataset.spectra), 1)
 
+    def test_scream3d_add_one_spectrum(self):
+        self.scream3d_importer._add_spectrum()
+        self.assertEqual(len(self.scream3d_importer._dataset.spectra), 1)
+
     def test_add_spectrum_is_list(self):
         self.scream_importer._add_spectrum()
         self.assertEqual(type(self.scream_importer._dataset.spectra), list)
+
+    def test_scream3d_add_spectrum_is_list(self):
+        self.scream3d_importer._add_spectrum()
+        self.assertEqual(type(self.scream3d_importer._dataset.spectra), list)
 
     def test_add_spectrum_is_list_of_Spectra(self):
         self.scream_importer._add_spectrum()
         self.assertEqual(
             type(self.scream_importer._dataset.spectra[0]),
+            screamlab.dataset.Spectra,
+        )
+
+    def test_scream3d_add_spectrum_is_list_of_Spectra(self):
+        self.scream3d_importer._add_spectrum()
+        self.assertEqual(
+            type(self.scream3d_importer._dataset.spectra[0]),
             screamlab.dataset.Spectra,
         )
 
@@ -337,3 +380,40 @@ class TestDataset(unittest.TestCase):
         for spectrum in self.scream_importer._dataset.spectra:
             delay_times.append(len(spectrum.y_axis))
         self.assertListEqual(delay_times, [16384] * 8)
+
+    def test_check_expno_raises_value_error(self):
+        self.scream3d_importer._dataset.props.expno = [1, 20]
+        with self.assertRaises(ValueError) as context:
+            self.scream3d_importer._check_expno()
+        self.assertEqual(
+            str(context.exception),
+            "Expected exactly one experiment number in dataset.",
+        )
+
+    def test_scream3d_generate_correct_filename(self):
+        self.set_up_real3d_dataset()
+        self.scream3d_importer._generate_path_to_experiment()
+        self.scream3d_importer.file = (
+            self.scream3d_importer._generate_path_to_experiment()
+        )
+        test_dir = Path(__file__).parent
+        self.assertEqual(
+            f"{test_dir}/Pseudo3DTestFiles\\1", self.scream3d_importer.file
+        )
+
+    def test_scream3d_import_topspin_data_filename(self):
+        self.set_up_real3d_dataset()
+        self.scream3d_importer.import_topspin_data()
+        test_dir = Path(__file__).parent
+        self.assertEqual(
+            f"{test_dir}/Pseudo3DTestFiles\\1", self.scream3d_importer.file
+        )
+
+    def test_scream3d_set_values(self):
+        self.set_up_real3d_dataset()
+        self.scream3d_importer.file = (
+            self.scream3d_importer._generate_path_to_experiment()[0]
+        )
+        self.scream3d_importer._set_values()
+
+        pass

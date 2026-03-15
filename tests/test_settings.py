@@ -99,6 +99,20 @@ class TestProperties(unittest.TestCase):
             props.buildup_types = "invalid"
             self.assertIn("must be one of", str(context.exception))
 
+    def test_default_for_scream3d(self):
+        props = Properties()
+        self.assertFalse(props.scream3d)
+
+    def test_scream3d_set_to_false(self):
+        props = Properties()
+        props.scream3d = False
+        self.assertFalse(props.scream3d)
+
+    def test_scream3d_set_to_true(self):
+        props = Properties()
+        props.scream3d = True
+        self.assertTrue(props.scream3d)
+
     def test_spectrum_for_prefit_default_value(self):
         props = Properties()
         self.assertEqual(props.spectrum_for_prefit, -1)

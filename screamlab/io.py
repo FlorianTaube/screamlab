@@ -4,6 +4,7 @@ import copy
 import csv
 import math
 import os
+import shutil
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -32,20 +33,27 @@ class TopspinImporter:
         if len(self._dataset.props.subspec) == 2:
             self._gen_subspectrum()
 
+    def _set_number_of_scans(self):
+        """Set the number of scans for the last spectrum in the ds."""
+        with open(rf"{self.file}/acqus", "r", encoding="utf-8") as acqu_file:
+            for acqu_line in acqu_file:
+                if "##$NS=" in acqu_line:
+                    self._dataset.spectra[-1].number_of_scans = int(
+                        acqu_line.strip().split(" ")[-1]
+                    )
+
     def _sort_xy_lists(self):
         t_pol_list = []
         for spectrum in self._dataset.spectra:
             t_pol_list.append(spectrum.tpol)
-        sorted_lists = sorted(
-            zip(t_pol_list, self._dataset.spectra)
-        )  # sortiert nach den Werten in liste1
+        sorted_lists = sorted(zip(t_pol_list, self._dataset.spectra))
         _, self._dataset.spectra = zip(*sorted_lists)
 
     def _add_spectrum(self):
         """Add a new spectrum to the ds."""
         self._dataset.spectra.append(screamlab.dataset.Spectra())
 
-    def _get_physical_range(self):
+    def _get_physical_range(self, flag=0):
         """
         Retrieve the physical range of the spectrum.
 
@@ -53,16 +61,19 @@ class TopspinImporter:
         :rtype: dict
         """
         ranges = {}
+        filename = "proc" if flag == 1 else "procs"
+        print(rf"{self.file}/pdata/{self._dataset.props.procno}/{filename}")
         with open(
-            rf"{self.file}/pdata/{self._dataset.props.procno}/procs",
+            rf"{self.file}/pdata/{self._dataset.props.procno}/{filename}",
             "r",
             encoding="utf-8",
         ) as procs_file:
-            for procs_line in procs_file:
-                if "##$ABSF1=" in procs_line:
-                    ranges["start"] = float(procs_line.strip().split(" ")[-1])
-                if "##$ABSF2=" in procs_line:
-                    ranges["end"] = float(procs_line.strip().split(" ")[-1])
+            for line in procs_file:
+                if "##$ABSF1=" in line:
+                    ranges["start"] = float(line.strip().split()[-1])
+                elif "##$ABSF2=" in line:
+                    ranges["end"] = float(line.strip().split()[-1])
+
         return ranges
 
     def _get_num_of_datapoints(self):
@@ -121,6 +132,19 @@ class TopspinImporter:
             )
         )
 
+    def _set_nucs(self):
+        with open(
+            rf"{self.file}/pdata/1/procs", "r", encoding="utf-8"
+        ) as procs_file:
+            for procs_line in procs_file:
+                if "##$AXNUC=" in procs_line:
+                    nuc = procs_line.strip().split("<")[1].split(">")[0]
+                    i = len(nuc) - 1
+                    while i >= 0 and nuc[i].isalpha():
+                        i -= 1
+                    nuclist = [int(nuc[: i + 1]), nuc[i + 1 :]]
+                    self._dataset.spectra[-1].nucs = nuclist
+
 
 class ScreamImporter(TopspinImporter):
     """
@@ -140,28 +164,6 @@ class ScreamImporter(TopspinImporter):
             self._add_spectrum()
             self._set_values()
         self._sort_xy_lists()
-
-    def _set_number_of_scans(self):
-        """Set the number of scans for the last spectrum in the ds."""
-        with open(rf"{self.file}/acqus", "r", encoding="utf-8") as acqu_file:
-            for acqu_line in acqu_file:
-                if "##$NS=" in acqu_line:
-                    self._dataset.spectra[-1].number_of_scans = int(
-                        acqu_line.strip().split(" ")[-1]
-                    )
-
-    def _set_nucs(self):
-        with open(
-            rf"{self.file}/pdata/1/procs", "r", encoding="utf-8"
-        ) as procs_file:
-            for procs_line in procs_file:
-                if "##$AXNUC=" in procs_line:
-                    nuc = procs_line.strip().split("<")[1].split(">")[0]
-                    i = len(nuc) - 1
-                    while i >= 0 and nuc[i].isalpha():
-                        i -= 1
-                    nuclist = [int(nuc[: i + 1]), nuc[i + 1 :]]
-                    self._dataset.spectra[-1].nucs = nuclist
 
     def _set_buildup_time(self):
         """Set the buildup time for the last spectrum in the ds."""
@@ -238,8 +240,7 @@ class Pseudo2DImporter(TopspinImporter):
 
     def import_topspin_data(self):
         """Import pseudo 2D NMR data from TopSpin and process it."""
-        files = self._generate_path_to_experiment()
-        self.file = files[0]
+        self.file = self._generate_path_to_experiment()[0]
         self._set_values()
 
     def _set_values(self):
@@ -289,6 +290,117 @@ class Pseudo2DImporter(TopspinImporter):
                 else:
                     vdvals.append(float(line))
         return vdvals
+
+
+class ScreamImporterPseudo3D(TopspinImporter):
+    """
+    Import and process SCREAM DNP data from pseudo-3D TopSpin experiments.
+
+    This class reads SCREAM DNP FIDs acquired in a TopSpin pseudo-3D dataset.
+    Currently under development. There might be some bugs.
+    The three experiment dimensions are:
+
+    1. Time domain (FID).
+    2. Acquisition type: alternating DP and DPsat spectra.
+    3. Polarization buildup time (t_pol).
+
+    The polarization buildup time (t_pol) is encoded via a variable count list
+    (vclist). Each count is multiplied by the repeating delay D20 in the pulse
+    sequence to obtain the effective buildup time.
+
+    For each polarization buildup time:
+    - The corresponding FIDs are Fourier transformed.
+    - DP and DPsat spectra are subtracted to produce the ΔDPsat spectrum.
+
+    The resulting spectra are then passed to further processing steps.
+    The importer also reads the corresponding polarization buildup times
+    (t_pol) and the number of scans. Spectra are automatically normalized
+    by the number of scans.
+
+    Note that baseline correction and referencing have still to be performed in TopSpin.
+    """
+
+    def import_topspin_data(self):
+        """Import NMR data from TopSpin and process it."""
+        self._check_correct_settings()
+        self.file = self._generate_path_to_experiment()[0]
+        self._set_values()
+
+    def _check_correct_settings(self):
+        self._check_expno()
+
+    def _check_expno(self):
+        if len(self._dataset.props.expno) != 1:
+            raise ValueError(
+                "Expected exactly one experiment number in dataset."
+            )
+
+    def _set_values(self):
+        dic, data = ng.bruker.read(rf"{self.file}\pdata\1")
+        LB = dic["procs"]["LB"]
+        vc_domain, vp_domain, t_domain = data.shape
+
+        SW = dic["acqus"]["SW_h"]
+        SFO1 = dic["acqus"]["SFO1"]
+        O1 = dic["acqus"]["O1"]
+        SF = dic["procs"]["SF"]
+        ph0 = dic["procs"]["PHC0"]
+        ph1 = dic["procs"]["PHC1"]
+        decim = dic["acqus"]["DECIM"]
+        dspfvs = dic["acqus"]["DSPFVS"]
+        lb = dic["procs"]["LB"]
+        d20 = dic["acqus"]["D"][20]
+        tbup = []
+        with open(f"{self.file}/vclist", "r", encoding="utf-8") as vclist:
+            for line in vclist:
+                tbup.append(float(line) * d20)
+
+        data_ft = []
+        data_df = []
+        vp_domain = [1, 0]
+        ls = np.argmax(np.abs(data[0][0]))
+        for vc_count in range(vc_domain):
+            for vp_count in vp_domain:
+                data_df.append(ng.proc_base.ls(data[vc_count][vp_count], ls))
+                data_df[-1] = ng.proc_base.em(data_df[-1], lb / SW)
+                data_ft.append(ng.proc_base.fft(data_df[-1]))
+
+        SI = len(data_ft[-1])
+        x_axis_ppm = (
+            (O1 / SFO1)
+            + (SW / (2 * SFO1))
+            - (np.arange(SI) * (SW / (SFO1 * SI)))
+        )
+
+        dp_spectrum = None
+        deltadpsat_list = []
+        phases = []
+        count = 0
+        for i in range(len(data_ft)):
+            if i % 2 == 0:
+                dp_spectrum = data_ft[i]
+            else:
+                deltadpsat_list.append(data_ft[i] - dp_spectrum)
+                deltadpsat_list[-1], phases = ng.proc_autophase.autops(
+                    deltadpsat_list[-1],
+                    "acme",
+                    return_phases=True,
+                    disp=False,
+                    ftol=1e-12,
+                )
+
+                deltadpsat_list[-1] = ng.proc_base.ps(
+                    deltadpsat_list[-1], 190, 0
+                )
+                self._add_spectrum()
+                self._dataset.spectra[-1].x_axis = x_axis_ppm
+                self._dataset.spectra[-1].y_axis = ng.proc_bl.cbf(
+                    deltadpsat_list[-1].real[::-1]
+                )
+                self._set_number_of_scans()
+                self._set_nucs()
+                self._dataset.spectra[-1].tpol = tbup[count]
+                count += 1
 
 
 class Exporter:
