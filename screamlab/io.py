@@ -53,6 +53,13 @@ class TopspinImporter:
         """Add a new spectrum to the ds."""
         self._dataset.spectra.append(screamlab.dataset.Spectra())
 
+    def _get_topspin_variable(self, dic, var_name):
+        "Returns a topspin variable from acqus or procs."
+        try:
+            return dic["acqus"][var_name]
+        except:
+            return dic["procs"][var_name]
+
     def _get_physical_range(self, flag=0):
         """
         Retrieve the physical range of the spectrum.
@@ -337,19 +344,15 @@ class ScreamImporterPseudo3D(TopspinImporter):
 
     def _set_values(self):
         dic, data = ng.bruker.read(rf"{self.file}\pdata\1")
-        LB = dic["procs"]["LB"]
+
         vc_domain, vp_domain, t_domain = data.shape
 
-        SW = dic["acqus"]["SW_h"]
-        SFO1 = dic["acqus"]["SFO1"]
-        O1 = dic["acqus"]["O1"]
-        SF = dic["procs"]["SF"]
-        ph0 = dic["procs"]["PHC0"]
-        ph1 = dic["procs"]["PHC1"]
-        decim = dic["acqus"]["DECIM"]
-        dspfvs = dic["acqus"]["DSPFVS"]
-        lb = dic["procs"]["LB"]
-        d20 = dic["acqus"]["D"][20]
+        sw = self._get_topspin_variable(dic, "SW_h")
+        sfo1 = self._get_topspin_variable(dic, "SFO1")
+        o1 = self._get_topspin_variable(dic, "O1")
+        lb = self._get_topspin_variable(dic, "LB")
+        d20 = self._get_topspin_variable(dic, "D")[20]
+
         tbup = []
         with open(f"{self.file}/vclist", "r", encoding="utf-8") as vclist:
             for line in vclist:
@@ -362,14 +365,14 @@ class ScreamImporterPseudo3D(TopspinImporter):
         for vc_count in range(vc_domain):
             for vp_count in vp_domain:
                 data_df.append(ng.proc_base.ls(data[vc_count][vp_count], ls))
-                data_df[-1] = ng.proc_base.em(data_df[-1], lb / SW)
+                data_df[-1] = ng.proc_base.em(data_df[-1], lb / sw)
                 data_ft.append(ng.proc_base.fft(data_df[-1]))
 
-        SI = len(data_ft[-1])
+        si = len(data_ft[-1])
         x_axis_ppm = (
-            (O1 / SFO1)
-            + (SW / (2 * SFO1))
-            - (np.arange(SI) * (SW / (SFO1 * SI)))
+            (o1 / sfo1)
+            + (sw / (2 * sfo1))
+            - (np.arange(si) * (sw / (sfo1 * si)))
         )
 
         dp_spectrum = None
@@ -390,7 +393,7 @@ class ScreamImporterPseudo3D(TopspinImporter):
                 )
 
                 deltadpsat_list[-1] = ng.proc_base.ps(
-                    deltadpsat_list[-1], 190, 0
+                    deltadpsat_list[-1], 180, 0
                 )
                 self._add_spectrum()
                 self._dataset.spectra[-1].x_axis = x_axis_ppm

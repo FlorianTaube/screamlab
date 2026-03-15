@@ -1,31 +1,31 @@
 [[Fit Statistics]]
     # fitting method   = leastsq
-    # function evals   = 1420
+    # function evals   = 3449
     # data points      = 2048
     # variables        = 16
-    chi-square         = 5.5829e+11
-    reduced chi-square = 2.7475e+08
-    Akaike info crit   = 39811.3858
-    Bayesian info crit = 39901.3797
+    chi-square         = 1.0476e+12
+    reduced chi-square = 5.1556e+08
+    Akaike info crit   = 41100.4022
+    Bayesian info crit = 41190.3961
 ##  Warning: uncertainties could not be estimated:
-    Peak_at_62_ppm_cen_0:    at boundary
     Peak_at_75_ppm_cen_0:    at boundary
-    Peak_at_75_ppm_sigma_0:  at boundary
+    Peak_at_67_ppm_cen_0:    at boundary
+    Peak_at_67_ppm_gamma_0:  at boundary
     Peak_at_23_ppm_cen_0:    at boundary
 [[Variables]]
-    Peak_at_62_ppm_amp_0:   -3131202.69 (init = -200)
-    Peak_at_62_ppm_cen_0:    62.9999995 (init = 62)
-    Peak_at_62_ppm_sigma_0:  0.98339268 (init = 1.5)
-    Peak_at_62_ppm_gamma_0:  6.7735e-07 (init = 1.5)
-    Peak_at_75_ppm_amp_0:   -543507.381 (init = -200)
+    Peak_at_62_ppm_amp_0:   -3615969.81 (init = -200)
+    Peak_at_62_ppm_cen_0:    62.9015852 (init = 62)
+    Peak_at_62_ppm_sigma_0:  1.01007116 (init = 1.5)
+    Peak_at_62_ppm_gamma_0:  0.09251104 (init = 1.5)
+    Peak_at_75_ppm_amp_0:   -96730.3709 (init = -200)
     Peak_at_75_ppm_cen_0:    76.0000000 (init = 75)
-    Peak_at_75_ppm_sigma_0:  3.00000000 (init = 1.5)
-    Peak_at_75_ppm_gamma_0:  0.48608383 (init = 1.5)
-    Peak_at_67_ppm_amp_0:   -2223458.83 (init = -200)
-    Peak_at_67_ppm_cen_0:    66.0388998 (init = 67)
-    Peak_at_67_ppm_sigma_0:  2.38532317 (init = 1.5)
-    Peak_at_67_ppm_gamma_0:  2.8915e-08 (init = 1.5)
-    Peak_at_23_ppm_amp_0:   -3586027.83 (init = -200)
+    Peak_at_75_ppm_sigma_0:  1.46911786 (init = 1.5)
+    Peak_at_75_ppm_gamma_0:  1.3370e-08 (init = 1.5)
+    Peak_at_67_ppm_amp_0:   -1543802.54 (init = -200)
+    Peak_at_67_ppm_cen_0:    66.0000005 (init = 67)
+    Peak_at_67_ppm_sigma_0:  2.43506285 (init = 1.5)
+    Peak_at_67_ppm_gamma_0:  7.8187e-09 (init = 1.5)
+    Peak_at_23_ppm_amp_0:   -3419666.57 (init = -200)
     Peak_at_23_ppm_cen_0:    22.0000000 (init = 23)
-    Peak_at_23_ppm_sigma_0:  1.78099432 (init = 1.5)
-    Peak_at_23_ppm_gamma_0:  1.60238466 (init = 1.5)
+    Peak_at_23_ppm_sigma_0:  1.58586439 (init = 1.5)
+    Peak_at_23_ppm_gamma_0:  1.68137445 (init = 1.5)
