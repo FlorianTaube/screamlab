@@ -53,7 +53,7 @@ class TopspinImporter:
         """Add a new spectrum to the ds."""
         self._dataset.spectra.append(screamlab.dataset.Spectra())
 
-    def _get_topspin_variable(self, dic, var_name):
+    def _get_top_par(self, dic, var_name):
         "Returns a topspin variable from acqus or procs."
         try:
             return dic["acqus"][var_name]
@@ -347,33 +347,9 @@ class ScreamImporterPseudo3D(TopspinImporter):
 
         vc_domain, vp_domain, t_domain = data.shape
 
-        sw = self._get_topspin_variable(dic, "SW_h")
-        sfo1 = self._get_topspin_variable(dic, "SFO1")
-        o1 = self._get_topspin_variable(dic, "O1")
-        lb = self._get_topspin_variable(dic, "LB")
-        d20 = self._get_topspin_variable(dic, "D")[20]
-
-        tbup = []
-        with open(f"{self.file}/vclist", "r", encoding="utf-8") as vclist:
-            for line in vclist:
-                tbup.append(float(line) * d20)
-
-        data_ft = []
-        data_df = []
-        vp_domain = [1, 0]
-        ls = np.argmax(np.abs(data[0][0]))
-        for vc_count in range(vc_domain):
-            for vp_count in vp_domain:
-                data_df.append(ng.proc_base.ls(data[vc_count][vp_count], ls))
-                data_df[-1] = ng.proc_base.em(data_df[-1], lb / sw)
-                data_ft.append(ng.proc_base.fft(data_df[-1]))
-
-        si = len(data_ft[-1])
-        x_axis_ppm = (
-            (o1 / sfo1)
-            + (sw / (2 * sfo1))
-            - (np.arange(si) * (sw / (sfo1 * si)))
-        )
+        tbup = self._set_buildup_time(self._get_top_par(dic, "D")[20])
+        data_ft = self._fourier_trafo(data, vc_domain, dic)
+        x_axis = self._calc_x_axis(dic, len(data_ft[-1]))
 
         dp_spectrum = None
         deltadpsat_list = []
@@ -384,19 +360,17 @@ class ScreamImporterPseudo3D(TopspinImporter):
                 dp_spectrum = data_ft[i]
             else:
                 deltadpsat_list.append(data_ft[i] - dp_spectrum)
-                deltadpsat_list[-1], phases = ng.proc_autophase.autops(
-                    deltadpsat_list[-1],
-                    "acme",
-                    return_phases=True,
-                    disp=False,
-                    ftol=1e-12,
+                deltadpsat_list[-1], phases = self._autophase(
+                    deltadpsat_list[-1]
                 )
-
+                phases = ng.proc_autophase.manual_ps(deltadpsat_list[-1])
+                print(phases)
+                sys.exit()
                 deltadpsat_list[-1] = ng.proc_base.ps(
                     deltadpsat_list[-1], 180, 0
                 )
                 self._add_spectrum()
-                self._dataset.spectra[-1].x_axis = x_axis_ppm
+                self._dataset.spectra[-1].x_axis = x_axis
                 self._dataset.spectra[-1].y_axis = ng.proc_bl.cbf(
                     deltadpsat_list[-1].real[::-1]
                 )
@@ -404,6 +378,55 @@ class ScreamImporterPseudo3D(TopspinImporter):
                 self._set_nucs()
                 self._dataset.spectra[-1].tpol = tbup[count]
                 count += 1
+                print(phases)
+
+    def _autophase(self, y_data):
+
+        return ng.proc_autophase.autops(
+            y_data,
+            "acme",
+            return_phases=True,
+            disp=False,
+            ftol=1e-12,
+        )
+
+    def _fourier_trafo(self, data, vc_domain, dic):
+        data_ft = []
+        vp_domain = [1, 0]
+        ls = np.argmax(np.abs(data[0][0]))
+        for vc_count in range(vc_domain):
+            for vp_count in vp_domain:
+                data_ft.append(ng.proc_base.ls(data[vc_count][vp_count], ls))
+                data_ft[-1] = ng.proc_base.em(
+                    data_ft[-1],
+                    self._get_top_par(dic, "LB")
+                    / self._get_top_par(dic, "SW_h"),
+                )
+                data_ft[-1] = ng.proc_base.fft(data_ft[-1])
+        return data_ft
+
+    def _set_buildup_time(self, d20):
+        tbup = []
+        with open(f"{self.file}/vclist", "r", encoding="utf-8") as vclist:
+            for line in vclist:
+                tbup.append(float(line) * d20)
+        return tbup
+
+    def _calc_x_axis(self, dic, si):
+        return (
+            (self._get_top_par(dic, "O1") / self._get_top_par(dic, "SFO1"))
+            + (
+                self._get_top_par(dic, "SW_h")
+                / (2 * self._get_top_par(dic, "SFO1"))
+            )
+            - (
+                np.arange(si)
+                * (
+                    self._get_top_par(dic, "SW_h")
+                    / (self._get_top_par(dic, "SFO1") * si)
+                )
+            )
+        )
 
 
 class Exporter:

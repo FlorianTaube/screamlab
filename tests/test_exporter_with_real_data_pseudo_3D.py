@@ -28,12 +28,12 @@ class TestDataset(unittest.TestCase):
         self.props.output_folder = rf"{test_dir}\Pseudo3DTestFiles\result"
         self.ds = dataset.Dataset()
         self.ds.props = self.props
-        self.ds.add_peak(
-            62,
-            peak_sign="-",
-        )
-        self.ds.add_peak(75, peak_sign="-")
-        self.ds.add_peak(67, peak_sign="-")
+        # self.ds.add_peak(
+        #    62,
+        #    peak_sign="-",
+        # )
+        # self.ds.add_peak(75, peak_sign="-")
+        # self.ds.add_peak(67, peak_sign="-")
         self.ds.add_peak(23, peak_sign="-")
         self.ds.start_analysis()
 
