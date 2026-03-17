@@ -351,34 +351,27 @@ class ScreamImporterPseudo3D(TopspinImporter):
         data_ft = self._fourier_trafo(data, vc_domain, dic)
         x_axis = self._calc_x_axis(dic, len(data_ft[-1]))
 
+        deltadpsatlist = self._calc_deltadpsat(data_ft)
+        phases = ng.proc_autophase.manual_ps(deltadpsatlist[-1])
+
+        for spec_nr, spec in enumerate(deltadpsatlist):
+            spec = ng.proc_base.ps(spec, phases[0], phases[-1])
+            self._add_spectrum()
+            self._dataset.spectra[-1].x_axis = x_axis
+            self._dataset.spectra[-1].y_axis = ng.proc_bl.cbf(spec.real[::-1])
+            self._set_number_of_scans()
+            self._set_nucs()
+            self._dataset.spectra[-1].tpol = tbup[spec_nr]
+
+    def _calc_deltadpsat(self, data_ft):
         dp_spectrum = None
         deltadpsat_list = []
-        phases = []
-        count = 0
         for i in range(len(data_ft)):
             if i % 2 == 0:
                 dp_spectrum = data_ft[i]
             else:
                 deltadpsat_list.append(data_ft[i] - dp_spectrum)
-                deltadpsat_list[-1], phases = self._autophase(
-                    deltadpsat_list[-1]
-                )
-                phases = ng.proc_autophase.manual_ps(deltadpsat_list[-1])
-                print(phases)
-                sys.exit()
-                deltadpsat_list[-1] = ng.proc_base.ps(
-                    deltadpsat_list[-1], 180, 0
-                )
-                self._add_spectrum()
-                self._dataset.spectra[-1].x_axis = x_axis
-                self._dataset.spectra[-1].y_axis = ng.proc_bl.cbf(
-                    deltadpsat_list[-1].real[::-1]
-                )
-                self._set_number_of_scans()
-                self._set_nucs()
-                self._dataset.spectra[-1].tpol = tbup[count]
-                count += 1
-                print(phases)
+        return deltadpsat_list
 
     def _autophase(self, y_data):
 
