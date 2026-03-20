@@ -352,26 +352,14 @@ class ScreamImporterPseudo3D(TopspinImporter):
         x_axis = self._calc_x_axis(dic, len(data_ft[-1]))
 
         deltadpsatlist = self._calc_deltadpsat(data_ft)
-        testspec = screamlab.dataset.Spectra()
-        testspec.x_axis = x_axis
-        testspec.y_axis = deltadpsatlist[-1]
-        if len(self._dataset.props.subspec) == 2:
-            _, y_short = screamlab.functions.generate_subspec(
-                testspec, self._dataset.props.subspec
-            )
-        else:
-            y_short = deltadpsatlist[-1]
 
-        phases = ng.proc_autophase.manual_ps(y_short)
-        # phases = [50.192307692307736 -360]
-        # phases = [-46.73076923076917 -299.4230769230769]
-        # phases = [27.692307692307736 -283.8461538461538
+        phases = ng.proc_autophase.manual_ps(deltadpsatlist[-1])
 
         for spec_nr, spec in enumerate(deltadpsatlist):
             spec = ng.proc_base.ps(spec, phases[0], phases[-1])
             self._add_spectrum()
             self._dataset.spectra[-1].x_axis = x_axis
-            self._dataset.spectra[-1].y_axis = ng.proc_bl.cbf(spec.real[::-1])
+            self._dataset.spectra[-1].y_axis = ng.proc_bl.cbf(spec.real)
             self._set_number_of_scans()
             self._set_nucs()
             self._dataset.spectra[-1].tpol = tbup[spec_nr]
@@ -434,7 +422,7 @@ class ScreamImporterPseudo3D(TopspinImporter):
                     / (self._get_top_par(dic, "SFO1") * si)
                 )
             )
-        )
+        )[::-1]
 
 
 class Exporter:

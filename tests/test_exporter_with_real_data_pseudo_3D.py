@@ -22,22 +22,14 @@ class TestDataset(unittest.TestCase):
         self.props.spectrum_for_prefit = -2
         self.props.buildup_types = ["exponential"]
         self.props.spectrum_fit_type = "global"
-        self.props.expno = [40]
+        self.props.expno = [1]
         self.props.procno = 1
-        # self.props.subspec = [-50,200]
-        # self.props.path_to_experiment = rf"{test_dir}/Pseudo3DTestFiles"
-        # self.props.path_to_experiment = rf"F:\ssNMR\20260316_13C2_EtOH"
-        self.props.path_to_experiment = rf"F:\ssNMR\20260317_2-13C_EtOH"
+        self.props.path_to_experiment = rf"{test_dir}/Pseudo3DTestFiles"
         self.props.output_folder = rf"{test_dir}\Pseudo3DTestFiles\result"
         self.ds = dataset.Dataset()
         self.ds.props = self.props
-        # self.ds.add_peak(
-        #    62,
-        #    peak_sign="-",
-        # )
-        # self.ds.add_peak(75, peak_sign="-")
-        # self.ds.add_peak(67, peak_sign="-")
-        self.ds.add_peak(23, peak_sign="-")
+
+        self.ds.add_peak(23, peak_sign="+")
         self.ds.start_analysis()
 
     def test_results_folder_exists(self):
@@ -92,7 +84,7 @@ class TestDataset(unittest.TestCase):
                     rf"{self.props.output_folder}/spectral_deconvolution_plots"
                 )
             ),
-            36,
+            18,
         )
 
     def test_spec_tab_results_contains_correct_number_of_files(self):

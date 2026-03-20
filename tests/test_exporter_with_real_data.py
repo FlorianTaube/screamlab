@@ -29,6 +29,7 @@ class TestDataset(unittest.TestCase):
         self.props.spectrum_fit_type = "global"
         self.props.expno = [1, 8]
         self.props.procno = 103
+        self.props.subspec = [-50, 20]
         self.props.path_to_experiment = (
             rf"{test_dir}/SCREAM_Test_Files/Alanin"
         )
