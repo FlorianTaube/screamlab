@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>screamlab.io module &mdash; screamlab 0.3.2.dev4 documentation</title>
+  <title>screamlab.io module &mdash; screamlab 0.3.3.dev10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../_static/Logo_32_32.ico"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=7643ccfc"></script>
+      <script src="../_static/documentation_options.js?v=f3871a7d"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -130,6 +130,38 @@ Automatically normalizes the  intensitys to the number of scans.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">import_topspin_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd><p>Import pseudo 2D NMR data from TopSpin and process it.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">screamlab.io.</span></span><span class="sig-name descname"><span class="pre">ScreamImporterPseudo3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TopspinImporter</span></code></p>
+<p>Import and process SCREAM DNP data from pseudo-3D TopSpin experiments.</p>
+<p>This class reads SCREAM DNP FIDs acquired in a TopSpin pseudo-3D dataset.
+Currently under development. There might be some bugs.
+The three experiment dimensions are:</p>
+<ol class="arabic simple">
+<li><p>Time domain (FID).</p></li>
+<li><p>Acquisition type: alternating DP and DPsat spectra.</p></li>
+<li><p>Polarization buildup time (t_pol).</p></li>
+</ol>
+<p>The polarization buildup time (t_pol) is encoded via a variable count list
+(vclist). Each count is multiplied by the repeating delay D20 in the pulse
+sequence to obtain the effective buildup time.</p>
+<p>For each polarization buildup time:
+- The corresponding FIDs are Fourier transformed.
+- DP and DPsat spectra are subtracted to produce the ΔDPsat spectrum.</p>
+<p>The resulting spectra are then passed to further processing steps.
+The importer also reads the corresponding polarization buildup times
+(t_pol) and the number of scans. Spectra are automatically normalized
+by the number of scans.</p>
+<p>Note that baseline correction and referencing have still to be performed in TopSpin.</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">import_topspin_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Import NMR data from TopSpin and process it.</p>
 </dd></dl>
 
 </dd></dl>
