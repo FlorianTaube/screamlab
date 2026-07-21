@@ -14,7 +14,7 @@ setuptools.setup(
     description="Package for reproducible evaluation of SCREAM-DNP data.",
     long_description=read("README.rst"),
     long_description_content_type="text/x-rst",
-    author="Florian Taube",
+    author="Florian Philipp-Taube",
     author_email="florian.taube@uni-rostock.de",
     url="https://github.com/FlorianTaube/screamlab",
     project_urls={

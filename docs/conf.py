@@ -22,8 +22,8 @@ with open(
     release_ = version_file.read().strip()
 
 project = "screamlab"
-copyright = "2024-25, Florian Taube"
-author = "Florian Taube"
+copyright = "2024-25, Florian Philipp-Taube"
+author = "Florian Philipp-Taube"
 
 # The short X.Y version
 version = ".".join(release_.split(".")[0:2])
@@ -185,7 +185,7 @@ latex_documents = [
         master_doc,
         "screamlab.tex",
         "screamlab Documentation",
-        "Florian Taube",
+        "Florian Philipp-Taube",
         "manual",
     ),
 ]
