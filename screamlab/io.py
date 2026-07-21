@@ -177,6 +177,12 @@ class ScreamImporter(TopspinImporter):
         delay = self._extract_params_from_acqus("##$D= (0..63)", 64)
         loop = self._extract_params_from_acqus("##$L= (0..31)", 32)
         self._dataset.spectra[-1].tpol = loop * delay
+        # if self._dataset.spectra[-1].tpol == 0:
+        #    self._dataset.props.delay20 = "D 2"
+        #    self._dataset.spectra[-1].tpol = self._extract_params_from_acqus("##$D= (0..63)", 64)
+        # if self._dataset.spectra[-1].tpol == 0:
+        #    self._dataset.props.delay20 = "P 15"
+        #    self._dataset.spectra[-1].tpol = self._extract_params_from_acqus("##$P= (0..63)", 64)
 
     def _extract_params_from_acqus(self, param_list_name, param_count):
         flag = False
@@ -213,6 +219,10 @@ class ScreamImporter(TopspinImporter):
                             param = param_line[
                                 int(self._dataset.props.loop20.split(" ")[-1])
                             ]
+                        # elif param_list_name == "##$P= (0..63)":
+                        #    param = param_line[
+                        #        int(self._dataset.props.delay20.split(" ")[-1])
+                        #    ]
                 if param_list_name in acqus_line:
                     flag = True
         return param
@@ -352,20 +362,9 @@ class ScreamImporterPseudo3D(TopspinImporter):
         x_axis = self._calc_x_axis(dic, len(data_ft[-1]))
 
         deltadpsatlist = self._calc_deltadpsat(data_ft)
-        testspec = screamlab.dataset.Spectra()
-        testspec.x_axis = x_axis
-        testspec.y_axis = deltadpsatlist[-1]
-        if len(self._dataset.props.subspec) == 2:
-            _, y_short = screamlab.functions.generate_subspec(
-                testspec, self._dataset.props.subspec
-            )
-        else:
-            y_short = deltadpsatlist[-1]
+        y_short = deltadpsatlist[-1]
 
         phases = ng.proc_autophase.manual_ps(y_short)
-        # phases = [50.192307692307736 -360]
-        # phases = [-46.73076923076917 -299.4230769230769]
-        # phases = [27.692307692307736 -283.8461538461538
 
         for spec_nr, spec in enumerate(deltadpsatlist):
             spec = ng.proc_base.ps(spec, phases[0], phases[-1])
@@ -377,6 +376,34 @@ class ScreamImporterPseudo3D(TopspinImporter):
             self._dataset.spectra[-1].tpol = tbup[spec_nr]
             if len(self._dataset.props.subspec) == 2:
                 self._gen_subspectrum()
+            if spec_nr == 200:
+                plt.plot(
+                    self._dataset.spectra[-1].x_axis,
+                    self._dataset.spectra[-1].y_axis,
+                )
+                plt.show()
+                plt.close()
+
+        with open(
+            "C:/Users/Florian Taube/Desktop/SCREAM_DNP_EtOH_Mixture_deltaDP.txt",
+            "w",
+        ) as f:
+            for spectrum in self._dataset.spectra:
+                f.write(str(spectrum.tpol))
+                f.write("\t")
+                f.write("\t".join(f"{v:.6f}" for v in spectrum.y_axis))
+                print(len(spectrum.y_axis))
+                tau = np.linspace(0, 891, 891)
+                # plt.plot(tau, spectrum.y_axis)
+
+                # plt.show()
+                # plt.close()
+
+                f.write("\n")
+
+        import sys
+
+        sys.exit()
 
     def _calc_deltadpsat(self, data_ft):
         dp_spectrum = None

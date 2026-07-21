@@ -16,7 +16,7 @@ import sys
 from datetime import datetime
 import numpy as np
 from lmfit import Parameters
-from screamlab import io, utils, settings, functions, ilt
+from screamlab import io, utils, settings, functions
 
 
 class Dataset:
@@ -64,25 +64,21 @@ class Dataset:
         print(
             f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start fitting."
         )
-        # self._calculate_peak_intensities()
+        self._calculate_peak_intensities()
         print(
             f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start buildup fit."
         )
 
-        # self._start_buildup_fit()
+        self._start_buildup_fit()
         print(
             f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: "
             f"Start generating result files. ({self.props.output_folder})"
         )
-        # self._print_all()
+        self._print_all()
         print(
             f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: "
             f"Finished with {self.props.path_to_experiment}"
         )
-
-        if self.props.scream3d:
-            trafo = ilt.InverseLaplaceTransformation(self.spectra)
-            trafo.start_ilt()
 
     def _start_buildup_fit_from_spectra(self):
         """Starts buildup fitting using data imported from spectra CSV files."""
@@ -147,6 +143,7 @@ class Dataset:
 
     def _calculate_peak_intensities(self):
         """Calculates peak intensities based on fitting methods."""
+
         if self.props.prefit and self.props.spectrum_fit_type != "numint":
             print(
                 f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Start prefit."
@@ -276,7 +273,7 @@ class Spectra:
     tpol : float or None
         The polarization time used in the experiment.
     nucs : str or None
-        The nucleous measured.
+        The nucleus measured.
     x_axis : array-like or None
         The x-axis values representing frequency domain data data.
     y_axis : array-like or None

@@ -24,20 +24,14 @@ class TestDataset(unittest.TestCase):
         self.props.spectrum_fit_type = "global"
         self.props.expno = [40]
         self.props.procno = 1
-        # self.props.subspec = [-50,200]
-        # self.props.path_to_experiment = rf"{test_dir}/Pseudo3DTestFiles"
-        # self.props.path_to_experiment = rf"F:\ssNMR\20260316_13C2_EtOH"
-        self.props.path_to_experiment = rf"F:\ssNMR\20260317_2-13C_EtOH"
+        self.props.subspec = [0, 130]
+
+        self.props.path_to_experiment = rf"F:\ssNMR\20260319_13C_EtOH_Mixture"
         self.props.output_folder = rf"{test_dir}\Pseudo3DTestFiles\result"
         self.ds = dataset.Dataset()
         self.ds.props = self.props
-        # self.ds.add_peak(
-        #    62,
-        #    peak_sign="-",
-        # )
-        # self.ds.add_peak(75, peak_sign="-")
-        # self.ds.add_peak(67, peak_sign="-")
         self.ds.add_peak(23, peak_sign="-")
+
         self.ds.start_analysis()
 
     def test_results_folder_exists(self):
