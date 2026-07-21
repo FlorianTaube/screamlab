@@ -1,7 +1,7 @@
 sphinx
 sphinx-rtd-theme
 sphinx-multiversion
-numpy
+numpy<2.0
 matplotlib
 lmfit
 scipy

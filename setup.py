@@ -43,7 +43,7 @@ setuptools.setup(
     ],
     install_requires=[
         "matplotlib",
-        "numpy<2.0",
+        "numpy",
         "lmfit",
         "scipy",
         "nmrglue",
