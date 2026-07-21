@@ -212,7 +212,7 @@ class Properties:
         """
         str, optional: A list specifying the spectrum fit type
 
-        Options supporded: "global", "independent, "numint".
+        Options supporded: "global", "individual, "numint".
 
         """
         return self._spectrum_fit_type
